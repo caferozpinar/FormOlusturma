@@ -1,0 +1,1475 @@
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞLATILDI
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Geçici dizin temizleniyor...
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Veri dizini: kaynaklar
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Şablonlar dizini: kaynaklar/sablonlar
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Çıktı dizini: ciktilar
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Eşleme kuralları yükleniyor...
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | 3 bölüm, 34 kural yüklendi
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Global placeholder eşlemesi oluşturuluyor...
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Global eşleme: 15 placeholder
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Ürüne özel placeholder eşlemeleri oluşturuluyor...
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu |   Ürün 'LK': 22 placeholder
+2026-01-08 08:28:56 | WARNING  | BelgeOlusturucu | UYARI: [ZP30] bölümü kurallar içinde bulunamadı
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu |   Ürün 'ZP30': 15 placeholder
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Başlık metni oluşturuluyor...
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | 3 ürün başlığı yüklendi: urunbasliklari.txt
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Başlık metni: 'ESSMAN DUMAN TAHLIYE KAPAKLARI ve ZP30 FİYAT TEKLİFİ'
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | ADIM 1: BAŞLIK ŞABLONU RENDER EDİLİYOR
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Render: STANDART_BASLIK.docx -> STANDART_BASLIK__32218657a0.docx
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | 4 paragrafta placeholder değiştirildi
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | ✓ Başlık render edildi: STANDART_BASLIK__32218657a0.docx
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | ADIM 2: ÜRÜN ŞABLONLARI RENDER EDİLİYOR
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Ürün işleniyor [1/2]: LK
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Render: LK_TANIM.docx -> LK_TANIM__9a035521b4.docx
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | 3 paragrafta placeholder değiştirildi
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu |   ✓ TANIM render edildi: LK_TANIM__9a035521b4.docx
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Render: LK_TABLO.docx -> LK_TABLO__10b246b903.docx
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | 6 paragrafta placeholder değiştirildi
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu |   ✓ TABLO render edildi: LK_TABLO__10b246b903.docx
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Ürün işleniyor [2/2]: ZP30
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Render: ZP30_TANIM.docx -> ZP30_TANIM__b071d7e2f4.docx
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | 0 paragrafta placeholder değiştirildi
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu |   ✓ TANIM render edildi: ZP30_TANIM__b071d7e2f4.docx
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Render: ZP30_TABLO.docx -> ZP30_TABLO__a84f597bf7.docx
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | 0 paragrafta placeholder değiştirildi
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu |   ✓ TABLO render edildi: ZP30_TABLO__a84f597bf7.docx
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | ADIM 3: BELGE BİRLEŞTİRME HAZIRLANIYOR
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | 2 TANIM belgesi ekleniyor
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | 2 TABLO belgesi ekleniyor
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | EK: FİYAT TABLOSU OLUŞTURULUYOR (SATIR SATIR)
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Fiyat tablosu: 5 normal, 0 opsiyon satır
+2026-01-08 08:28:56 | DEBUG    | BelgeOlusturucu | Toplam (sadece normal): 32.550,00, KDV: 6.510,00, Genel Toplam: 39.060,00
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu yazıldı: FIYAT__20260108_082856.docx
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu |   - Normal ürünler: 5
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu |   - Opsiyon ürünler: 0
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu |   - Genel toplam (KDV dahil, sadece normal): 39.060,00
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu oluşturuldu: FIYAT__20260108_082856.docx
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Şartlar ekleniyor: SARTLAR.docx
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Toplam birleştirilecek: 7 belge (başlık + 6 ek)
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | ADIM 4: ÇIKTI DOSYA ADI OLUŞTURULUYOR
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Seri numarası oluşturuluyor...
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-DENEME-ERZURUM-TÜRKIYE-LKZP30-XDOFK5-R01
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Dosya adı: DENEME-080126-XDOFK5-R01.docx
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | ADIM 5: BELGELER BİRLEŞTİRİLİYOR
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu | Belge birleştirme başladı (temel: STANDART_BASLIK__32218657a0.docx)
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu |   [1/6] Ekleniyor: LK_TANIM__9a035521b4.docx
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu |   [2/6] Ekleniyor: ZP30_TANIM__b071d7e2f4.docx
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu |   [3/6] Ekleniyor: LK_TABLO__10b246b903.docx
+2026-01-08 08:28:56 | INFO     | BelgeOlusturucu |   [4/6] Ekleniyor: ZP30_TABLO__a84f597bf7.docx
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu |   [5/6] Ekleniyor: FIYAT__20260108_082856.docx
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu |   [6/6] Ekleniyor: SARTLAR.docx
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | Birleştirilmiş belge kaydedildi: DENEME-080126-XDOFK5-R01__MERGED.docx
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ✓ Belgeler birleştirildi: DENEME-080126-XDOFK5-R01__MERGED.docx
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ADIM 6: SON GLOBAL PLACEHOLDER'LAR UYGULANIYOR
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulanıyor: DENEME-080126-XDOFK5-R01__MERGED.docx
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | 12 paragrafta placeholder değiştirildi
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulandı: DENEME-080126-XDOFK5-R01.docx
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ✓ Son belge kaydedildi: ciktilar/DENEME-080126-XDOFK5-R01.docx
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ADIM 7: SERİ NUMARASI FOOTER'A YAZILIYOR
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | Seri numarası footer'a yazıldı: SN:080126-DENEME-ERZURUM-TÜRKIYE-LKZP30-XDOFK5-R01 (1 konum)
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ✓ Seri numarası eklendi: SN:080126-DENEME-ERZURUM-TÜRKIYE-LKZP30-XDOFK5-R01
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ADIM 8: BELGE VERİLERİ ZTF DOSYASINA KAYDEDILIYOR
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ✓ Veri kaydedildi: DENEME-080126-XDOFK5-R01.ztf
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu |   - Orijinal: 4,204 byte
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu |   - Sıkıştırılmış: 1,671 byte
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu |   - Kazanç: %60.3
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ✓ Belge verileri ZTF dosyasına kaydedildi
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ADIM 9: CSV KAYDI EKLENİYOR
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:57 | WARNING  | BelgeOlusturucu | Ürün kodu verisi bulunamadı: ZP30
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | Fiyat tablosu: 5 ürün CSV'ye eklendi
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: SN:080126-DENEME-ERZURUM-TÜRKIYE-LKZP30-XDOFK5-R01
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: /home/cafer/Documents/MyWorkspace/ZET Yapı/Application/FormOlusturma/kayitlar/belge_kayitlari.csv
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | GEÇİCİ DOSYALAR TEMİZLENİYOR
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | Geçici dizin temizlendi: 7 dosya silindi
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞARIYLA TAMAMLANDI
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | Çıktı dosyası: ciktilar/DENEME-080126-XDOFK5-R01.docx
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | Dosya boyutu: 154.87 KB
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | Dahil edilen ürünler: LK, ZP30
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-DENEME-ERZURUM-TÜRKIYE-LKZP30-XDOFK5-R01
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | Kod: IDX1|I=Erzurum|U=Türkiye|F=Cafer Umut Özpınar|R=R00|PE=LK:150 x 150 cm,ZP30:-,-:-,-:-,-:-,-:-
+2026-01-08 08:28:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞLATILDI
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Geçici dizin temizleniyor...
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Veri dizini: kaynaklar
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Şablonlar dizini: kaynaklar/sablonlar
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Çıktı dizini: ciktilar
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Eşleme kuralları yükleniyor...
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | 3 bölüm, 34 kural yüklendi
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Global placeholder eşlemesi oluşturuluyor...
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Global eşleme: 15 placeholder
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Ürüne özel placeholder eşlemeleri oluşturuluyor...
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu |   Ürün 'LK': 22 placeholder
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Başlık metni oluşturuluyor...
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | 3 ürün başlığı yüklendi: urunbasliklari.txt
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Başlık metni: 'ESSMAN DUMAN TAHLIYE KAPAKLARI FİYAT TEKLİFİ'
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ADIM 1: BAŞLIK ŞABLONU RENDER EDİLİYOR
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Render: STANDART_BASLIK.docx -> STANDART_BASLIK__0a4758dd4c.docx
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | 4 paragrafta placeholder değiştirildi
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ✓ Başlık render edildi: STANDART_BASLIK__0a4758dd4c.docx
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ADIM 2: ÜRÜN ŞABLONLARI RENDER EDİLİYOR
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Ürün işleniyor [1/1]: LK
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Render: LK_TANIM.docx -> LK_TANIM__67253848b4.docx
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | 3 paragrafta placeholder değiştirildi
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu |   ✓ TANIM render edildi: LK_TANIM__67253848b4.docx
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Render: LK_TABLO.docx -> LK_TABLO__8d3d01227c.docx
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | 6 paragrafta placeholder değiştirildi
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu |   ✓ TABLO render edildi: LK_TABLO__8d3d01227c.docx
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ADIM 3: BELGE BİRLEŞTİRME HAZIRLANIYOR
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | 1 TANIM belgesi ekleniyor
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | 1 TABLO belgesi ekleniyor
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | EK: FİYAT TABLOSU OLUŞTURULUYOR (SATIR SATIR)
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Fiyat tablosu: 5 normal, 0 opsiyon satır
+2026-01-08 08:33:32 | DEBUG    | BelgeOlusturucu | Toplam (sadece normal): 32.550,00, KDV: 6.510,00, Genel Toplam: 39.060,00
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu yazıldı: FIYAT__20260108_083332.docx
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu |   - Normal ürünler: 5
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu |   - Opsiyon ürünler: 0
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu |   - Genel toplam (KDV dahil, sadece normal): 39.060,00
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu oluşturuldu: FIYAT__20260108_083332.docx
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Şartlar ekleniyor: SARTLAR.docx
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Toplam birleştirilecek: 5 belge (başlık + 4 ek)
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ADIM 4: ÇIKTI DOSYA ADI OLUŞTURULUYOR
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Seri numarası oluşturuluyor...
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-IZELTAS-ERZURUM-TÜRKIYE-LK-59HOY1-R01
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Dosya adı: IZELTAS-080126-59HOY1-R01.docx
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ADIM 5: BELGELER BİRLEŞTİRİLİYOR
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Belge birleştirme başladı (temel: STANDART_BASLIK__0a4758dd4c.docx)
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu |   [1/4] Ekleniyor: LK_TANIM__67253848b4.docx
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu |   [2/4] Ekleniyor: LK_TABLO__8d3d01227c.docx
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu |   [3/4] Ekleniyor: FIYAT__20260108_083332.docx
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu |   [4/4] Ekleniyor: SARTLAR.docx
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Birleştirilmiş belge kaydedildi: IZELTAS-080126-59HOY1-R01__MERGED.docx
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ✓ Belgeler birleştirildi: IZELTAS-080126-59HOY1-R01__MERGED.docx
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ADIM 6: SON GLOBAL PLACEHOLDER'LAR UYGULANIYOR
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulanıyor: IZELTAS-080126-59HOY1-R01__MERGED.docx
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | 12 paragrafta placeholder değiştirildi
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulandı: IZELTAS-080126-59HOY1-R01.docx
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ✓ Son belge kaydedildi: ciktilar/IZELTAS-080126-59HOY1-R01.docx
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ADIM 7: SERİ NUMARASI FOOTER'A YAZILIYOR
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Seri numarası footer'a yazıldı: SN:080126-IZELTAS-ERZURUM-TÜRKIYE-LK-59HOY1-R01 (1 konum)
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ✓ Seri numarası eklendi: SN:080126-IZELTAS-ERZURUM-TÜRKIYE-LK-59HOY1-R01
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ADIM 8: BELGE VERİLERİ ZTF DOSYASINA KAYDEDILIYOR
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ✓ Veri kaydedildi: IZELTAS-080126-59HOY1-R01.ztf
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu |   - Orijinal: 4,191 byte
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu |   - Sıkıştırılmış: 1,660 byte
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu |   - Kazanç: %60.4
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ✓ Belge verileri ZTF dosyasına kaydedildi
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ADIM 9: CSV KAYDI EKLENİYOR
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Fiyat tablosu: 5 ürün CSV'ye eklendi
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: SN:080126-IZELTAS-ERZURUM-TÜRKIYE-LK-59HOY1-R01
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: /home/cafer/Documents/MyWorkspace/ZET Yapı/Application/FormOlusturma/kayitlar/belge_kayitlari.csv
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | GEÇİCİ DOSYALAR TEMİZLENİYOR
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Geçici dizin temizlendi: 5 dosya silindi
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞARIYLA TAMAMLANDI
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Çıktı dosyası: ciktilar/IZELTAS-080126-59HOY1-R01.docx
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Dosya boyutu: 139.39 KB
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Dahil edilen ürünler: LK
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-IZELTAS-ERZURUM-TÜRKIYE-LK-59HOY1-R01
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | Kod: IDX1|I=Erzurum|U=Türkiye|F=Cafer Umut Özpınar|R=R00|PE=LK:180 x 180 cm,-:-,-:-,-:-,-:-,-:-
+2026-01-08 08:33:32 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞLATILDI
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Geçici dizin temizleniyor...
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Veri dizini: kaynaklar
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Şablonlar dizini: kaynaklar/sablonlar
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Çıktı dizini: ciktilar
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Eşleme kuralları yükleniyor...
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | 3 bölüm, 34 kural yüklendi
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Global placeholder eşlemesi oluşturuluyor...
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Global eşleme: 15 placeholder
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Ürüne özel placeholder eşlemeleri oluşturuluyor...
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu |   Ürün 'LK': 22 placeholder
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Başlık metni oluşturuluyor...
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | 3 ürün başlığı yüklendi: urunbasliklari.txt
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Başlık metni: 'ESSMAN DUMAN TAHLIYE KAPAKLARI FİYAT TEKLİFİ'
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ADIM 1: BAŞLIK ŞABLONU RENDER EDİLİYOR
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Render: STANDART_BASLIK.docx -> STANDART_BASLIK__12859dafa8.docx
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | 4 paragrafta placeholder değiştirildi
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ✓ Başlık render edildi: STANDART_BASLIK__12859dafa8.docx
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ADIM 2: ÜRÜN ŞABLONLARI RENDER EDİLİYOR
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Ürün işleniyor [1/1]: LK
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Render: LK_TANIM.docx -> LK_TANIM__9323f570ab.docx
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | 3 paragrafta placeholder değiştirildi
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu |   ✓ TANIM render edildi: LK_TANIM__9323f570ab.docx
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Render: LK_TABLO.docx -> LK_TABLO__4f5569f673.docx
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | 6 paragrafta placeholder değiştirildi
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu |   ✓ TABLO render edildi: LK_TABLO__4f5569f673.docx
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ADIM 3: BELGE BİRLEŞTİRME HAZIRLANIYOR
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | 1 TANIM belgesi ekleniyor
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | 1 TABLO belgesi ekleniyor
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | EK: FİYAT TABLOSU OLUŞTURULUYOR (SATIR SATIR)
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Fiyat tablosu: 3 normal, 2 opsiyon satır
+2026-01-08 08:33:49 | DEBUG    | BelgeOlusturucu | Toplam (sadece normal): 6.975,00, KDV: 1.395,00, Genel Toplam: 8.370,00
+2026-01-08 08:33:49 | DEBUG    | BelgeOlusturucu | Opsiyon satır renklendirildi: BUTON - RGB(173, 216, 230)
+2026-01-08 08:33:49 | DEBUG    | BelgeOlusturucu | Opsiyon satır renklendirildi: HAVALANDIRMA MOTORU - RGB(255, 218, 185)
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu yazıldı: FIYAT__20260108_083349.docx
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu |   - Normal ürünler: 3
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu |   - Opsiyon ürünler: 2
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu |   - Genel toplam (KDV dahil, sadece normal): 8.370,00
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu oluşturuldu: FIYAT__20260108_083349.docx
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Şartlar ekleniyor: SARTLAR.docx
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Toplam birleştirilecek: 5 belge (başlık + 4 ek)
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ADIM 4: ÇIKTI DOSYA ADI OLUŞTURULUYOR
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Seri numarası oluşturuluyor...
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-IZELTAS-ERZURUM-TÜRKIYE-LK-59HOY1-R01
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Dosya adı: IZELTAS-080126-59HOY1-R01.docx
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ADIM 5: BELGELER BİRLEŞTİRİLİYOR
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Belge birleştirme başladı (temel: STANDART_BASLIK__12859dafa8.docx)
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu |   [1/4] Ekleniyor: LK_TANIM__9323f570ab.docx
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu |   [2/4] Ekleniyor: LK_TABLO__4f5569f673.docx
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu |   [3/4] Ekleniyor: FIYAT__20260108_083349.docx
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu |   [4/4] Ekleniyor: SARTLAR.docx
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Birleştirilmiş belge kaydedildi: IZELTAS-080126-59HOY1-R01__MERGED.docx
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ✓ Belgeler birleştirildi: IZELTAS-080126-59HOY1-R01__MERGED.docx
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ADIM 6: SON GLOBAL PLACEHOLDER'LAR UYGULANIYOR
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulanıyor: IZELTAS-080126-59HOY1-R01__MERGED.docx
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | 12 paragrafta placeholder değiştirildi
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulandı: IZELTAS-080126-59HOY1-R01.docx
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ✓ Son belge kaydedildi: ciktilar/IZELTAS-080126-59HOY1-R01.docx
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ADIM 7: SERİ NUMARASI FOOTER'A YAZILIYOR
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Seri numarası footer'a yazıldı: SN:080126-IZELTAS-ERZURUM-TÜRKIYE-LK-59HOY1-R01 (1 konum)
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ✓ Seri numarası eklendi: SN:080126-IZELTAS-ERZURUM-TÜRKIYE-LK-59HOY1-R01
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ADIM 8: BELGE VERİLERİ ZTF DOSYASINA KAYDEDILIYOR
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ✓ Veri kaydedildi: IZELTAS-080126-59HOY1-R01.ztf
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu |   - Orijinal: 4,187 byte
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu |   - Sıkıştırılmış: 1,656 byte
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu |   - Kazanç: %60.4
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ✓ Belge verileri ZTF dosyasına kaydedildi
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ADIM 9: CSV KAYDI EKLENİYOR
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Fiyat tablosu: 5 ürün CSV'ye eklendi
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: SN:080126-IZELTAS-ERZURUM-TÜRKIYE-LK-59HOY1-R01
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: /home/cafer/Documents/MyWorkspace/ZET Yapı/Application/FormOlusturma/kayitlar/belge_kayitlari.csv
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | GEÇİCİ DOSYALAR TEMİZLENİYOR
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Geçici dizin temizlendi: 5 dosya silindi
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞARIYLA TAMAMLANDI
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Çıktı dosyası: ciktilar/IZELTAS-080126-59HOY1-R01.docx
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Dosya boyutu: 139.42 KB
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Dahil edilen ürünler: LK
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-IZELTAS-ERZURUM-TÜRKIYE-LK-59HOY1-R01
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | Kod: IDX1|I=Erzurum|U=Türkiye|F=Cafer Umut Özpınar|R=R00|PE=LK:180 x 180 cm,-:-,-:-,-:-,-:-,-:-
+2026-01-08 08:33:49 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞLATILDI
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Geçici dizin temizleniyor...
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Veri dizini: kaynaklar
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Şablonlar dizini: kaynaklar/sablonlar
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Çıktı dizini: ciktilar
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Eşleme kuralları yükleniyor...
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | 3 bölüm, 34 kural yüklendi
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Global placeholder eşlemesi oluşturuluyor...
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Global eşleme: 15 placeholder
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Ürüne özel placeholder eşlemeleri oluşturuluyor...
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu |   Ürün 'LK': 22 placeholder
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Başlık metni oluşturuluyor...
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | 3 ürün başlığı yüklendi: urunbasliklari.txt
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Başlık metni: 'ESSMAN DUMAN TAHLIYE KAPAKLARI FİYAT TEKLİFİ'
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ADIM 1: BAŞLIK ŞABLONU RENDER EDİLİYOR
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Render: STANDART_BASLIK.docx -> STANDART_BASLIK__caada4395a.docx
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | 4 paragrafta placeholder değiştirildi
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ✓ Başlık render edildi: STANDART_BASLIK__caada4395a.docx
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ADIM 2: ÜRÜN ŞABLONLARI RENDER EDİLİYOR
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Ürün işleniyor [1/1]: LK
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Render: LK_TANIM.docx -> LK_TANIM__1fc3677310.docx
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | 3 paragrafta placeholder değiştirildi
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu |   ✓ TANIM render edildi: LK_TANIM__1fc3677310.docx
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Render: LK_TABLO.docx -> LK_TABLO__0efae3f866.docx
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | 6 paragrafta placeholder değiştirildi
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu |   ✓ TABLO render edildi: LK_TABLO__0efae3f866.docx
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ADIM 3: BELGE BİRLEŞTİRME HAZIRLANIYOR
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | 1 TANIM belgesi ekleniyor
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | 1 TABLO belgesi ekleniyor
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | EK: FİYAT TABLOSU OLUŞTURULUYOR (SATIR SATIR)
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Fiyat tablosu: 3 normal, 2 opsiyon satır
+2026-01-08 08:34:03 | DEBUG    | BelgeOlusturucu | Toplam (sadece normal): 6.975,00, KDV: 1.395,00, Genel Toplam: 8.370,00
+2026-01-08 08:34:03 | DEBUG    | BelgeOlusturucu | Opsiyon satır renklendirildi: BUTON - RGB(173, 216, 230)
+2026-01-08 08:34:03 | DEBUG    | BelgeOlusturucu | Opsiyon satır renklendirildi: HAVALANDIRMA MOTORU - RGB(255, 218, 185)
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu yazıldı: FIYAT__20260108_083403.docx
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu |   - Normal ürünler: 3
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu |   - Opsiyon ürünler: 2
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu |   - Genel toplam (KDV dahil, sadece normal): 8.370,00
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu oluşturuldu: FIYAT__20260108_083403.docx
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Şartlar ekleniyor: SARTLAR.docx
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Toplam birleştirilecek: 5 belge (başlık + 4 ek)
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ADIM 4: ÇIKTI DOSYA ADI OLUŞTURULUYOR
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Seri numarası oluşturuluyor...
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-IZELTAS-ERZURUM-TÜRKIYE-LK-59HOY1-R01
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Dosya adı: IZELTAS-080126-59HOY1-R01.docx
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ADIM 5: BELGELER BİRLEŞTİRİLİYOR
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Belge birleştirme başladı (temel: STANDART_BASLIK__caada4395a.docx)
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu |   [1/4] Ekleniyor: LK_TANIM__1fc3677310.docx
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu |   [2/4] Ekleniyor: LK_TABLO__0efae3f866.docx
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu |   [3/4] Ekleniyor: FIYAT__20260108_083403.docx
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu |   [4/4] Ekleniyor: SARTLAR.docx
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Birleştirilmiş belge kaydedildi: IZELTAS-080126-59HOY1-R01__MERGED.docx
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ✓ Belgeler birleştirildi: IZELTAS-080126-59HOY1-R01__MERGED.docx
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ADIM 6: SON GLOBAL PLACEHOLDER'LAR UYGULANIYOR
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulanıyor: IZELTAS-080126-59HOY1-R01__MERGED.docx
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | 12 paragrafta placeholder değiştirildi
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulandı: IZELTAS-080126-59HOY1-R01.docx
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ✓ Son belge kaydedildi: ciktilar/IZELTAS-080126-59HOY1-R01.docx
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ADIM 7: SERİ NUMARASI FOOTER'A YAZILIYOR
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Seri numarası footer'a yazıldı: SN:080126-IZELTAS-ERZURUM-TÜRKIYE-LK-59HOY1-R01 (1 konum)
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ✓ Seri numarası eklendi: SN:080126-IZELTAS-ERZURUM-TÜRKIYE-LK-59HOY1-R01
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ADIM 8: BELGE VERİLERİ ZTF DOSYASINA KAYDEDILIYOR
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ✓ Veri kaydedildi: IZELTAS-080126-59HOY1-R01.ztf
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu |   - Orijinal: 4,187 byte
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu |   - Sıkıştırılmış: 1,654 byte
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu |   - Kazanç: %60.5
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ✓ Belge verileri ZTF dosyasına kaydedildi
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ADIM 9: CSV KAYDI EKLENİYOR
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Fiyat tablosu: 5 ürün CSV'ye eklendi
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: SN:080126-IZELTAS-ERZURUM-TÜRKIYE-LK-59HOY1-R01
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: /home/cafer/Documents/MyWorkspace/ZET Yapı/Application/FormOlusturma/kayitlar/belge_kayitlari.csv
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | GEÇİCİ DOSYALAR TEMİZLENİYOR
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Geçici dizin temizlendi: 5 dosya silindi
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞARIYLA TAMAMLANDI
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Çıktı dosyası: ciktilar/IZELTAS-080126-59HOY1-R01.docx
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Dosya boyutu: 139.42 KB
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Dahil edilen ürünler: LK
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-IZELTAS-ERZURUM-TÜRKIYE-LK-59HOY1-R01
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | Kod: IDX1|I=Erzurum|U=Türkiye|F=Cafer Umut Özpınar|R=R00|PE=LK:180 x 180 cm,-:-,-:-,-:-,-:-,-:-
+2026-01-08 08:34:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞLATILDI
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Geçici dizin temizleniyor...
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Veri dizini: kaynaklar
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Şablonlar dizini: kaynaklar/sablonlar
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Çıktı dizini: ciktilar
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Eşleme kuralları yükleniyor...
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | 3 bölüm, 34 kural yüklendi
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Global placeholder eşlemesi oluşturuluyor...
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Global eşleme: 15 placeholder
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Ürüne özel placeholder eşlemeleri oluşturuluyor...
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu |   Ürün 'LK': 22 placeholder
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Başlık metni oluşturuluyor...
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | 3 ürün başlığı yüklendi: urunbasliklari.txt
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Başlık metni: 'ESSMAN DUMAN TAHLIYE KAPAKLARI FİYAT TEKLİFİ'
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ADIM 1: BAŞLIK ŞABLONU RENDER EDİLİYOR
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Render: STANDART_BASLIK.docx -> STANDART_BASLIK__b1a52b27d4.docx
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | 4 paragrafta placeholder değiştirildi
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ✓ Başlık render edildi: STANDART_BASLIK__b1a52b27d4.docx
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ADIM 2: ÜRÜN ŞABLONLARI RENDER EDİLİYOR
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Ürün işleniyor [1/1]: LK
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Render: LK_TANIM.docx -> LK_TANIM__67d5595d61.docx
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | 3 paragrafta placeholder değiştirildi
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu |   ✓ TANIM render edildi: LK_TANIM__67d5595d61.docx
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Render: LK_TABLO.docx -> LK_TABLO__29c379b99e.docx
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | 6 paragrafta placeholder değiştirildi
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu |   ✓ TABLO render edildi: LK_TABLO__29c379b99e.docx
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ADIM 3: BELGE BİRLEŞTİRME HAZIRLANIYOR
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | 1 TANIM belgesi ekleniyor
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | 1 TABLO belgesi ekleniyor
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | EK: FİYAT TABLOSU OLUŞTURULUYOR (SATIR SATIR)
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Fiyat tablosu: 3 normal, 2 opsiyon satır
+2026-01-08 11:13:57 | DEBUG    | BelgeOlusturucu | Toplam (sadece normal): 17.835,00, KDV: 3.567,00, Genel Toplam: 21.402,00
+2026-01-08 11:13:57 | DEBUG    | BelgeOlusturucu | Opsiyon satır renklendirildi: BUTON - RGB(173, 216, 230)
+2026-01-08 11:13:57 | DEBUG    | BelgeOlusturucu | Opsiyon satır renklendirildi: HAVALANDIRMA MOTORU - RGB(255, 218, 185)
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu yazıldı: FIYAT__20260108_111357.docx
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu |   - Normal ürünler: 3
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu |   - Opsiyon ürünler: 2
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu |   - Genel toplam (KDV dahil, sadece normal): 21.402,00
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu oluşturuldu: FIYAT__20260108_111357.docx
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Şartlar ekleniyor: SARTLAR.docx
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Toplam birleştirilecek: 5 belge (başlık + 4 ek)
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ADIM 4: ÇIKTI DOSYA ADI OLUŞTURULUYOR
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Seri numarası oluşturuluyor...
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-DENEME-ERZINCAN-TÜRKIYE-LK-WCZ7YM-R01
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Dosya adı: DENEME-080126-WCZ7YM-R01.docx
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ADIM 5: BELGELER BİRLEŞTİRİLİYOR
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Belge birleştirme başladı (temel: STANDART_BASLIK__b1a52b27d4.docx)
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu |   [1/4] Ekleniyor: LK_TANIM__67d5595d61.docx
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu |   [2/4] Ekleniyor: LK_TABLO__29c379b99e.docx
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu |   [3/4] Ekleniyor: FIYAT__20260108_111357.docx
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu |   [4/4] Ekleniyor: SARTLAR.docx
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Birleştirilmiş belge kaydedildi: DENEME-080126-WCZ7YM-R01__MERGED.docx
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ✓ Belgeler birleştirildi: DENEME-080126-WCZ7YM-R01__MERGED.docx
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ADIM 6: SON GLOBAL PLACEHOLDER'LAR UYGULANIYOR
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulanıyor: DENEME-080126-WCZ7YM-R01__MERGED.docx
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | 12 paragrafta placeholder değiştirildi
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulandı: DENEME-080126-WCZ7YM-R01.docx
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ✓ Son belge kaydedildi: ciktilar/DENEME-080126-WCZ7YM-R01.docx
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ADIM 7: SERİ NUMARASI FOOTER'A YAZILIYOR
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | Seri numarası footer'a yazıldı: SN:080126-DENEME-ERZINCAN-TÜRKIYE-LK-WCZ7YM-R01 (1 konum)
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ✓ Seri numarası eklendi: SN:080126-DENEME-ERZINCAN-TÜRKIYE-LK-WCZ7YM-R01
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ADIM 8: BELGE VERİLERİ ZTF DOSYASINA KAYDEDILIYOR
+2026-01-08 11:13:57 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:13:57 | ERROR    | BelgeOlusturucu | HATA: Beklenmeyen hata: BelgeVeriYoneticisi.__init__() got an unexpected keyword argument 'sikistir'
+2026-01-08 11:13:57 | ERROR    | BelgeOlusturucu | ============================================================
+2026-01-08 11:13:57 | ERROR    | BelgeOlusturucu | ============================================================
+2026-01-08 11:13:57 | ERROR    | BelgeOlusturucu | KRİTİK HATA OLUŞTU - LOG DOSYASI KORUNMAK ÜZERE İŞARETLENDİ
+2026-01-08 11:13:57 | ERROR    | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Temizlik: 1 kritik log dosyası korundu
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞLATILDI
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Geçici dizin temizleniyor...
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Geçici dizin temizlendi: 2 dosya silindi
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Veri dizini: kaynaklar
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Şablonlar dizini: kaynaklar/sablonlar
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Çıktı dizini: ciktilar
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Eşleme kuralları yükleniyor...
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | 3 bölüm, 34 kural yüklendi
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Global placeholder eşlemesi oluşturuluyor...
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Global eşleme: 15 placeholder
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Ürüne özel placeholder eşlemeleri oluşturuluyor...
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu |   Ürün 'LK': 22 placeholder
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Başlık metni oluşturuluyor...
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | 3 ürün başlığı yüklendi: urunbasliklari.txt
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Başlık metni: 'ESSMAN DUMAN TAHLIYE KAPAKLARI FİYAT TEKLİFİ'
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ADIM 1: BAŞLIK ŞABLONU RENDER EDİLİYOR
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Render: STANDART_BASLIK.docx -> STANDART_BASLIK__d4c2e58183.docx
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | 4 paragrafta placeholder değiştirildi
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ✓ Başlık render edildi: STANDART_BASLIK__d4c2e58183.docx
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ADIM 2: ÜRÜN ŞABLONLARI RENDER EDİLİYOR
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Ürün işleniyor [1/1]: LK
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Render: LK_TANIM.docx -> LK_TANIM__ade95e5a1b.docx
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | 3 paragrafta placeholder değiştirildi
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu |   ✓ TANIM render edildi: LK_TANIM__ade95e5a1b.docx
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Render: LK_TABLO.docx -> LK_TABLO__b6ad32dbae.docx
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | 6 paragrafta placeholder değiştirildi
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu |   ✓ TABLO render edildi: LK_TABLO__b6ad32dbae.docx
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ADIM 3: BELGE BİRLEŞTİRME HAZIRLANIYOR
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | 1 TANIM belgesi ekleniyor
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | 1 TABLO belgesi ekleniyor
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | EK: FİYAT TABLOSU OLUŞTURULUYOR (SATIR SATIR)
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Fiyat tablosu: 3 normal, 2 opsiyon satır
+2026-01-08 11:18:56 | DEBUG    | BelgeOlusturucu | Toplam (sadece normal): 4.428,00, KDV: 885,60, Genel Toplam: 5.313,60
+2026-01-08 11:18:56 | DEBUG    | BelgeOlusturucu | Opsiyon satır renklendirildi: BUTON - RGB(173, 216, 230)
+2026-01-08 11:18:56 | DEBUG    | BelgeOlusturucu | Opsiyon satır renklendirildi: HAVALANDIRMA MOTORU - RGB(255, 218, 185)
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu yazıldı: FIYAT__20260108_111856.docx
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu |   - Normal ürünler: 3
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu |   - Opsiyon ürünler: 2
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu |   - Genel toplam (KDV dahil, sadece normal): 5.313,60
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu oluşturuldu: FIYAT__20260108_111856.docx
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Şartlar ekleniyor: SARTLAR.docx
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Toplam birleştirilecek: 5 belge (başlık + 4 ek)
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ADIM 4: ÇIKTI DOSYA ADI OLUŞTURULUYOR
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Seri numarası oluşturuluyor...
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-DENEME-ÇANKIRI-TÜRKIYE-LK-MDEDSF-R01
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Dosya adı: DENEME-080126-MDEDSF-R01.docx
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ADIM 5: BELGELER BİRLEŞTİRİLİYOR
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Belge birleştirme başladı (temel: STANDART_BASLIK__d4c2e58183.docx)
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu |   [1/4] Ekleniyor: LK_TANIM__ade95e5a1b.docx
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu |   [2/4] Ekleniyor: LK_TABLO__b6ad32dbae.docx
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu |   [3/4] Ekleniyor: FIYAT__20260108_111856.docx
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu |   [4/4] Ekleniyor: SARTLAR.docx
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Birleştirilmiş belge kaydedildi: DENEME-080126-MDEDSF-R01__MERGED.docx
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ✓ Belgeler birleştirildi: DENEME-080126-MDEDSF-R01__MERGED.docx
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ADIM 6: SON GLOBAL PLACEHOLDER'LAR UYGULANIYOR
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulanıyor: DENEME-080126-MDEDSF-R01__MERGED.docx
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | 12 paragrafta placeholder değiştirildi
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulandı: DENEME-080126-MDEDSF-R01.docx
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ✓ Son belge kaydedildi: ciktilar/DENEME-080126-MDEDSF-R01.docx
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ADIM 7: SERİ NUMARASI FOOTER'A YAZILIYOR
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Seri numarası footer'a yazıldı: SN:080126-DENEME-ÇANKIRI-TÜRKIYE-LK-MDEDSF-R01 (1 konum)
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ✓ Seri numarası eklendi: SN:080126-DENEME-ÇANKIRI-TÜRKIYE-LK-MDEDSF-R01
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ADIM 8: BELGE VERİLERİ ZTF DOSYASINA KAYDEDILIYOR
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | WARNING  | BelgeOlusturucu | Belge bulunamadı: DENEME-080126-MDEDSF-R01
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ✓ Belge kaydedildi: DENEME-080126-MDEDSF-R01
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu |   - Seri: SN:080126-DENEME-ÇANKIRI-TÜRKIYE-LK-MDEDSF-R01
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu |   - Orijinal: 3,432 byte
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu |   - Sıkıştırılmış: 2,020 byte
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu |   - Kazanç: %41.1
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ✓ Belge SQLite'a kaydedildi: DENEME-080126-MDEDSF-R01
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ✓ Belge verileri ZTF dosyasına kaydedildi
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ADIM 9: CSV KAYDI EKLENİYOR
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Fiyat tablosu: 5 ürün CSV'ye eklendi
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: SN:080126-DENEME-ÇANKIRI-TÜRKIYE-LK-MDEDSF-R01
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: /home/cafer/Documents/MyWorkspace/ZET Yapı/Application/FormOlusturma/kayitlar/belge_kayitlari.csv
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | GEÇİCİ DOSYALAR TEMİZLENİYOR
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Geçici dizin temizlendi: 5 dosya silindi
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞARIYLA TAMAMLANDI
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Çıktı dosyası: ciktilar/DENEME-080126-MDEDSF-R01.docx
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Dosya boyutu: 139.43 KB
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Dahil edilen ürünler: LK
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-DENEME-ÇANKIRI-TÜRKIYE-LK-MDEDSF-R01
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | Kod: IDX1|I=Çankırı|U=Türkiye|F=Cafer Umut Özpınar|R=R00|PE=LK:123 x 123 cm,-:-,-:-,-:-,-:-,-:-
+2026-01-08 11:18:56 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Temizlik: 1 kritik log dosyası korundu
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞLATILDI
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Geçici dizin temizleniyor...
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Veri dizini: kaynaklar
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Şablonlar dizini: kaynaklar/sablonlar
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Çıktı dizini: ciktilar
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Eşleme kuralları yükleniyor...
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | 3 bölüm, 34 kural yüklendi
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Global placeholder eşlemesi oluşturuluyor...
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Global eşleme: 15 placeholder
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Ürüne özel placeholder eşlemeleri oluşturuluyor...
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu |   Ürün 'LK': 22 placeholder
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Başlık metni oluşturuluyor...
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | 3 ürün başlığı yüklendi: urunbasliklari.txt
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Başlık metni: 'ESSMAN DUMAN TAHLIYE KAPAKLARI FİYAT TEKLİFİ'
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ADIM 1: BAŞLIK ŞABLONU RENDER EDİLİYOR
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Render: STANDART_BASLIK.docx -> STANDART_BASLIK__91f8decbaf.docx
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | 4 paragrafta placeholder değiştirildi
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ✓ Başlık render edildi: STANDART_BASLIK__91f8decbaf.docx
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ADIM 2: ÜRÜN ŞABLONLARI RENDER EDİLİYOR
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Ürün işleniyor [1/1]: LK
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Render: LK_TANIM.docx -> LK_TANIM__9c957e71fb.docx
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | 3 paragrafta placeholder değiştirildi
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu |   ✓ TANIM render edildi: LK_TANIM__9c957e71fb.docx
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Render: LK_TABLO.docx -> LK_TABLO__3c624caa5a.docx
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | 6 paragrafta placeholder değiştirildi
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu |   ✓ TABLO render edildi: LK_TABLO__3c624caa5a.docx
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ADIM 3: BELGE BİRLEŞTİRME HAZIRLANIYOR
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | 1 TANIM belgesi ekleniyor
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | 1 TABLO belgesi ekleniyor
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | EK: FİYAT TABLOSU OLUŞTURULUYOR (SATIR SATIR)
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Fiyat tablosu: 3 normal, 2 opsiyon satır
+2026-01-08 11:19:08 | DEBUG    | BelgeOlusturucu | Toplam (sadece normal): 4.428,00, KDV: 885,60, Genel Toplam: 5.313,60
+2026-01-08 11:19:08 | DEBUG    | BelgeOlusturucu | Opsiyon satır renklendirildi: BUTON - RGB(173, 216, 230)
+2026-01-08 11:19:08 | DEBUG    | BelgeOlusturucu | Opsiyon satır renklendirildi: HAVALANDIRMA MOTORU - RGB(255, 218, 185)
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu yazıldı: FIYAT__20260108_111908.docx
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu |   - Normal ürünler: 3
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu |   - Opsiyon ürünler: 2
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu |   - Genel toplam (KDV dahil, sadece normal): 5.313,60
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu oluşturuldu: FIYAT__20260108_111908.docx
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Şartlar ekleniyor: SARTLAR.docx
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Toplam birleştirilecek: 5 belge (başlık + 4 ek)
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ADIM 4: ÇIKTI DOSYA ADI OLUŞTURULUYOR
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Seri numarası oluşturuluyor...
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-DENEME-ÇANKIRI-TÜRKIYE-LK-MDEDSF-R01
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Dosya adı: DENEME-080126-MDEDSF-R01.docx
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ADIM 5: BELGELER BİRLEŞTİRİLİYOR
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Belge birleştirme başladı (temel: STANDART_BASLIK__91f8decbaf.docx)
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu |   [1/4] Ekleniyor: LK_TANIM__9c957e71fb.docx
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu |   [2/4] Ekleniyor: LK_TABLO__3c624caa5a.docx
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu |   [3/4] Ekleniyor: FIYAT__20260108_111908.docx
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu |   [4/4] Ekleniyor: SARTLAR.docx
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Birleştirilmiş belge kaydedildi: DENEME-080126-MDEDSF-R01__MERGED.docx
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ✓ Belgeler birleştirildi: DENEME-080126-MDEDSF-R01__MERGED.docx
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ADIM 6: SON GLOBAL PLACEHOLDER'LAR UYGULANIYOR
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulanıyor: DENEME-080126-MDEDSF-R01__MERGED.docx
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | 12 paragrafta placeholder değiştirildi
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulandı: DENEME-080126-MDEDSF-R01.docx
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ✓ Son belge kaydedildi: ciktilar/DENEME-080126-MDEDSF-R01.docx
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ADIM 7: SERİ NUMARASI FOOTER'A YAZILIYOR
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Seri numarası footer'a yazıldı: SN:080126-DENEME-ÇANKIRI-TÜRKIYE-LK-MDEDSF-R01 (1 konum)
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ✓ Seri numarası eklendi: SN:080126-DENEME-ÇANKIRI-TÜRKIYE-LK-MDEDSF-R01
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ADIM 8: BELGE VERİLERİ ZTF DOSYASINA KAYDEDILIYOR
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ✓ Belge yüklendi: DENEME-080126-MDEDSF-R01
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu |   - Seri: SN:080126-DENEME-ÇANKIRI-TÜRKIYE-LK-MDEDSF-R01
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu |   - Proje: DENEME
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu |   - Ürünler: LK
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ✓ Belge güncellendi: DENEME-080126-MDEDSF-R01
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu |   - Seri: SN:080126-DENEME-ÇANKIRI-TÜRKIYE-LK-MDEDSF-R01
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu |   - Orijinal: 3,432 byte
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu |   - Sıkıştırılmış: 2,020 byte
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu |   - Kazanç: %41.1
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ✓ Belge SQLite'a kaydedildi: DENEME-080126-MDEDSF-R01
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ✓ Belge verileri ZTF dosyasına kaydedildi
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ADIM 9: CSV KAYDI EKLENİYOR
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Fiyat tablosu: 5 ürün CSV'ye eklendi
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: SN:080126-DENEME-ÇANKIRI-TÜRKIYE-LK-MDEDSF-R01
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: /home/cafer/Documents/MyWorkspace/ZET Yapı/Application/FormOlusturma/kayitlar/belge_kayitlari.csv
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | GEÇİCİ DOSYALAR TEMİZLENİYOR
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Geçici dizin temizlendi: 5 dosya silindi
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞARIYLA TAMAMLANDI
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Çıktı dosyası: ciktilar/DENEME-080126-MDEDSF-R01.docx
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Dosya boyutu: 139.43 KB
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Dahil edilen ürünler: LK
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-DENEME-ÇANKIRI-TÜRKIYE-LK-MDEDSF-R01
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | Kod: IDX1|I=Çankırı|U=Türkiye|F=Cafer Umut Özpınar|R=R00|PE=LK:123 x 123 cm,-:-,-:-,-:-,-:-,-:-
+2026-01-08 11:19:08 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Temizlik: 1 kritik log dosyası korundu
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞLATILDI
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Geçici dizin temizleniyor...
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Veri dizini: kaynaklar
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Şablonlar dizini: kaynaklar/sablonlar
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Çıktı dizini: ciktilar
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Eşleme kuralları yükleniyor...
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | 3 bölüm, 34 kural yüklendi
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Global placeholder eşlemesi oluşturuluyor...
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Global eşleme: 15 placeholder
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Ürüne özel placeholder eşlemeleri oluşturuluyor...
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu |   Ürün 'LK': 22 placeholder
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Başlık metni oluşturuluyor...
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | 3 ürün başlığı yüklendi: urunbasliklari.txt
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Başlık metni: 'ESSMAN DUMAN TAHLIYE KAPAKLARI FİYAT TEKLİFİ'
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ADIM 1: BAŞLIK ŞABLONU RENDER EDİLİYOR
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Render: STANDART_BASLIK.docx -> STANDART_BASLIK__eddfa27c3e.docx
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | 4 paragrafta placeholder değiştirildi
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ✓ Başlık render edildi: STANDART_BASLIK__eddfa27c3e.docx
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ADIM 2: ÜRÜN ŞABLONLARI RENDER EDİLİYOR
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Ürün işleniyor [1/1]: LK
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Render: LK_TANIM.docx -> LK_TANIM__be48a765ca.docx
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | 3 paragrafta placeholder değiştirildi
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu |   ✓ TANIM render edildi: LK_TANIM__be48a765ca.docx
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Render: LK_TABLO.docx -> LK_TABLO__8d222501c4.docx
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | 6 paragrafta placeholder değiştirildi
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu |   ✓ TABLO render edildi: LK_TABLO__8d222501c4.docx
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ADIM 3: BELGE BİRLEŞTİRME HAZIRLANIYOR
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | 1 TANIM belgesi ekleniyor
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | 1 TABLO belgesi ekleniyor
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | EK: FİYAT TABLOSU OLUŞTURULUYOR (SATIR SATIR)
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Fiyat tablosu: 5 normal, 0 opsiyon satır
+2026-01-08 12:47:47 | DEBUG    | BelgeOlusturucu | Toplam (sadece normal): 32.054,60, KDV: 6.410,92, Genel Toplam: 38.465,52
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu yazıldı: FIYAT__20260108_124747.docx
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu |   - Normal ürünler: 5
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu |   - Opsiyon ürünler: 0
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu |   - Genel toplam (KDV dahil, sadece normal): 38.465,52
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu oluşturuldu: FIYAT__20260108_124747.docx
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Şartlar ekleniyor: SARTLAR.docx
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Toplam birleştirilecek: 5 belge (başlık + 4 ek)
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ADIM 4: ÇIKTI DOSYA ADI OLUŞTURULUYOR
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Seri numarası oluşturuluyor...
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-TEST-123-123--TÜRKIYE-LK-P5SB4G-R00
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Dosya adı: TEST_123_123-080126-P5SB4G-R00.docx
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ADIM 5: BELGELER BİRLEŞTİRİLİYOR
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Belge birleştirme başladı (temel: STANDART_BASLIK__eddfa27c3e.docx)
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu |   [1/4] Ekleniyor: LK_TANIM__be48a765ca.docx
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu |   [2/4] Ekleniyor: LK_TABLO__8d222501c4.docx
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu |   [3/4] Ekleniyor: FIYAT__20260108_124747.docx
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu |   [4/4] Ekleniyor: SARTLAR.docx
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Birleştirilmiş belge kaydedildi: TEST_123_123-080126-P5SB4G-R00__MERGED.docx
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ✓ Belgeler birleştirildi: TEST_123_123-080126-P5SB4G-R00__MERGED.docx
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ADIM 6: SON GLOBAL PLACEHOLDER'LAR UYGULANIYOR
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulanıyor: TEST_123_123-080126-P5SB4G-R00__MERGED.docx
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | 12 paragrafta placeholder değiştirildi
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulandı: TEST_123_123-080126-P5SB4G-R00.docx
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ✓ Son belge kaydedildi: ciktilar/TEST_123_123-080126-P5SB4G-R00.docx
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ADIM 7: SERİ NUMARASI FOOTER'A YAZILIYOR
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Seri numarası footer'a yazıldı: SN:080126-TEST-123-123--TÜRKIYE-LK-P5SB4G-R00 (1 konum)
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ✓ Seri numarası eklendi: SN:080126-TEST-123-123--TÜRKIYE-LK-P5SB4G-R00
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ADIM 8: BELGE VERİLERİ ZTF DOSYASINA KAYDEDILIYOR
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | WARNING  | BelgeOlusturucu | Belge bulunamadı: TEST_123_123-080126-P5SB4G-R00
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ✓ Belge kaydedildi: TEST_123_123-080126-P5SB4G-R00
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu |   - Seri: SN:080126-TEST-123-123--TÜRKIYE-LK-P5SB4G-R00
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu |   - Orijinal: 3,475 byte
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu |   - Sıkıştırılmış: 2,072 byte
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu |   - Kazanç: %40.4
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ✓ Belge SQLite'a kaydedildi: TEST_123_123-080126-P5SB4G-R00
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ✓ Belge verileri ZTF dosyasına kaydedildi
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ADIM 9: CSV KAYDI EKLENİYOR
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Fiyat tablosu: 5 ürün CSV'ye eklendi
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: SN:080126-TEST-123-123--TÜRKIYE-LK-P5SB4G-R00
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: /home/cafer/Documents/MyWorkspace/ZET Yapı/Application/FormOlusturma/kayitlar/belge_kayitlari.csv
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | GEÇİCİ DOSYALAR TEMİZLENİYOR
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Geçici dizin temizlendi: 5 dosya silindi
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞARIYLA TAMAMLANDI
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Çıktı dosyası: ciktilar/TEST_123_123-080126-P5SB4G-R00.docx
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Dosya boyutu: 139.40 KB
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Dahil edilen ürünler: LK
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-TEST-123-123--TÜRKIYE-LK-P5SB4G-R00
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | Kod: IDX1|I=-|U=Türkiye|F=Cafer Umut Özpınar|R=R00|PE=LK:213 x 123 cm,-:-,-:-,-:-,-:-,-:-
+2026-01-08 12:47:47 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Temizlik: 1 kritik log dosyası korundu
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞLATILDI
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Geçici dizin temizleniyor...
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Veri dizini: kaynaklar
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Şablonlar dizini: kaynaklar/sablonlar
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Çıktı dizini: ciktilar
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Eşleme kuralları yükleniyor...
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | 3 bölüm, 34 kural yüklendi
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Global placeholder eşlemesi oluşturuluyor...
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Global eşleme: 15 placeholder
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Ürüne özel placeholder eşlemeleri oluşturuluyor...
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu |   Ürün 'LK': 22 placeholder
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Başlık metni oluşturuluyor...
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | 3 ürün başlığı yüklendi: urunbasliklari.txt
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Başlık metni: 'ESSMAN DUMAN TAHLIYE KAPAKLARI FİYAT TEKLİFİ'
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ADIM 1: BAŞLIK ŞABLONU RENDER EDİLİYOR
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Render: STANDART_BASLIK.docx -> STANDART_BASLIK__509ece7428.docx
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | 4 paragrafta placeholder değiştirildi
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ✓ Başlık render edildi: STANDART_BASLIK__509ece7428.docx
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ADIM 2: ÜRÜN ŞABLONLARI RENDER EDİLİYOR
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Ürün işleniyor [1/1]: LK
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Render: LK_TANIM.docx -> LK_TANIM__6435ef1594.docx
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | 3 paragrafta placeholder değiştirildi
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu |   ✓ TANIM render edildi: LK_TANIM__6435ef1594.docx
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Render: LK_TABLO.docx -> LK_TABLO__da73cf6c90.docx
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | 6 paragrafta placeholder değiştirildi
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu |   ✓ TABLO render edildi: LK_TABLO__da73cf6c90.docx
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ADIM 3: BELGE BİRLEŞTİRME HAZIRLANIYOR
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | 1 TANIM belgesi ekleniyor
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | 1 TABLO belgesi ekleniyor
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | EK: FİYAT TABLOSU OLUŞTURULUYOR (SATIR SATIR)
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Fiyat tablosu: 5 normal, 0 opsiyon satır
+2026-01-08 12:48:34 | DEBUG    | BelgeOlusturucu | Toplam (sadece normal): 32.054,60, KDV: 6.410,92, Genel Toplam: 38.465,52
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu yazıldı: FIYAT__20260108_124834.docx
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu |   - Normal ürünler: 5
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu |   - Opsiyon ürünler: 0
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu |   - Genel toplam (KDV dahil, sadece normal): 38.465,52
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu oluşturuldu: FIYAT__20260108_124834.docx
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Şartlar ekleniyor: SARTLAR.docx
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Toplam birleştirilecek: 5 belge (başlık + 4 ek)
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ADIM 4: ÇIKTI DOSYA ADI OLUŞTURULUYOR
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Seri numarası oluşturuluyor...
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-TEST-123-123-ÇANKIRI-TÜRKIYE-LK-C687OA-R0
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Dosya adı: TEST_123_123-080126-C687OA-R0.docx
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ADIM 5: BELGELER BİRLEŞTİRİLİYOR
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Belge birleştirme başladı (temel: STANDART_BASLIK__509ece7428.docx)
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu |   [1/4] Ekleniyor: LK_TANIM__6435ef1594.docx
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu |   [2/4] Ekleniyor: LK_TABLO__da73cf6c90.docx
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu |   [3/4] Ekleniyor: FIYAT__20260108_124834.docx
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu |   [4/4] Ekleniyor: SARTLAR.docx
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Birleştirilmiş belge kaydedildi: TEST_123_123-080126-C687OA-R0__MERGED.docx
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ✓ Belgeler birleştirildi: TEST_123_123-080126-C687OA-R0__MERGED.docx
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ADIM 6: SON GLOBAL PLACEHOLDER'LAR UYGULANIYOR
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulanıyor: TEST_123_123-080126-C687OA-R0__MERGED.docx
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | 12 paragrafta placeholder değiştirildi
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulandı: TEST_123_123-080126-C687OA-R0.docx
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ✓ Son belge kaydedildi: ciktilar/TEST_123_123-080126-C687OA-R0.docx
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ADIM 7: SERİ NUMARASI FOOTER'A YAZILIYOR
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Seri numarası footer'a yazıldı: SN:080126-TEST-123-123-ÇANKIRI-TÜRKIYE-LK-C687OA-R0 (1 konum)
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ✓ Seri numarası eklendi: SN:080126-TEST-123-123-ÇANKIRI-TÜRKIYE-LK-C687OA-R0
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ADIM 8: BELGE VERİLERİ ZTF DOSYASINA KAYDEDILIYOR
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | WARNING  | BelgeOlusturucu | Belge bulunamadı: TEST_123_123-080126-C687OA-R0
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ✓ Belge kaydedildi: TEST_123_123-080126-C687OA-R0
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu |   - Seri: SN:080126-TEST-123-123-ÇANKIRI-TÜRKIYE-LK-C687OA-R0
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu |   - Orijinal: 3,492 byte
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu |   - Sıkıştırılmış: 2,076 byte
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu |   - Kazanç: %40.5
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ✓ Belge SQLite'a kaydedildi: TEST_123_123-080126-C687OA-R0
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ✓ Belge verileri ZTF dosyasına kaydedildi
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ADIM 9: CSV KAYDI EKLENİYOR
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Fiyat tablosu: 5 ürün CSV'ye eklendi
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: SN:080126-TEST-123-123-ÇANKIRI-TÜRKIYE-LK-C687OA-R0
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: /home/cafer/Documents/MyWorkspace/ZET Yapı/Application/FormOlusturma/kayitlar/belge_kayitlari.csv
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | GEÇİCİ DOSYALAR TEMİZLENİYOR
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Geçici dizin temizlendi: 5 dosya silindi
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞARIYLA TAMAMLANDI
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Çıktı dosyası: ciktilar/TEST_123_123-080126-C687OA-R0.docx
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Dosya boyutu: 139.42 KB
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Dahil edilen ürünler: LK
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-TEST-123-123-ÇANKIRI-TÜRKIYE-LK-C687OA-R0
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | Kod: IDX1|I=Çankırı|U=Türkiye|F=Cafer Umut Özpınar|R=R00|PE=LK:213 x 123 cm,-:-,-:-,-:-,-:-,-:-
+2026-01-08 12:48:34 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Temizlik: 1 kritik log dosyası korundu
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞLATILDI
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Geçici dizin temizleniyor...
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Veri dizini: kaynaklar
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Şablonlar dizini: kaynaklar/sablonlar
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Çıktı dizini: ciktilar
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Eşleme kuralları yükleniyor...
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | 3 bölüm, 34 kural yüklendi
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Global placeholder eşlemesi oluşturuluyor...
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Global eşleme: 15 placeholder
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Ürüne özel placeholder eşlemeleri oluşturuluyor...
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu |   Ürün 'LK': 22 placeholder
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Başlık metni oluşturuluyor...
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | 3 ürün başlığı yüklendi: urunbasliklari.txt
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Başlık metni: 'ESSMAN DUMAN TAHLIYE KAPAKLARI FİYAT TEKLİFİ'
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ADIM 1: BAŞLIK ŞABLONU RENDER EDİLİYOR
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Render: STANDART_BASLIK.docx -> STANDART_BASLIK__dd7fd1cc72.docx
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | 4 paragrafta placeholder değiştirildi
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ✓ Başlık render edildi: STANDART_BASLIK__dd7fd1cc72.docx
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ADIM 2: ÜRÜN ŞABLONLARI RENDER EDİLİYOR
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Ürün işleniyor [1/1]: LK
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Render: LK_TANIM.docx -> LK_TANIM__ed6dec128d.docx
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | 3 paragrafta placeholder değiştirildi
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu |   ✓ TANIM render edildi: LK_TANIM__ed6dec128d.docx
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Render: LK_TABLO.docx -> LK_TABLO__b78d9f1627.docx
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | 6 paragrafta placeholder değiştirildi
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu |   ✓ TABLO render edildi: LK_TABLO__b78d9f1627.docx
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ADIM 3: BELGE BİRLEŞTİRME HAZIRLANIYOR
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | 1 TANIM belgesi ekleniyor
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | 1 TABLO belgesi ekleniyor
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | EK: FİYAT TABLOSU OLUŞTURULUYOR (SATIR SATIR)
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Fiyat tablosu: 3 normal, 2 opsiyon satır
+2026-01-08 13:09:45 | DEBUG    | BelgeOlusturucu | Toplam (sadece normal): 3.200,00, KDV: 640,00, Genel Toplam: 3.840,00
+2026-01-08 13:09:45 | DEBUG    | BelgeOlusturucu | Opsiyon satır renklendirildi: BUTON - RGB(173, 216, 230)
+2026-01-08 13:09:45 | DEBUG    | BelgeOlusturucu | Opsiyon satır renklendirildi: HAVALANDIRMA MOTORU - RGB(255, 218, 185)
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu yazıldı: FIYAT__20260108_130945.docx
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu |   - Normal ürünler: 3
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu |   - Opsiyon ürünler: 2
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu |   - Genel toplam (KDV dahil, sadece normal): 3.840,00
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu oluşturuldu: FIYAT__20260108_130945.docx
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Şartlar ekleniyor: SARTLAR.docx
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Toplam birleştirilecek: 5 belge (başlık + 4 ek)
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ADIM 4: ÇIKTI DOSYA ADI OLUŞTURULUYOR
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Seri numarası oluşturuluyor...
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-IZELTAS-AMASYA-TÜRKIYE-LK-P00IQB-R01
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Dosya adı: IZELTAS-080126-P00IQB-R01.docx
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ADIM 5: BELGELER BİRLEŞTİRİLİYOR
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Belge birleştirme başladı (temel: STANDART_BASLIK__dd7fd1cc72.docx)
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu |   [1/4] Ekleniyor: LK_TANIM__ed6dec128d.docx
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu |   [2/4] Ekleniyor: LK_TABLO__b78d9f1627.docx
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu |   [3/4] Ekleniyor: FIYAT__20260108_130945.docx
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu |   [4/4] Ekleniyor: SARTLAR.docx
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Birleştirilmiş belge kaydedildi: IZELTAS-080126-P00IQB-R01__MERGED.docx
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ✓ Belgeler birleştirildi: IZELTAS-080126-P00IQB-R01__MERGED.docx
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ADIM 6: SON GLOBAL PLACEHOLDER'LAR UYGULANIYOR
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulanıyor: IZELTAS-080126-P00IQB-R01__MERGED.docx
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | 12 paragrafta placeholder değiştirildi
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulandı: IZELTAS-080126-P00IQB-R01.docx
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ✓ Son belge kaydedildi: ciktilar/IZELTAS-080126-P00IQB-R01.docx
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ADIM 7: SERİ NUMARASI FOOTER'A YAZILIYOR
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Seri numarası footer'a yazıldı: SN:080126-IZELTAS-AMASYA-TÜRKIYE-LK-P00IQB-R01 (1 konum)
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ✓ Seri numarası eklendi: SN:080126-IZELTAS-AMASYA-TÜRKIYE-LK-P00IQB-R01
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ADIM 8: BELGE VERİLERİ ZTF DOSYASINA KAYDEDILIYOR
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | WARNING  | BelgeOlusturucu | Belge bulunamadı: IZELTAS-080126-P00IQB-R01
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ✓ Belge kaydedildi: IZELTAS-080126-P00IQB-R01
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu |   - Seri: SN:080126-IZELTAS-AMASYA-TÜRKIYE-LK-P00IQB-R01
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu |   - Orijinal: 3,453 byte
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu |   - Sıkıştırılmış: 2,068 byte
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu |   - Kazanç: %40.1
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ✓ Belge SQLite'a kaydedildi: IZELTAS-080126-P00IQB-R01
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ✓ Belge verileri ZTF dosyasına kaydedildi
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ADIM 9: CSV KAYDI EKLENİYOR
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Fiyat tablosu: 5 ürün CSV'ye eklendi
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: SN:080126-IZELTAS-AMASYA-TÜRKIYE-LK-P00IQB-R01
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: /home/cafer/Documents/MyWorkspace/ZET Yapı/Application/FormOlusturma/kayitlar/belge_kayitlari.csv
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | GEÇİCİ DOSYALAR TEMİZLENİYOR
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Geçici dizin temizlendi: 5 dosya silindi
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞARIYLA TAMAMLANDI
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Çıktı dosyası: ciktilar/IZELTAS-080126-P00IQB-R01.docx
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Dosya boyutu: 139.44 KB
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Dahil edilen ürünler: LK
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-IZELTAS-AMASYA-TÜRKIYE-LK-P00IQB-R01
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | Kod: IDX1|I=Amasya|U=Türkiye|F=Cafer Umut Özpınar|R=R00|PE=LK:150 x 150 cm,-:-,-:-,-:-,-:-,-:-
+2026-01-08 13:09:45 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Temizlik: 1 kritik log dosyası korundu
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞLATILDI
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Geçici dizin temizleniyor...
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Veri dizini: kaynaklar
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Şablonlar dizini: kaynaklar/sablonlar
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Çıktı dizini: ciktilar
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Eşleme kuralları yükleniyor...
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | 3 bölüm, 34 kural yüklendi
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Global placeholder eşlemesi oluşturuluyor...
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Global eşleme: 15 placeholder
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Ürüne özel placeholder eşlemeleri oluşturuluyor...
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu |   Ürün 'LK': 22 placeholder
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Başlık metni oluşturuluyor...
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | 3 ürün başlığı yüklendi: urunbasliklari.txt
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Başlık metni: 'ESSMAN DUMAN TAHLIYE KAPAKLARI FİYAT TEKLİFİ'
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ADIM 1: BAŞLIK ŞABLONU RENDER EDİLİYOR
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Render: STANDART_BASLIK.docx -> STANDART_BASLIK__d1a70601af.docx
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | 4 paragrafta placeholder değiştirildi
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ✓ Başlık render edildi: STANDART_BASLIK__d1a70601af.docx
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ADIM 2: ÜRÜN ŞABLONLARI RENDER EDİLİYOR
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Ürün işleniyor [1/1]: LK
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Render: LK_TANIM.docx -> LK_TANIM__567baecb68.docx
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | 3 paragrafta placeholder değiştirildi
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu |   ✓ TANIM render edildi: LK_TANIM__567baecb68.docx
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Render: LK_TABLO.docx -> LK_TABLO__7f974542f2.docx
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | 6 paragrafta placeholder değiştirildi
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu |   ✓ TABLO render edildi: LK_TABLO__7f974542f2.docx
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ADIM 3: BELGE BİRLEŞTİRME HAZIRLANIYOR
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | 1 TANIM belgesi ekleniyor
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | 1 TABLO belgesi ekleniyor
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | EK: FİYAT TABLOSU OLUŞTURULUYOR (SATIR SATIR)
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Fiyat tablosu: 3 normal, 2 opsiyon satır
+2026-01-08 13:16:12 | DEBUG    | BelgeOlusturucu | Toplam (sadece normal): 3.200,00, KDV: 640,00, Genel Toplam: 3.840,00
+2026-01-08 13:16:12 | DEBUG    | BelgeOlusturucu | Opsiyon satır renklendirildi: BUTON - RGB(173, 216, 230)
+2026-01-08 13:16:12 | DEBUG    | BelgeOlusturucu | Opsiyon satır renklendirildi: HAVALANDIRMA MOTORU - RGB(255, 218, 185)
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu yazıldı: FIYAT__20260108_131612.docx
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu |   - Normal ürünler: 3
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu |   - Opsiyon ürünler: 2
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu |   - Genel toplam (KDV dahil, sadece normal): 3.840,00
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu oluşturuldu: FIYAT__20260108_131612.docx
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Şartlar ekleniyor: SARTLAR.docx
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Toplam birleştirilecek: 5 belge (başlık + 4 ek)
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ADIM 4: ÇIKTI DOSYA ADI OLUŞTURULUYOR
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Seri numarası oluşturuluyor...
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-IZELTAS-AMASYA-TÜRKIYE-LK-P00IQB-R01
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Dosya adı: IZELTAS-080126-P00IQB-R01.docx
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ADIM 5: BELGELER BİRLEŞTİRİLİYOR
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Belge birleştirme başladı (temel: STANDART_BASLIK__d1a70601af.docx)
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu |   [1/4] Ekleniyor: LK_TANIM__567baecb68.docx
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu |   [2/4] Ekleniyor: LK_TABLO__7f974542f2.docx
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu |   [3/4] Ekleniyor: FIYAT__20260108_131612.docx
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu |   [4/4] Ekleniyor: SARTLAR.docx
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Birleştirilmiş belge kaydedildi: IZELTAS-080126-P00IQB-R01__MERGED.docx
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ✓ Belgeler birleştirildi: IZELTAS-080126-P00IQB-R01__MERGED.docx
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ADIM 6: SON GLOBAL PLACEHOLDER'LAR UYGULANIYOR
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulanıyor: IZELTAS-080126-P00IQB-R01__MERGED.docx
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | 12 paragrafta placeholder değiştirildi
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulandı: IZELTAS-080126-P00IQB-R01.docx
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ✓ Son belge kaydedildi: ciktilar/IZELTAS-080126-P00IQB-R01.docx
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ADIM 7: SERİ NUMARASI FOOTER'A YAZILIYOR
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Seri numarası footer'a yazıldı: SN:080126-IZELTAS-AMASYA-TÜRKIYE-LK-P00IQB-R01 (1 konum)
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ✓ Seri numarası eklendi: SN:080126-IZELTAS-AMASYA-TÜRKIYE-LK-P00IQB-R01
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ADIM 8: BELGE VERİLERİ ZTF DOSYASINA KAYDEDILIYOR
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ✓ Belge yüklendi: IZELTAS-080126-P00IQB-R01
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu |   - Seri: SN:080126-IZELTAS-AMASYA-TÜRKIYE-LK-P00IQB-R01
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu |   - Proje: IZELTAS
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu |   - Ürünler: LK
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ✓ Belge güncellendi: IZELTAS-080126-P00IQB-R01
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu |   - Seri: SN:080126-IZELTAS-AMASYA-TÜRKIYE-LK-P00IQB-R01
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu |   - Orijinal: 3,453 byte
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu |   - Sıkıştırılmış: 2,072 byte
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu |   - Kazanç: %40.0
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ✓ Belge SQLite'a kaydedildi: IZELTAS-080126-P00IQB-R01
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ✓ Belge verileri ZTF dosyasına kaydedildi
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ADIM 9: CSV KAYDI EKLENİYOR
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Fiyat tablosu: 5 ürün CSV'ye eklendi
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: SN:080126-IZELTAS-AMASYA-TÜRKIYE-LK-P00IQB-R01
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: /home/cafer/Documents/MyWorkspace/ZET Yapı/Application/FormOlusturma/kayitlar/belge_kayitlari.csv
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | GEÇİCİ DOSYALAR TEMİZLENİYOR
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Geçici dizin temizlendi: 5 dosya silindi
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞARIYLA TAMAMLANDI
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Çıktı dosyası: ciktilar/IZELTAS-080126-P00IQB-R01.docx
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Dosya boyutu: 139.44 KB
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Dahil edilen ürünler: LK
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-IZELTAS-AMASYA-TÜRKIYE-LK-P00IQB-R01
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | Kod: IDX1|I=Amasya|U=Türkiye|F=Cafer Umut Özpınar|R=R00|PE=LK:150 x 150 cm,-:-,-:-,-:-,-:-,-:-
+2026-01-08 13:16:12 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | Temizlik: 1 kritik log dosyası korundu
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞLATILDI
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | Geçici dizin temizleniyor...
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | Veri dizini: kaynaklar
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | Şablonlar dizini: kaynaklar/sablonlar
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | Çıktı dizini: ciktilar
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | Eşleme kuralları yükleniyor...
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | 3 bölüm, 34 kural yüklendi
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | Global placeholder eşlemesi oluşturuluyor...
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | Global eşleme: 15 placeholder
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | Ürüne özel placeholder eşlemeleri oluşturuluyor...
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu |   Ürün 'LK': 22 placeholder
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | Başlık metni oluşturuluyor...
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | 3 ürün başlığı yüklendi: urunbasliklari.txt
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | Başlık metni: 'ESSMAN DUMAN TAHLIYE KAPAKLARI FİYAT TEKLİFİ'
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | ADIM 1: BAŞLIK ŞABLONU RENDER EDİLİYOR
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | Render: STANDART_BASLIK.docx -> STANDART_BASLIK__434458e8ab.docx
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | 4 paragrafta placeholder değiştirildi
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | ✓ Başlık render edildi: STANDART_BASLIK__434458e8ab.docx
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | ADIM 2: ÜRÜN ŞABLONLARI RENDER EDİLİYOR
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | Ürün işleniyor [1/1]: LK
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | Render: LK_TANIM.docx -> LK_TANIM__03fd205373.docx
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | 3 paragrafta placeholder değiştirildi
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu |   ✓ TANIM render edildi: LK_TANIM__03fd205373.docx
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | Render: LK_TABLO.docx -> LK_TABLO__351332334a.docx
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | 6 paragrafta placeholder değiştirildi
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu |   ✓ TABLO render edildi: LK_TABLO__351332334a.docx
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | ADIM 3: BELGE BİRLEŞTİRME HAZIRLANIYOR
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | 1 TANIM belgesi ekleniyor
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | 1 TABLO belgesi ekleniyor
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | EK: FİYAT TABLOSU OLUŞTURULUYOR (SATIR SATIR)
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 13:24:24 | INFO     | BelgeOlusturucu | Fiyat tablosu: 3 normal, 2 opsiyon satır
+2026-01-08 13:24:24 | DEBUG    | BelgeOlusturucu | Toplam (sadece normal): 3.200,00, KDV: 640,00, Genel Toplam: 3.840,00
+2026-01-08 13:24:24 | DEBUG    | BelgeOlusturucu | Opsiyon satır renklendirildi: BUTON - RGB(173, 216, 230)
+2026-01-08 13:24:25 | DEBUG    | BelgeOlusturucu | Opsiyon satır renklendirildi: HAVALANDIRMA MOTORU - RGB(255, 218, 185)
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu yazıldı: FIYAT__20260108_132424.docx
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu |   - Normal ürünler: 3
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu |   - Opsiyon ürünler: 2
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu |   - Genel toplam (KDV dahil, sadece normal): 3.840,00
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu oluşturuldu: FIYAT__20260108_132424.docx
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | Şartlar ekleniyor: SARTLAR.docx
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | Toplam birleştirilecek: 5 belge (başlık + 4 ek)
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ADIM 4: ÇIKTI DOSYA ADI OLUŞTURULUYOR
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | Seri numarası oluşturuluyor...
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-IZELTAS-AMASYA-TÜRKIYE-LK-P00IQB-R02
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | Dosya adı: IZELTAS-080126-P00IQB-R02.docx
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ADIM 5: BELGELER BİRLEŞTİRİLİYOR
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | Belge birleştirme başladı (temel: STANDART_BASLIK__434458e8ab.docx)
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu |   [1/4] Ekleniyor: LK_TANIM__03fd205373.docx
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu |   [2/4] Ekleniyor: LK_TABLO__351332334a.docx
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu |   [3/4] Ekleniyor: FIYAT__20260108_132424.docx
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu |   [4/4] Ekleniyor: SARTLAR.docx
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | Birleştirilmiş belge kaydedildi: IZELTAS-080126-P00IQB-R02__MERGED.docx
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ✓ Belgeler birleştirildi: IZELTAS-080126-P00IQB-R02__MERGED.docx
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ADIM 6: SON GLOBAL PLACEHOLDER'LAR UYGULANIYOR
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulanıyor: IZELTAS-080126-P00IQB-R02__MERGED.docx
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | 12 paragrafta placeholder değiştirildi
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulandı: IZELTAS-080126-P00IQB-R02.docx
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ✓ Son belge kaydedildi: ciktilar/IZELTAS-080126-P00IQB-R02.docx
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ADIM 7: SERİ NUMARASI FOOTER'A YAZILIYOR
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | Seri numarası footer'a yazıldı: SN:080126-IZELTAS-AMASYA-TÜRKIYE-LK-P00IQB-R02 (1 konum)
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ✓ Seri numarası eklendi: SN:080126-IZELTAS-AMASYA-TÜRKIYE-LK-P00IQB-R02
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ADIM 8: BELGE VERİLERİ ZTF DOSYASINA KAYDEDILIYOR
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:25 | WARNING  | BelgeOlusturucu | Belge bulunamadı: IZELTAS-080126-P00IQB-R02
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ✓ Belge kaydedildi: IZELTAS-080126-P00IQB-R02
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu |   - Seri: SN:080126-IZELTAS-AMASYA-TÜRKIYE-LK-P00IQB-R02
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu |   - Orijinal: 3,453 byte
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu |   - Sıkıştırılmış: 2,072 byte
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu |   - Kazanç: %40.0
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ✓ Belge SQLite'a kaydedildi: IZELTAS-080126-P00IQB-R02
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ✓ Belge verileri ZTF dosyasına kaydedildi
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ADIM 9: CSV KAYDI EKLENİYOR
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | Fiyat tablosu: 5 ürün CSV'ye eklendi
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: SN:080126-IZELTAS-AMASYA-TÜRKIYE-LK-P00IQB-R02
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: /home/cafer/Documents/MyWorkspace/ZET Yapı/Application/FormOlusturma/kayitlar/belge_kayitlari.csv
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | GEÇİCİ DOSYALAR TEMİZLENİYOR
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | Geçici dizin temizlendi: 5 dosya silindi
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞARIYLA TAMAMLANDI
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | Çıktı dosyası: ciktilar/IZELTAS-080126-P00IQB-R02.docx
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | Dosya boyutu: 139.44 KB
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | Dahil edilen ürünler: LK
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-IZELTAS-AMASYA-TÜRKIYE-LK-P00IQB-R02
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | Kod: IDX1|I=Amasya|U=Türkiye|F=Cafer Umut Özpınar|R=R00|PE=LK:150 x 150 cm,-:-,-:-,-:-,-:-,-:-
+2026-01-08 13:24:25 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Temizlik: 1 kritik log dosyası korundu
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞLATILDI
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Geçici dizin temizleniyor...
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Veri dizini: kaynaklar
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Şablonlar dizini: kaynaklar/sablonlar
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Çıktı dizini: ciktilar
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Eşleme kuralları yükleniyor...
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | 3 bölüm, 34 kural yüklendi
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Global placeholder eşlemesi oluşturuluyor...
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Global eşleme: 15 placeholder
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Ürüne özel placeholder eşlemeleri oluşturuluyor...
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu |   Ürün 'LK': 22 placeholder
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Başlık metni oluşturuluyor...
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | 3 ürün başlığı yüklendi: urunbasliklari.txt
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Başlık metni: 'ESSMAN DUMAN TAHLIYE KAPAKLARI FİYAT TEKLİFİ'
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ADIM 1: BAŞLIK ŞABLONU RENDER EDİLİYOR
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Render: STANDART_BASLIK.docx -> STANDART_BASLIK__5b827422da.docx
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | 4 paragrafta placeholder değiştirildi
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ✓ Başlık render edildi: STANDART_BASLIK__5b827422da.docx
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ADIM 2: ÜRÜN ŞABLONLARI RENDER EDİLİYOR
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Ürün işleniyor [1/1]: LK
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Render: LK_TANIM.docx -> LK_TANIM__04c297b287.docx
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | 3 paragrafta placeholder değiştirildi
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu |   ✓ TANIM render edildi: LK_TANIM__04c297b287.docx
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Render: LK_TABLO.docx -> LK_TABLO__39b0c1797a.docx
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | 6 paragrafta placeholder değiştirildi
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu |   ✓ TABLO render edildi: LK_TABLO__39b0c1797a.docx
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ADIM 3: BELGE BİRLEŞTİRME HAZIRLANIYOR
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | 1 TANIM belgesi ekleniyor
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | 1 TABLO belgesi ekleniyor
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | EK: FİYAT TABLOSU OLUŞTURULUYOR (SATIR SATIR)
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Fiyat tablosu: 3 normal, 2 opsiyon satır
+2026-01-08 16:54:21 | DEBUG    | BelgeOlusturucu | Toplam (sadece normal): 4.428,00, KDV: 885,60, Genel Toplam: 5.313,60
+2026-01-08 16:54:21 | DEBUG    | BelgeOlusturucu | Opsiyon satır renklendirildi: BUTON - RGB(173, 216, 230)
+2026-01-08 16:54:21 | DEBUG    | BelgeOlusturucu | Opsiyon satır renklendirildi: HAVALANDIRMA MOTORU - RGB(255, 218, 185)
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu yazıldı: FIYAT__20260108_165421.docx
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu |   - Normal ürünler: 3
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu |   - Opsiyon ürünler: 2
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu |   - Genel toplam (KDV dahil, sadece normal): 5.313,60
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu oluşturuldu: FIYAT__20260108_165421.docx
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Şartlar ekleniyor: SARTLAR.docx
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Toplam birleştirilecek: 5 belge (başlık + 4 ek)
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ADIM 4: ÇIKTI DOSYA ADI OLUŞTURULUYOR
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Seri numarası oluşturuluyor...
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-DEASDE-BURDUR-TÜRKIYE-LK-B0PSRS-R01
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Dosya adı: DEASDE-080126-B0PSRS-R01.docx
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ADIM 5: BELGELER BİRLEŞTİRİLİYOR
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Belge birleştirme başladı (temel: STANDART_BASLIK__5b827422da.docx)
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu |   [1/4] Ekleniyor: LK_TANIM__04c297b287.docx
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu |   [2/4] Ekleniyor: LK_TABLO__39b0c1797a.docx
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu |   [3/4] Ekleniyor: FIYAT__20260108_165421.docx
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu |   [4/4] Ekleniyor: SARTLAR.docx
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Birleştirilmiş belge kaydedildi: DEASDE-080126-B0PSRS-R01__MERGED.docx
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ✓ Belgeler birleştirildi: DEASDE-080126-B0PSRS-R01__MERGED.docx
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ADIM 6: SON GLOBAL PLACEHOLDER'LAR UYGULANIYOR
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulanıyor: DEASDE-080126-B0PSRS-R01__MERGED.docx
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | 12 paragrafta placeholder değiştirildi
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulandı: DEASDE-080126-B0PSRS-R01.docx
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ✓ Son belge kaydedildi: ciktilar/DEASDE-080126-B0PSRS-R01.docx
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ADIM 7: SERİ NUMARASI FOOTER'A YAZILIYOR
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Seri numarası footer'a yazıldı: SN:080126-DEASDE-BURDUR-TÜRKIYE-LK-B0PSRS-R01 (1 konum)
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ✓ Seri numarası eklendi: SN:080126-DEASDE-BURDUR-TÜRKIYE-LK-B0PSRS-R01
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ADIM 8: BELGE VERİLERİ ZTF DOSYASINA KAYDEDILIYOR
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | WARNING  | BelgeOlusturucu | Belge bulunamadı: DEASDE-080126-B0PSRS-R01
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ✓ Belge kaydedildi: DEASDE-080126-B0PSRS-R01
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu |   - Seri: SN:080126-DEASDE-BURDUR-TÜRKIYE-LK-B0PSRS-R01
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu |   - Orijinal: 3,471 byte
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu |   - Sıkıştırılmış: 2,060 byte
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu |   - Kazanç: %40.7
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ✓ Belge SQLite'a kaydedildi: DEASDE-080126-B0PSRS-R01
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ✓ Belge verileri ZTF dosyasına kaydedildi
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ADIM 9: CSV KAYDI EKLENİYOR
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Fiyat tablosu: 5 ürün CSV'ye eklendi
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: SN:080126-DEASDE-BURDUR-TÜRKIYE-LK-B0PSRS-R01
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: /home/cafer/Documents/MyWorkspace/ZET Yapı/Application/FormOlusturma/kayitlar/belge_kayitlari.csv
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | GEÇİCİ DOSYALAR TEMİZLENİYOR
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Geçici dizin temizlendi: 5 dosya silindi
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞARIYLA TAMAMLANDI
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Çıktı dosyası: ciktilar/DEASDE-080126-B0PSRS-R01.docx
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Dosya boyutu: 139.42 KB
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Dahil edilen ürünler: LK
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Seri numarası: SN:080126-DEASDE-BURDUR-TÜRKIYE-LK-B0PSRS-R01
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | Kod: IDX1|I=Burdur|U=Türkiye|F=Cafer Umut Özpınar|R=R00|PE=LK:123 x 123 cm,-:-,-:-,-:-,-:-,-:-
+2026-01-08 16:54:21 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu | Temizlik: 1 kritik log dosyası korundu
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu | KEŞİF ÖZETİ OLUŞTURMA BAŞLATILDI
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu | Geçici dizin temizleniyor...
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu | Veri dizini: kaynaklar
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu | Şablonlar dizini: kaynaklar/sablonlar
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu | Çıktı dizini: ciktilar
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu | Ürünler: LK
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu | Eşleme kuralları yükleniyor...
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu | 3 bölüm, 34 kural yüklendi
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu | Global placeholder eşlemesi oluşturuluyor...
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu | Global eşleme: 15 placeholder
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu | Ürüne özel placeholder eşlemeleri oluşturuluyor...
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu |   Ürün 'LK': 24 placeholder
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu | ADIM 1: ŞABLON KOPYALANIYOR
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu | ✓ Şablon kopyalandı: temp_kesif_20260108_165617.docx
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu | ADIM 2: PLACEHOLDER'LAR DOLDURULUYOR
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:17 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulanıyor: temp_kesif_20260108_165617.docx
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | 20 paragrafta placeholder değiştirildi
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulandı: temp_kesif_processed_20260108_165617.docx
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ✓ Placeholder'lar dolduruldu
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ADIM 3: OPSİYON BAYRAKLARI HAZIRLANIYOR
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu |   Opsiyon: LK_4 = True
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu |   Opsiyon: LK_5 = True
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ✓ Toplam 2 opsiyon işaretlendi
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ADIM 4: OPSİYON VE NUMARALAMA UYGULAMASI
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | OPSİYON VE NUMARALAMA UYGULAMASI
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | Kaynak belge: gecici/temp_kesif_processed_20260108_165617.docx
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | Çıktı belgesi: ciktilar/CAFER-080126-3VNAYP-R01_KEŞİF ÖZETİ.docx
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | Tablo index: 0
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | Opsiyon alt sayısı: 5
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | Opsiyon ürün sayısı: 0
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | Tablo yüklendi: 47 satır x 9 sütun
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | Toplam 2 ürün bloğu bulundu
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu |   - LB: satır 1-35
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu |   - ZR20: satır 36-46
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ADIM 1: OPSİYON ALT BLOKLARI İŞLENİYOR
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ✓ Toplam 0 opsiyon bloğu işlendi
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ADIM 2: SIRA NUMARALARI DOLDURULUYOR
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ✓ 7 sıra numarası yazıldı
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ✓ 0 opsiyon satırı işaretlendi
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ✓ Belge başarıyla kaydedildi: ciktilar/CAFER-080126-3VNAYP-R01_KEŞİF ÖZETİ.docx
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ADIM 5: METADATA YAZILIYOR
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:18 | WARNING  | BelgeOlusturucu | UYARI: Metadata yazılamadı: BelgeVeriYoneticisi.__init__() got an unexpected keyword argument 'sikistir'
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ADIM 6: CSV KAYDI YAPILIYOR
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:18 | WARNING  | BelgeOlusturucu | UYARI: CSV kaydı yapılamadı: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ✓ Geçici dosya temizlendi
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ✓ KEŞİF ÖZETİ BAŞARIYLA OLUŞTURULDU
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ✓ Dosya: CAFER-080126-3VNAYP-R01_KEŞİF ÖZETİ.docx
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ✓ Konum: ciktilar
+2026-01-08 16:56:18 | INFO     | BelgeOlusturucu | ============================================================

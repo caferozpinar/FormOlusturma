@@ -1,0 +1,116 @@
+# Eşleme Kuralları
+# ================
+#
+# Bu dosya placeholder'ları form verilerine eşler.
+#
+# Format:
+# [BOLUM_ADI]
+# {/PLACEHOLDER/} = kural_ifadesi
+#
+# Kural Tipleri:
+# - field:ALAN_ADI                    # Direkt alan değeri
+# - format:"şablon {a}" using a:alan  # Formatlı metin
+# - dynamic:ANAHTAR                   # Dinamik değer
+# - if KOSUL then "değer" else "def"  # Koşullu ifade
+
+# =============================================================================
+# GLOBAL - Tüm formlar için ortak
+# =============================================================================
+[GLOBAL]
+{/DATE/}            = field:CURDATE
+{/DUZENLEYENISIM/}  = field:DUZENLEYEN
+{/PROJEADI/}        = field:PROJEADI
+{/PROJEYERI/}       = field:PROJEKONUM
+{/GIRDI1/}          = field:GIRDI1
+{/GIRDI2/}          = field:GIRDI2
+{/GIRDI3/}          = field:GIRDI3
+{/GIRDI4/}          = field:GIRDI4
+{/GIRDI5/}          = field:GIRDI5
+{/GIRDI6/}          = field:GIRDI6
+{/GIRDI7/}          = field:GIRDI7
+{/GIRDI8/}          = field:GIRDI8
+{/SONTRH/}          = field:SONTRH
+{/TERMIN/}          = field:TERMIN
+{/MONTAJ/}          = field:MONTAJ
+
+# =============================================================================
+# LK - Lamine Kasa Ürünü
+# =============================================================================
+[LK]
+# Ebat bilgisi (formatlanmış)
+{/EBAT/}            = format:"{w}x{h} cm" using w:kapaken_line, h:kapakboy_line
+
+# Kasa yüksekliği
+{/YKS/}             = field:kasayks_line
+
+# Motor tipi
+{/MTP/}             = field:motor_cins_box
+
+# Motor yüksekliği
+{/MYKS/}            = field:motor_boy_box
+
+# Kanat cinsi
+{/KNTMLZ/}          = field:kanat_mlz_box
+
+# Kasa Malzemesi
+{/KASAMLZ/}         = field:kasa_mlz_box
+
+# Fusible Link
+{/FSLNK/}           = field:fusible_box
+
+# Isı geçirgenlik yüzdesi (kanat malzemesine göre)
+{/ISKYZD/}          = if field:kanat_mlz_box == "Pc-s" then "43" else if field:kanat_mlz_box == "çift cidarlı" then "50" else if field:kanat_mlz_box == "üç cidarlı" then "43" else if field:kanat_mlz_box == "Pc-st" then "52" else ""
+
+# Isı iletim katsayısı (kanat malzemesine göre)
+{/ISIKT/}           = if field:kanat_mlz_box == "Pc-s" then "1.8 W/m²K" else if field:kanat_mlz_box == "çift cidarlı" then "3.0 W/m²K" else if field:kanat_mlz_box == "üç cidarlı" then "1.9 W/m²K" else if field:kanat_mlz_box == "Pc-st" then "1.4 W/m²K" else ""
+
+# =============================================================================
+# FIYAT - Fiyat Tablosu (YENİ - Dinamik değerler)
+# =============================================================================
+[FIYAT]
+# Ürün satırları için dinamik placeholder'lar
+# Bu değerler fiyat_tablosu.py tarafından çalışma zamanında doldurulur
+
+# Satır bazlı değerler (her ürün satırı için)
+{/NO/}              = dynamic:NO           # Sıra numarası veya "OPSİYON"
+{/URUN/}            = dynamic:URUN         # Ürün açıklaması (urun_label_*)
+{/URUNAD/}          = dynamic:URUNAD       # Ürün adedi (adet_line_*)
+{/URUNBRFY/}        = dynamic:URUNBRFY     # Birim fiyat (brmfiyat_line_*)
+{/URUNTPFY/}        = dynamic:URUNTPFY     # Toplam fiyat (top_line_*)
+
+# Toplam değerler (tablo sonunda)
+{/TPFY/}            = dynamic:TPFY         # Genel toplam (tüm ürünler)
+{/KDV/}             = dynamic:KDV          # KDV oranı (%)
+{/KDVFY/}           = dynamic:KDVFY        # KDV tutarı
+{/TOPKDV/}          = dynamic:TOPKDV       # KDV dahil toplam
+
+# Ürün listesi (virgülle ayrılmış)
+{/URUNLER/}         = dynamic:URUNLER      # Örn: "LK, ZTK, SR"
+
+# =============================================================================
+# Notlar
+# =============================================================================
+#
+# 1. DYNAMIC değerler çalışma zamanında doldurulur:
+#    - Ürün satırları için: fiyat_tablosu.py
+#    - Diğer dinamik değerler için: olusturucu.py
+#
+# 2. FIELD değerler doğrudan oturum_onbellegi'nden alınır:
+#    oturum_onbellegi['LK']['kapaken_line'] -> {/EBAT/} için kullanılır
+#
+# 3. FORMAT ifadeleri şablon kullanır:
+#    format:"{w}x{h} cm" using w:kapaken_line, h:kapakboy_line
+#    -> "123x456 cm"
+#
+# 4. IF koşulları zincir halinde kullanılır (nested if-else):
+#    if ALAN == "değer1" then "sonuç1" else if ALAN == "değer2" then "sonuç2" else "varsayılan"
+#
+#    Örnekler:
+#    - {/ISKYZD/}: Kanat malzemesine göre ısı geçirgenlik yüzdesi
+#    - {/ISIKT/}: Kanat malzemesine göre ısı iletim katsayısı (W/m²K)
+#
+# 5. Karşılaştırma operatörleri:
+#    - ==  : Eşittir
+#    - !=  : Eşit değildir
+#
+# =============================================================================

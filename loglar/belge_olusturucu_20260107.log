@@ -1,0 +1,70 @@
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | KEŞİF ÖZETİ OLUŞTURMA BAŞLATILDI
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | Geçici dizin temizleniyor...
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | Veri dizini: kaynaklar
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | Şablonlar dizini: kaynaklar/sablonlar
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | Çıktı dizini: ciktilar
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | Ürünler: LK
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | Eşleme kuralları yükleniyor...
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | 3 bölüm, 34 kural yüklendi
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | Global placeholder eşlemesi oluşturuluyor...
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | Global eşleme: 15 placeholder
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | Ürüne özel placeholder eşlemeleri oluşturuluyor...
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu |   Ürün 'LK': 24 placeholder
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ADIM 1: ŞABLON KOPYALANIYOR
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ✓ Şablon kopyalandı: temp_kesif_20260107_150724.docx
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ADIM 2: PLACEHOLDER'LAR DOLDURULUYOR
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulanıyor: temp_kesif_20260107_150724.docx
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | 20 paragrafta placeholder değiştirildi
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulandı: temp_kesif_processed_20260107_150724.docx
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ✓ Placeholder'lar dolduruldu
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ADIM 3: OPSİYON BAYRAKLARI HAZIRLANIYOR
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ✓ Toplam 0 opsiyon işaretlendi
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ADIM 4: OPSİYON VE NUMARALAMA UYGULAMASI
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | OPSİYON VE NUMARALAMA UYGULAMASI
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | Kaynak belge: gecici/temp_kesif_processed_20260107_150724.docx
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | Çıktı belgesi: ciktilar/CAFER-070126-K6MOON-R01_KEŞİF ÖZETİ.docx
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | Tablo index: 0
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | Opsiyon alt sayısı: 5
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | Opsiyon ürün sayısı: 0
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | Tablo yüklendi: 47 satır x 9 sütun
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | Toplam 2 ürün bloğu bulundu
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu |   - LB: satır 1-35
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu |   - ZR20: satır 36-46
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ADIM 1: OPSİYON ALT BLOKLARI İŞLENİYOR
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ✓ Toplam 0 opsiyon bloğu işlendi
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ADIM 2: SIRA NUMARALARI DOLDURULUYOR
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ✓ 7 sıra numarası yazıldı
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ✓ 0 opsiyon satırı işaretlendi
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ✓ Belge başarıyla kaydedildi: ciktilar/CAFER-070126-K6MOON-R01_KEŞİF ÖZETİ.docx
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ADIM 5: METADATA YAZILIYOR
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | WARNING  | BelgeOlusturucu | UYARI: Metadata yazılamadı: BelgeVeriYoneticisi.veri_kaydet() got an unexpected keyword argument 'cikti_yolu'
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ADIM 6: CSV KAYDI YAPILIYOR
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | WARNING  | BelgeOlusturucu | UYARI: CSV kaydı yapılamadı: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ✓ Geçici dosya temizlendi
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ✓ KEŞİF ÖZETİ BAŞARIYLA OLUŞTURULDU
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ✓ Dosya: CAFER-070126-K6MOON-R01_KEŞİF ÖZETİ.docx
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ✓ Konum: ciktilar
+2026-01-07 15:07:24 | INFO     | BelgeOlusturucu | ============================================================

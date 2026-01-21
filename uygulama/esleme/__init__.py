@@ -1,0 +1,32 @@
+"""
+E�leme Paketi
+=============
+
+Placeholder eşleme kuralları yönetimi.
+
+Kullanım:
+---------
+>>> from uygulama.esleme import kurallari_yukle, placeholder_esleme_olustur
+>>> kurallar = kurallari_yukle("mapping_rules.txt")
+>>> esleme = placeholder_esleme_olustur("LK", form_verileri, kurallar)
+"""
+
+from uygulama.esleme.esleme_motoru import (
+    kurallari_yukle,
+    ifade_degerlendir,
+    placeholder_esleme_olustur,
+    # Geriye uyumluluk
+    load_rules,
+    eval_expr,
+    build_placeholder_mapping,
+)
+
+__all__ = [
+    "kurallari_yukle",
+    "ifade_degerlendir",
+    "placeholder_esleme_olustur",
+    # Geriye uyumluluk
+    "load_rules",
+    "eval_expr",
+    "build_placeholder_mapping",
+]
