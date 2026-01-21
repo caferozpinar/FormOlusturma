@@ -1,0 +1,109 @@
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Temizlik: 1 eski log dosyası silindi (>7 gün)
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Temizlik: 1 kritik log dosyası korundu
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞLATILDI
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Geçici dizin temizleniyor...
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Geçici dizin temizlendi: 1 dosya silindi
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Veri dizini: kaynaklar
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Şablonlar dizini: kaynaklar/sablonlar
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Çıktı dizini: ciktilar
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Eşleme kuralları yükleniyor...
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | 3 bölüm, 34 kural yüklendi
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Global placeholder eşlemesi oluşturuluyor...
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Global eşleme: 15 placeholder
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Ürüne özel placeholder eşlemeleri oluşturuluyor...
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu |   Ürün 'LK': 22 placeholder
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Başlık metni oluşturuluyor...
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | 3 ürün başlığı yüklendi: urunbasliklari.txt
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Başlık metni: 'ESSMAN DUMAN TAHLIYE KAPAKLARI FİYAT TEKLİFİ'
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ADIM 1: BAŞLIK ŞABLONU RENDER EDİLİYOR
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Render: STANDART_BASLIK.docx -> STANDART_BASLIK__2e798bf3f8.docx
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | 4 paragrafta placeholder değiştirildi
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ✓ Başlık render edildi: STANDART_BASLIK__2e798bf3f8.docx
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ADIM 2: ÜRÜN ŞABLONLARI RENDER EDİLİYOR
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Ürün işleniyor [1/1]: LK
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Render: LK_TANIM.docx -> LK_TANIM__62bca577f7.docx
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | 3 paragrafta placeholder değiştirildi
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu |   ✓ TANIM render edildi: LK_TANIM__62bca577f7.docx
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Render: LK_TABLO.docx -> LK_TABLO__c3d68f9186.docx
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | 6 paragrafta placeholder değiştirildi
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu |   ✓ TABLO render edildi: LK_TABLO__c3d68f9186.docx
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ADIM 3: BELGE BİRLEŞTİRME HAZIRLANIYOR
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | 1 TANIM belgesi ekleniyor
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | 1 TABLO belgesi ekleniyor
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | EK: FİYAT TABLOSU OLUŞTURULUYOR (SATIR SATIR)
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Fiyat tablosu: 3 normal, 2 opsiyon satır
+2026-01-21 15:42:14 | DEBUG    | BelgeOlusturucu | Toplam (sadece normal): 675,00, KDV: 135,00, Genel Toplam: 810,00
+2026-01-21 15:42:14 | DEBUG    | BelgeOlusturucu | Opsiyon satır renklendirildi: BUTON - RGB(173, 216, 230)
+2026-01-21 15:42:14 | DEBUG    | BelgeOlusturucu | Opsiyon satır renklendirildi: HAVALANDIRMA MOTORU - RGB(255, 218, 185)
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu yazıldı: FIYAT__20260121_154214.docx
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu |   - Normal ürünler: 3
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu |   - Opsiyon ürünler: 2
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu |   - Genel toplam (KDV dahil, sadece normal): 810,00
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu oluşturuldu: FIYAT__20260121_154214.docx
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Şartlar ekleniyor: SARTLAR.docx
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Toplam birleştirilecek: 5 belge (başlık + 4 ek)
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ADIM 4: ÇIKTI DOSYA ADI OLUŞTURULUYOR
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Seri numarası oluşturuluyor...
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Seri numarası: SN:210126-TÜLOMSAŞ-ANKARA-TÜRKIYE-LK-XP868G-R01
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Dosya adı: TÜLOMSAŞ-210126-XP868G-R01.docx
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ADIM 5: BELGELER BİRLEŞTİRİLİYOR
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Belge birleştirme başladı (temel: STANDART_BASLIK__2e798bf3f8.docx)
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu |   [1/4] Ekleniyor: LK_TANIM__62bca577f7.docx
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu |   [2/4] Ekleniyor: LK_TABLO__c3d68f9186.docx
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu |   [3/4] Ekleniyor: FIYAT__20260121_154214.docx
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu |   [4/4] Ekleniyor: SARTLAR.docx
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Birleştirilmiş belge kaydedildi: TÜLOMSAŞ-210126-XP868G-R01__MERGED.docx
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ✓ Belgeler birleştirildi: TÜLOMSAŞ-210126-XP868G-R01__MERGED.docx
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ADIM 6: SON GLOBAL PLACEHOLDER'LAR UYGULANIYOR
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulanıyor: TÜLOMSAŞ-210126-XP868G-R01__MERGED.docx
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | 12 paragrafta placeholder değiştirildi
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulandı: TÜLOMSAŞ-210126-XP868G-R01.docx
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ✓ Son belge kaydedildi: ciktilar/TÜLOMSAŞ-210126-XP868G-R01.docx
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ADIM 7: SERİ NUMARASI FOOTER'A YAZILIYOR
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Seri numarası footer'a yazıldı: SN:210126-TÜLOMSAŞ-ANKARA-TÜRKIYE-LK-XP868G-R01 (1 konum)
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ✓ Seri numarası eklendi: SN:210126-TÜLOMSAŞ-ANKARA-TÜRKIYE-LK-XP868G-R01
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ADIM 8: BELGE VERİLERİ ZTF DOSYASINA KAYDEDILIYOR
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | DEBUG    | BelgeOlusturucu | Belge bulunamadı: TÜLOMSAŞ-210126-XP868G-R01
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ✓ Belge kaydedildi: TÜLOMSAŞ-210126-XP868G-R01
+2026-01-21 15:42:14 | DEBUG    | BelgeOlusturucu |   - Sıkıştırma: %40.9
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ✓ Belge SQLite'a kaydedildi: TÜLOMSAŞ-210126-XP868G-R01
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ✓ Belge verileri ZTF dosyasına kaydedildi
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ADIM 9: CSV KAYDI EKLENİYOR
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Fiyat tablosu: 5 ürün CSV'ye eklendi
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: SN:210126-TÜLOMSAŞ-ANKARA-TÜRKIYE-LK-XP868G-R01
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: /home/cafer/Documents/MyWorkspace/ZET Yapı/Application/FormOlusturma/kayitlar/belge_kayitlari.csv
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | GEÇİCİ DOSYALAR TEMİZLENİYOR
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Geçici dizin temizlendi: 5 dosya silindi
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞARIYLA TAMAMLANDI
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Çıktı dosyası: ciktilar/TÜLOMSAŞ-210126-XP868G-R01.docx
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Dosya boyutu: 139.41 KB
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Dahil edilen ürünler: LK
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Seri numarası: SN:210126-TÜLOMSAŞ-ANKARA-TÜRKIYE-LK-XP868G-R01
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Kod: IDX1|I=Ankara|U=Türkiye|F=Cafer Umut Özpınar|R=R00|PE=LK:150 x 150 cm,-:-,-:-,-:-,-:-,-:-
+2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================

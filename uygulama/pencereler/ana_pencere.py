@@ -16,8 +16,15 @@ from pathlib import Path
 from typing import Any, Optional
 
 from PyQt5 import QtWidgets, uic
-from PyQt5.QtWidgets import QMessageBox, QFileDialog
+from PyQt5.QtWidgets import QMessageBox, QFileDialog, QTableWidgetItem
 from PyQt5.QtCore import QDate, Qt
+
+try:
+    from rapidfuzz import fuzz
+    RAPIDFUZZ_MEVCUT = True
+except ImportError:
+    RAPIDFUZZ_MEVCUT = False
+    logging.warning("rapidfuzz bulunamadı. Fuzzy arama devre dışı. Kurmak için: pip install rapidfuzz")
 
 from uygulama.sabitler import (
     URUN_COMBOBOX_SAYISI,
@@ -26,6 +33,7 @@ from uygulama.sabitler import (
 )
 from uygulama.yardimcilar.donusturucular import guvenli_int_donustur
 from uygulama.yardimcilar.dogrulayicilar import tarih_dogrula
+# from uygulama.yardimcilar.fuzzy_arama import fuzzy_ara, self._tab3_fuzzy_eslesme
 from uygulama.veri.csv_yukleyici import (
     ulkeler_combobox_yukle,
     iller_combobox_yukle,
@@ -81,6 +89,9 @@ class AnaPencere(QtWidgets.QMainWindow):
         
         # ÖNEMLİ: Kullanıcı adını ayarla (UI yüklendikten SONRA!)
         self._kullanici_adini_ayarla()
+        
+        # Tab_3 arama sistemi sinyalleri
+        self._tab3_sinyalleri_bagla()
     
     def _comboboxlari_doldur(self) -> None:
         """Ürün ComboBox'larını doldurur."""
@@ -1014,3 +1025,233 @@ class AnaPencere(QtWidgets.QMainWindow):
                 QMessageBox.Ok
             )
 
+    # =========================================================================
+    # TAB_3 ARAMA VE GÖRÜNTÜLEME SİSTEMİ
+    # =========================================================================
+    
+
+    # =========================================================================
+    # TAB_3 ARAMA VE GÖRÜNTÜLEME - BASİT VERSİYON (HATASIZ)
+    # =========================================================================
+    
+    def _tab3_sinyalleri_bagla(self) -> None:
+        """Tab_3 sinyallerini bağlar."""
+        try:
+            # ARA butonu
+            ara_butonu = getattr(self, "pushButton_2", None)
+            if ara_butonu is not None:
+                ara_butonu.clicked.connect(self._tab3_ara)
+                gunluk.info("Tab_3 'ARA' butonu bağlandı")
+            
+            # Proje Detaylarını Göster butonu
+            detay_butonu = getattr(self, "pushButton_3", None)
+            if detay_butonu is not None:
+                detay_butonu.clicked.connect(self._tab3_detay_goster)
+                gunluk.info("Tab_3 'Detay Göster' butonu bağlandı")
+            
+            # Tablo satır seçimi
+            sonuc_tablosu = getattr(self, "tableWidget", None)
+            if sonuc_tablosu is not None:
+                sonuc_tablosu.itemSelectionChanged.connect(self._tab3_satir_secildi)
+                gunluk.info("Tab_3 tablo seçimi bağlandı")
+        except Exception as e:
+            gunluk.error(f"Tab_3 sinyal bağlama hatası: {e}")
+    
+    def _tab3_ara(self) -> None:
+        """Veritabanında BASİT arama yapar - HATASIZ."""
+        try:
+            gunluk.info("Tab_3 arama başlatıldı")
+            
+            # Arama kutusundan metni al
+            arama_kutusu = getattr(self, "lineEdit", None)
+            if arama_kutusu is None:
+                return
+            
+            arama_metni = arama_kutusu.text().strip().lower()
+            
+            # Takvimden tarihi al
+            takvim = getattr(self, "calendarWidget", None)
+            secili_tarih = None
+            if takvim is not None:
+                qdate = takvim.selectedDate()
+                secili_tarih = qdate.toString("yyyy-MM-dd")
+            
+            # Veritabanı kaydedici
+            from uygulama.belge.veritabani_kaydedici import VeritabaniKaydedici
+            kaydedici = VeritabaniKaydedici()
+            
+            # Tüm kayıtları çek
+            tum_kayitlar = []
+            
+            # belge_kayitlari
+            try:
+                belge_kayitlari = kaydedici.kayit_ara(
+                    tarih_baslangic=secili_tarih if secili_tarih else None,
+                    limit=1000
+                )
+                tum_kayitlar.extend([(k, 'belge_kayitlari') for k in belge_kayitlari])
+            except Exception as e:
+                gunluk.warning(f"belge_kayitlari arama hatası: {e}")
+            
+            # tab2_kayitlari
+            try:
+                tab2_kayitlari = kaydedici.tab2_kayitlari_ara(
+                    tarih_baslangic=secili_tarih if secili_tarih else None,
+                    limit=1000
+                )
+                tum_kayitlar.extend([(k, 'tab2_kayitlari') for k in tab2_kayitlari])
+            except Exception as e:
+                gunluk.warning(f"tab2_kayitlari arama hatası: {e}")
+            
+            # Arama metni varsa filtrele
+            if arama_metni:
+                filtrelenmis = []
+                for kayit, tablo_adi in tum_kayitlar:
+                    # Basit string araması - her alanda
+                    eslesme = False
+                    
+                    for alan, deger in kayit.items():
+                        if deger and arama_metni in str(deger).lower():
+                            eslesme = True
+                            break
+                    
+                    if eslesme:
+                        filtrelenmis.append((kayit, tablo_adi))
+                
+                tum_kayitlar = filtrelenmis
+            
+            # Tabloya doldur
+            self._tab3_sonuclari_tabloya_doldur(tum_kayitlar)
+            
+            gunluk.info(f"✓ Tab_3 arama tamamlandı: {len(tum_kayitlar)} sonuç")
+            
+        except Exception as e:
+            gunluk.error(f"Tab_3 arama hatası: {e}")
+            import traceback
+            gunluk.error(f"Detay: {traceback.format_exc()}")
+    
+    def _tab3_sonuclari_tabloya_doldur(self, sonuclar: list) -> None:
+        """Arama sonuçlarını tabloya doldurur."""
+        try:
+            tablo = getattr(self, "tableWidget", None)
+            if tablo is None:
+                return
+            
+            # Tabloyu temizle
+            tablo.setRowCount(0)
+            
+            # Satırları ekle
+            for idx, (kayit, tablo_adi) in enumerate(sonuclar):
+                tablo.insertRow(idx)
+                
+                # Tarih
+                tarih = kayit.get('tarih', '') or kayit.get('belge_tarih', '')
+                tablo.setItem(idx, 0, QTableWidgetItem(str(tarih)))
+                
+                # Proje Yeri
+                proje_yeri = kayit.get('proje_konum', '') or kayit.get('proje_yeri', '')
+                tablo.setItem(idx, 1, QTableWidgetItem(str(proje_yeri)))
+                
+                # Proje Adı
+                proje_adi = kayit.get('proje_adi', '')
+                tablo.setItem(idx, 2, QTableWidgetItem(str(proje_adi)))
+                
+                # Gizli veri sakla
+                tablo.item(idx, 0).setData(Qt.UserRole, (kayit.get('id'), tablo_adi, kayit))
+            
+            tablo.resizeColumnsToContents()
+            
+        except Exception as e:
+            gunluk.error(f"Tablo doldurma hatası: {e}")
+    
+    def _tab3_satir_secildi(self) -> None:
+        """Tabloda satır seçildiğinde detayları gösterir."""
+        try:
+            tablo = getattr(self, "tableWidget", None)
+            if tablo is None:
+                return
+            
+            satir_no = tablo.currentRow()
+            if satir_no < 0:
+                self._tab3_detaylari_temizle()
+                return
+            
+            ilk_sutun = tablo.item(satir_no, 0)
+            if ilk_sutun is None:
+                return
+            
+            kayit_data = ilk_sutun.data(Qt.UserRole)
+            if kayit_data is None:
+                return
+            
+            kayit_id, tablo_adi, kayit = kayit_data
+            self._tab3_detaylari_goster(kayit, tablo_adi)
+            
+        except Exception as e:
+            gunluk.error(f"Satır seçimi hatası: {e}")
+    
+    def _tab3_detay_goster(self) -> None:
+        """Detay göster butonu."""
+        self._tab3_satir_secildi()
+    
+    def _tab3_detaylari_goster(self, kayit: dict, tablo_adi: str) -> None:
+        """Detayları sağ panelde gösterir."""
+        try:
+            # Temel bilgiler
+            self._tab3_label_ayarla("proje_adi_label", kayit.get('proje_adi', ''))
+            
+            proje_yeri = kayit.get('proje_konum', '') or kayit.get('proje_yeri', '')
+            self._tab3_label_ayarla("proje_yeri_label", proje_yeri)
+            
+            self._tab3_label_ayarla("revizyon_label", kayit.get('revizyon_numarasi', ''))
+            
+            tarih = kayit.get('tarih', '') or kayit.get('belge_tarih', '')
+            self._tab3_label_ayarla("tarih_label", tarih)
+            
+            self._tab3_label_ayarla("serinumara_label", kayit.get('seri_numarasi', ''))
+            self._tab3_label_ayarla("dosyayolu_label", kayit.get('dosya_yolu', ''))
+            self._tab3_label_ayarla("duzenleyen_isim_label", kayit.get('olusturan_kisi', ''))
+            self._tab3_label_ayarla("notes_label", kayit.get('notlar', ''))
+            
+            fiyat = kayit.get('kdvli_toplam_fiyat', '') or kayit.get('toplam_teklif', '')
+            self._tab3_label_ayarla("label_102", fiyat)
+            
+            # Ürünleri göster
+            if tablo_adi == 'tab2_kayitlari':
+                for i in range(6):
+                    urun_no = i + 1
+                    self._tab3_label_ayarla(f"urun_kod_label_{i}", kayit.get(f'urun{urun_no}_kod', ''))
+                    self._tab3_label_ayarla(f"urun_adet_label_{i}", kayit.get(f'urun{urun_no}_adet', ''))
+                    self._tab3_label_ayarla(f"urun_ozl_label_{i}", kayit.get(f'urun{urun_no}_ozl', ''))
+            
+        except Exception as e:
+            gunluk.error(f"Detay gösterme hatası: {e}")
+    
+    def _tab3_label_ayarla(self, label_adi: str, metin: str) -> None:
+        """Label metnini güvenli ayarlar."""
+        try:
+            label = getattr(self, label_adi, None)
+            if label is not None:
+                label.setText(str(metin) if metin else "")
+        except:
+            pass
+    
+    def _tab3_detaylari_temizle(self) -> None:
+        """Detay panelini temizler."""
+        try:
+            self._tab3_label_ayarla("proje_adi_label", "Proje Adı")
+            self._tab3_label_ayarla("proje_yeri_label", "Proje konumu")
+            self._tab3_label_ayarla("revizyon_label", "Revizyon")
+            self._tab3_label_ayarla("tarih_label", "Tarih")
+            self._tab3_label_ayarla("serinumara_label", "Seri Numarası")
+            self._tab3_label_ayarla("dosyayolu_label", "Dosya yolu")
+            self._tab3_label_ayarla("duzenleyen_isim_label", "Düzenleyen")
+            self._tab3_label_ayarla("notes_label", "")
+            self._tab3_label_ayarla("label_102", "Fiyat Teklif Miktarı")
+            
+            for i in range(6):
+                self._tab3_label_ayarla(f"urun_kod_label_{i}", "")
+                self._tab3_label_ayarla(f"urun_adet_label_{i}", "")
+                self._tab3_label_ayarla(f"urun_ozl_label_{i}", "")
+        except:
+            pass
