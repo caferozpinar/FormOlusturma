@@ -172,7 +172,7 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="tab_2">
+      <widget class="QWidget" name="tab_1">
        <attribute name="title">
         <string>Form Olusturma</string>
        </attribute>
@@ -1644,7 +1644,7 @@ p, li { white-space: pre-wrap; }
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab">
+      <widget class="QWidget" name="tab_2">
        <attribute name="title">
         <string>Belge Ekle</string>
        </attribute>
@@ -1685,7 +1685,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="gun_line_2">
+                   <widget class="QLineEdit" name="belge_tarih_line">
                     <property name="minimumSize">
                      <size>
                       <width>135</width>
@@ -1768,7 +1768,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="projeadi_line_2">
+                   <widget class="QLineEdit" name="belge_projeadi_line">
                     <property name="minimumSize">
                      <size>
                       <width>255</width>
@@ -1844,7 +1844,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="projeadi_line_3">
+                   <widget class="QLineEdit" name="belge_projeyeri_line">
                     <property name="minimumSize">
                      <size>
                       <width>255</width>
@@ -2062,7 +2062,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="projeadi_line_6">
+                   <widget class="QLineEdit" name="urun1_kod_line">
                     <property name="minimumSize">
                      <size>
                       <width>80</width>
@@ -2096,7 +2096,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="projeadi_line_5">
+                   <widget class="QLineEdit" name="urun1_adet_line">
                     <property name="minimumSize">
                      <size>
                       <width>80</width>
@@ -2130,7 +2130,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="projeadi_line_4">
+                   <widget class="QLineEdit" name="urun1_ozl_line">
                     <property name="minimumSize">
                      <size>
                       <width>80</width>
@@ -2206,7 +2206,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="projeadi_line_9">
+                   <widget class="QLineEdit" name="urun2_kod_line">
                     <property name="minimumSize">
                      <size>
                       <width>80</width>
@@ -2240,7 +2240,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="projeadi_line_8">
+                   <widget class="QLineEdit" name="urun2_adet_line">
                     <property name="minimumSize">
                      <size>
                       <width>80</width>
@@ -2274,7 +2274,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="projeadi_line_7">
+                   <widget class="QLineEdit" name="urun2_ozl_line">
                     <property name="minimumSize">
                      <size>
                       <width>80</width>
@@ -2350,7 +2350,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="projeadi_line_11">
+                   <widget class="QLineEdit" name="urun3_kod_line">
                     <property name="minimumSize">
                      <size>
                       <width>80</width>
@@ -2384,7 +2384,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="projeadi_line_10">
+                   <widget class="QLineEdit" name="urun3_adet_line">
                     <property name="minimumSize">
                      <size>
                       <width>80</width>
@@ -2418,7 +2418,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="projeadi_line_13">
+                   <widget class="QLineEdit" name="urun3_ozl_line">
                     <property name="minimumSize">
                      <size>
                       <width>80</width>
@@ -2494,7 +2494,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="projeadi_line_14">
+                   <widget class="QLineEdit" name="urun4_kod_line">
                     <property name="minimumSize">
                      <size>
                       <width>80</width>
@@ -2528,7 +2528,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="projeadi_line_12">
+                   <widget class="QLineEdit" name="urun4_adet_line">
                     <property name="minimumSize">
                      <size>
                       <width>80</width>
@@ -2562,7 +2562,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="projeadi_line_15">
+                   <widget class="QLineEdit" name="urun4_ozl_line">
                     <property name="minimumSize">
                      <size>
                       <width>80</width>
@@ -2638,7 +2638,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="projeadi_line_18">
+                   <widget class="QLineEdit" name="urun5_kod_line">
                     <property name="minimumSize">
                      <size>
                       <width>80</width>
@@ -2672,7 +2672,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="projeadi_line_17">
+                   <widget class="QLineEdit" name="urun5_adet_line">
                     <property name="minimumSize">
                      <size>
                       <width>80</width>
@@ -2706,7 +2706,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="projeadi_line_16">
+                   <widget class="QLineEdit" name="urun5_ozl_line">
                     <property name="minimumSize">
                      <size>
                       <width>80</width>
@@ -2782,7 +2782,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="projeadi_line_21">
+                   <widget class="QLineEdit" name="urun6_kod_line">
                     <property name="minimumSize">
                      <size>
                       <width>80</width>
@@ -2816,7 +2816,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="projeadi_line_20">
+                   <widget class="QLineEdit" name="urun6_adet_line">
                     <property name="minimumSize">
                      <size>
                       <width>80</width>
@@ -2850,7 +2850,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="projeadi_line_19">
+                   <widget class="QLineEdit" name="urun6_ozl_line">
                     <property name="minimumSize">
                      <size>
                       <width>80</width>
@@ -2926,7 +2926,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="projeadi_line_22">
+                   <widget class="QLineEdit" name="toplamteklif_line">
                     <property name="minimumSize">
                      <size>
                       <width>255</width>
@@ -2997,7 +2997,7 @@ p, li { white-space: pre-wrap; }
                    </spacer>
                   </item>
                   <item>
-                   <widget class="QRadioButton" name="radioButton_3">
+                   <widget class="QRadioButton" name="tanim_radio">
                     <property name="font">
                      <font>
                       <weight>75</weight>
@@ -3010,7 +3010,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QRadioButton" name="radioButton_2">
+                   <widget class="QRadioButton" name="kesif_radio">
                     <property name="minimumSize">
                      <size>
                       <width>105</width>
@@ -3029,7 +3029,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QRadioButton" name="radioButton">
+                   <widget class="QRadioButton" name="teklif_radio">
                     <property name="font">
                      <font>
                       <weight>75</weight>
@@ -3105,7 +3105,7 @@ p, li { white-space: pre-wrap; }
                    </spacer>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="pushButton">
+                   <widget class="QPushButton" name="pushButton_kaydet">
                     <property name="minimumSize">
                      <size>
                       <width>130</width>
@@ -3173,7 +3173,7 @@ p, li { white-space: pre-wrap; }
                  </widget>
                 </item>
                 <item>
-                 <widget class="QTextEdit" name="textEdit">
+                 <widget class="QTextEdit" name="notlar_textEdit">
                   <property name="minimumSize">
                    <size>
                     <width>400</width>
@@ -3535,269 +3535,9 @@ p, li { white-space: pre-wrap; }
                 <property name="cornerButtonEnabled">
                  <bool>false</bool>
                 </property>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
-                <row>
-                 <property name="text">
-                  <string>New Row</string>
-                 </property>
-                </row>
                 <column>
                  <property name="text">
-                  <string>New Column</string>
+                  <string>Tarih</string>
                  </property>
                  <property name="font">
                   <font>
@@ -3808,12 +3548,12 @@ p, li { white-space: pre-wrap; }
                 </column>
                 <column>
                  <property name="text">
-                  <string>New Column</string>
+                  <string>Proje Yeri</string>
                  </property>
                 </column>
                 <column>
                  <property name="text">
-                  <string>New Column</string>
+                  <string>Proje Adı</string>
                  </property>
                 </column>
                </widget>
@@ -3894,7 +3634,7 @@ p, li { white-space: pre-wrap; }
                  <x>0</x>
                  <y>0</y>
                  <width>734</width>
-                 <height>994</height>
+                 <height>1148</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -3903,7 +3643,7 @@ p, li { white-space: pre-wrap; }
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_72">
                     <item>
-                     <widget class="QLabel" name="label_3">
+                     <widget class="QLabel" name="proje_adi_label">
                       <property name="font">
                        <font>
                         <weight>75</weight>
@@ -3922,7 +3662,7 @@ p, li { white-space: pre-wrap; }
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLabel" name="label_2">
+                     <widget class="QLabel" name="proje_yeri_label">
                       <property name="font">
                        <font>
                         <weight>75</weight>
@@ -3941,7 +3681,7 @@ p, li { white-space: pre-wrap; }
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLabel" name="label_4">
+                     <widget class="QLabel" name="revizyon_label">
                       <property name="font">
                        <font>
                         <weight>75</weight>
@@ -3960,7 +3700,7 @@ p, li { white-space: pre-wrap; }
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLabel" name="label_5">
+                     <widget class="QLabel" name="tarih_label">
                       <property name="font">
                        <font>
                         <weight>75</weight>
@@ -3983,7 +3723,7 @@ p, li { white-space: pre-wrap; }
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_71">
                     <item>
-                     <widget class="QLabel" name="label_8">
+                     <widget class="QLabel" name="serinumara_label">
                       <property name="font">
                        <font>
                         <weight>75</weight>
@@ -4006,7 +3746,7 @@ p, li { white-space: pre-wrap; }
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_10">
                     <item>
-                     <widget class="QLabel" name="label_6">
+                     <widget class="QLabel" name="dosyayolu_label">
                       <property name="font">
                        <font>
                         <weight>75</weight>
@@ -4046,9 +3786,32 @@ p, li { white-space: pre-wrap; }
                    </layout>
                   </item>
                   <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_73">
+                    <item>
+                     <widget class="QLabel" name="duzenleyen_isim_label">
+                      <property name="font">
+                       <font>
+                        <weight>75</weight>
+                        <bold>true</bold>
+                       </font>
+                      </property>
+                      <property name="cursor">
+                       <cursorShape>IBeamCursor</cursorShape>
+                      </property>
+                      <property name="text">
+                       <string>Düzenleyen</string>
+                      </property>
+                      <property name="textInteractionFlags">
+                       <set>Qt::TextSelectableByMouse</set>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_49">
                     <item>
-                     <widget class="QPushButton" name="pushButton_6">
+                     <widget class="QPushButton" name="onaylandi_button">
                       <property name="font">
                        <font>
                         <weight>75</weight>
@@ -4073,7 +3836,7 @@ p, li { white-space: pre-wrap; }
                      </widget>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="pushButton_8">
+                     <widget class="QPushButton" name="hatirlat_button">
                       <property name="font">
                        <font>
                         <weight>75</weight>
@@ -4121,7 +3884,7 @@ p, li { white-space: pre-wrap; }
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLabel" name="label_105">
+                     <widget class="QLabel" name="notes_label">
                       <property name="minimumSize">
                        <size>
                         <width>700</width>
@@ -4198,7 +3961,29 @@ p, li { white-space: pre-wrap; }
                     <item>
                      <layout class="QHBoxLayout" name="horizontalLayout_85">
                       <item>
-                       <widget class="QLabel" name="label_63">
+                       <widget class="QLabel" name="urun_kod_label_0">
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
+                        <property name="cursor">
+                         <cursorShape>IBeamCursor</cursorShape>
+                        </property>
+                        <property name="text">
+                         <string>Urun_1 Kodu</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="urun_adet_label_0">
                         <property name="font">
                          <font>
                           <weight>75</weight>
@@ -4220,29 +4005,7 @@ p, li { white-space: pre-wrap; }
                        </widget>
                       </item>
                       <item>
-                       <widget class="QLabel" name="label_106">
-                        <property name="font">
-                         <font>
-                          <weight>75</weight>
-                          <bold>true</bold>
-                         </font>
-                        </property>
-                        <property name="cursor">
-                         <cursorShape>IBeamCursor</cursorShape>
-                        </property>
-                        <property name="text">
-                         <string>TextLabel</string>
-                        </property>
-                        <property name="alignment">
-                         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                        </property>
-                        <property name="textInteractionFlags">
-                         <set>Qt::TextSelectableByMouse</set>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QLabel" name="label_144">
+                       <widget class="QLabel" name="urun_ozl_label_0">
                         <property name="font">
                          <font>
                           <weight>75</weight>
@@ -4270,7 +4033,7 @@ p, li { white-space: pre-wrap; }
                       <item>
                        <layout class="QHBoxLayout" name="horizontalLayout_80">
                         <item>
-                         <widget class="QLabel" name="label_133">
+                         <widget class="QLabel" name="urun_alt_isim_1_0">
                           <property name="font">
                            <font>
                             <weight>75</weight>
@@ -4289,7 +4052,7 @@ p, li { white-space: pre-wrap; }
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_134">
+                         <widget class="QLabel" name="urun_alt_adet_1_0">
                           <property name="font">
                            <font>
                             <weight>75</weight>
@@ -4308,7 +4071,7 @@ p, li { white-space: pre-wrap; }
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_135">
+                         <widget class="QLabel" name="urun_alt_fiyat_1_0">
                           <property name="font">
                            <font>
                             <weight>75</weight>
@@ -4331,7 +4094,7 @@ p, li { white-space: pre-wrap; }
                       <item>
                        <layout class="QHBoxLayout" name="horizontalLayout_81">
                         <item>
-                         <widget class="QLabel" name="label_9">
+                         <widget class="QLabel" name="urun_alt_isim_2_0">
                           <property name="font">
                            <font>
                             <weight>75</weight>
@@ -4350,7 +4113,7 @@ p, li { white-space: pre-wrap; }
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_10">
+                         <widget class="QLabel" name="urun_alt_adet_2_0">
                           <property name="font">
                            <font>
                             <weight>75</weight>
@@ -4369,7 +4132,7 @@ p, li { white-space: pre-wrap; }
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_11">
+                         <widget class="QLabel" name="urun_alt_fiyat_2_0">
                           <property name="font">
                            <font>
                             <weight>75</weight>
@@ -4392,7 +4155,7 @@ p, li { white-space: pre-wrap; }
                       <item>
                        <layout class="QHBoxLayout" name="horizontalLayout_82">
                         <item>
-                         <widget class="QLabel" name="label_136">
+                         <widget class="QLabel" name="urun_alt_isim_3_0">
                           <property name="font">
                            <font>
                             <weight>75</weight>
@@ -4411,7 +4174,7 @@ p, li { white-space: pre-wrap; }
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_137">
+                         <widget class="QLabel" name="urun_alt_adet_3_0">
                           <property name="font">
                            <font>
                             <weight>75</weight>
@@ -4430,7 +4193,7 @@ p, li { white-space: pre-wrap; }
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_138">
+                         <widget class="QLabel" name="urun_alt_fiyat_3_0">
                           <property name="font">
                            <font>
                             <weight>75</weight>
@@ -4453,7 +4216,7 @@ p, li { white-space: pre-wrap; }
                       <item>
                        <layout class="QHBoxLayout" name="horizontalLayout_83">
                         <item>
-                         <widget class="QLabel" name="label_12">
+                         <widget class="QLabel" name="urun_alt_isim_4_0">
                           <property name="font">
                            <font>
                             <weight>75</weight>
@@ -4472,7 +4235,7 @@ p, li { white-space: pre-wrap; }
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_139">
+                         <widget class="QLabel" name="urun_alt_adet_4_0">
                           <property name="font">
                            <font>
                             <weight>75</weight>
@@ -4491,7 +4254,7 @@ p, li { white-space: pre-wrap; }
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_140">
+                         <widget class="QLabel" name="urun_alt_fiyat_4_0">
                           <property name="font">
                            <font>
                             <weight>75</weight>
@@ -4514,7 +4277,7 @@ p, li { white-space: pre-wrap; }
                       <item>
                        <layout class="QHBoxLayout" name="horizontalLayout_84">
                         <item>
-                         <widget class="QLabel" name="label_141">
+                         <widget class="QLabel" name="urun_alt_isim_5_0">
                           <property name="font">
                            <font>
                             <weight>75</weight>
@@ -4533,7 +4296,7 @@ p, li { white-space: pre-wrap; }
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_142">
+                         <widget class="QLabel" name="urun_alt_adet_5_0">
                           <property name="font">
                            <font>
                             <weight>75</weight>
@@ -4552,7 +4315,7 @@ p, li { white-space: pre-wrap; }
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_143">
+                         <widget class="QLabel" name="urun_alt_fiyat_5_0">
                           <property name="font">
                            <font>
                             <weight>75</weight>
@@ -4577,394 +4340,33 @@ p, li { white-space: pre-wrap; }
                    </layout>
                   </item>
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_73">
-                    <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_86">
-                      <item>
-                       <widget class="QLabel" name="label_132">
-                        <property name="font">
-                         <font>
-                          <weight>75</weight>
-                          <bold>true</bold>
-                         </font>
-                        </property>
-                        <property name="cursor">
-                         <cursorShape>IBeamCursor</cursorShape>
-                        </property>
-                        <property name="text">
-                         <string>TextLabel</string>
-                        </property>
-                        <property name="alignment">
-                         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                        </property>
-                        <property name="textInteractionFlags">
-                         <set>Qt::TextSelectableByMouse</set>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QLabel" name="label_145">
-                        <property name="font">
-                         <font>
-                          <weight>75</weight>
-                          <bold>true</bold>
-                         </font>
-                        </property>
-                        <property name="cursor">
-                         <cursorShape>IBeamCursor</cursorShape>
-                        </property>
-                        <property name="text">
-                         <string>TextLabel</string>
-                        </property>
-                        <property name="alignment">
-                         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                        </property>
-                        <property name="textInteractionFlags">
-                         <set>Qt::TextSelectableByMouse</set>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QLabel" name="label_146">
-                        <property name="font">
-                         <font>
-                          <weight>75</weight>
-                          <bold>true</bold>
-                         </font>
-                        </property>
-                        <property name="cursor">
-                         <cursorShape>IBeamCursor</cursorShape>
-                        </property>
-                        <property name="text">
-                         <string>TextLabel</string>
-                        </property>
-                        <property name="alignment">
-                         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                        </property>
-                        <property name="textInteractionFlags">
-                         <set>Qt::TextSelectableByMouse</set>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
-                    </item>
-                    <item>
-                     <layout class="QVBoxLayout" name="verticalLayout_24">
-                      <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_74">
-                        <item>
-                         <widget class="QLabel" name="label_117">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="cursor">
-                           <cursorShape>IBeamCursor</cursorShape>
-                          </property>
-                          <property name="text">
-                           <string>TextLabel</string>
-                          </property>
-                          <property name="textInteractionFlags">
-                           <set>Qt::TextSelectableByMouse</set>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_118">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="cursor">
-                           <cursorShape>IBeamCursor</cursorShape>
-                          </property>
-                          <property name="text">
-                           <string>TextLabel</string>
-                          </property>
-                          <property name="textInteractionFlags">
-                           <set>Qt::TextSelectableByMouse</set>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_119">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="cursor">
-                           <cursorShape>IBeamCursor</cursorShape>
-                          </property>
-                          <property name="text">
-                           <string>TextLabel</string>
-                          </property>
-                          <property name="textInteractionFlags">
-                           <set>Qt::TextSelectableByMouse</set>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </item>
-                      <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_75">
-                        <item>
-                         <widget class="QLabel" name="label_120">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="cursor">
-                           <cursorShape>IBeamCursor</cursorShape>
-                          </property>
-                          <property name="text">
-                           <string>TextLabel</string>
-                          </property>
-                          <property name="textInteractionFlags">
-                           <set>Qt::TextSelectableByMouse</set>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_121">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="cursor">
-                           <cursorShape>IBeamCursor</cursorShape>
-                          </property>
-                          <property name="text">
-                           <string>TextLabel</string>
-                          </property>
-                          <property name="textInteractionFlags">
-                           <set>Qt::TextSelectableByMouse</set>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_122">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="cursor">
-                           <cursorShape>IBeamCursor</cursorShape>
-                          </property>
-                          <property name="text">
-                           <string>TextLabel</string>
-                          </property>
-                          <property name="textInteractionFlags">
-                           <set>Qt::TextSelectableByMouse</set>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </item>
-                      <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_76">
-                        <item>
-                         <widget class="QLabel" name="label_123">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="cursor">
-                           <cursorShape>IBeamCursor</cursorShape>
-                          </property>
-                          <property name="text">
-                           <string>TextLabel</string>
-                          </property>
-                          <property name="textInteractionFlags">
-                           <set>Qt::TextSelectableByMouse</set>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_124">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="cursor">
-                           <cursorShape>IBeamCursor</cursorShape>
-                          </property>
-                          <property name="text">
-                           <string>TextLabel</string>
-                          </property>
-                          <property name="textInteractionFlags">
-                           <set>Qt::TextSelectableByMouse</set>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_125">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="cursor">
-                           <cursorShape>IBeamCursor</cursorShape>
-                          </property>
-                          <property name="text">
-                           <string>TextLabel</string>
-                          </property>
-                          <property name="textInteractionFlags">
-                           <set>Qt::TextSelectableByMouse</set>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </item>
-                      <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_77">
-                        <item>
-                         <widget class="QLabel" name="label_126">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="cursor">
-                           <cursorShape>IBeamCursor</cursorShape>
-                          </property>
-                          <property name="text">
-                           <string>TextLabel</string>
-                          </property>
-                          <property name="textInteractionFlags">
-                           <set>Qt::TextSelectableByMouse</set>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_127">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="cursor">
-                           <cursorShape>IBeamCursor</cursorShape>
-                          </property>
-                          <property name="text">
-                           <string>TextLabel</string>
-                          </property>
-                          <property name="textInteractionFlags">
-                           <set>Qt::TextSelectableByMouse</set>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_128">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="cursor">
-                           <cursorShape>IBeamCursor</cursorShape>
-                          </property>
-                          <property name="text">
-                           <string>TextLabel</string>
-                          </property>
-                          <property name="textInteractionFlags">
-                           <set>Qt::TextSelectableByMouse</set>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </item>
-                      <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_78">
-                        <item>
-                         <widget class="QLabel" name="label_129">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="cursor">
-                           <cursorShape>IBeamCursor</cursorShape>
-                          </property>
-                          <property name="text">
-                           <string>TextLabel</string>
-                          </property>
-                          <property name="textInteractionFlags">
-                           <set>Qt::TextSelectableByMouse</set>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_130">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="cursor">
-                           <cursorShape>IBeamCursor</cursorShape>
-                          </property>
-                          <property name="text">
-                           <string>TextLabel</string>
-                          </property>
-                          <property name="textInteractionFlags">
-                           <set>Qt::TextSelectableByMouse</set>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_131">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="cursor">
-                           <cursorShape>IBeamCursor</cursorShape>
-                          </property>
-                          <property name="text">
-                           <string>TextLabel</string>
-                          </property>
-                          <property name="textInteractionFlags">
-                           <set>Qt::TextSelectableByMouse</set>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </item>
-                     </layout>
-                    </item>
-                   </layout>
-                  </item>
-                  <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_56">
+                   <layout class="QHBoxLayout" name="horizontalLayout_86">
                     <item>
                      <layout class="QHBoxLayout" name="horizontalLayout_87">
                       <item>
-                       <widget class="QLabel" name="label_147">
+                       <widget class="QLabel" name="urun_kod_label_1">
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
+                        <property name="cursor">
+                         <cursorShape>IBeamCursor</cursorShape>
+                        </property>
+                        <property name="text">
+                         <string>Urun_1 Kodu</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="urun_adet_label_1">
                         <property name="font">
                          <font>
                           <weight>75</weight>
@@ -4986,29 +4388,7 @@ p, li { white-space: pre-wrap; }
                        </widget>
                       </item>
                       <item>
-                       <widget class="QLabel" name="label_148">
-                        <property name="font">
-                         <font>
-                          <weight>75</weight>
-                          <bold>true</bold>
-                         </font>
-                        </property>
-                        <property name="cursor">
-                         <cursorShape>IBeamCursor</cursorShape>
-                        </property>
-                        <property name="text">
-                         <string>TextLabel</string>
-                        </property>
-                        <property name="alignment">
-                         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                        </property>
-                        <property name="textInteractionFlags">
-                         <set>Qt::TextSelectableByMouse</set>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QLabel" name="label_149">
+                       <widget class="QLabel" name="urun_ozl_label_1">
                         <property name="font">
                          <font>
                           <weight>75</weight>
@@ -5032,11 +4412,11 @@ p, li { white-space: pre-wrap; }
                      </layout>
                     </item>
                     <item>
-                     <layout class="QVBoxLayout" name="verticalLayout_23">
+                     <layout class="QVBoxLayout" name="verticalLayout_28">
                       <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_57">
+                       <layout class="QHBoxLayout" name="horizontalLayout_88">
                         <item>
-                         <widget class="QLabel" name="label_97">
+                         <widget class="QLabel" name="urun_alt_isim_1_1">
                           <property name="font">
                            <font>
                             <weight>75</weight>
@@ -5055,7 +4435,7 @@ p, li { white-space: pre-wrap; }
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_98">
+                         <widget class="QLabel" name="urun_alt_adet_1_1">
                           <property name="font">
                            <font>
                             <weight>75</weight>
@@ -5074,7 +4454,7 @@ p, li { white-space: pre-wrap; }
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_99">
+                         <widget class="QLabel" name="urun_alt_fiyat_1_1">
                           <property name="font">
                            <font>
                             <weight>75</weight>
@@ -5095,9 +4475,9 @@ p, li { white-space: pre-wrap; }
                        </layout>
                       </item>
                       <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_58">
+                       <layout class="QHBoxLayout" name="horizontalLayout_89">
                         <item>
-                         <widget class="QLabel" name="label_100">
+                         <widget class="QLabel" name="urun_alt_isim_2_1">
                           <property name="font">
                            <font>
                             <weight>75</weight>
@@ -5116,7 +4496,7 @@ p, li { white-space: pre-wrap; }
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_101">
+                         <widget class="QLabel" name="urun_alt_adet_2_1">
                           <property name="font">
                            <font>
                             <weight>75</weight>
@@ -5135,7 +4515,7 @@ p, li { white-space: pre-wrap; }
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_102">
+                         <widget class="QLabel" name="urun_alt_fiyat_2_1">
                           <property name="font">
                            <font>
                             <weight>75</weight>
@@ -5156,129 +4536,183 @@ p, li { white-space: pre-wrap; }
                        </layout>
                       </item>
                       <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_59">
+                       <layout class="QHBoxLayout" name="horizontalLayout_90">
                         <item>
-                         <widget class="QLabel" name="label_103">
+                         <widget class="QLabel" name="urun_alt_isim_3_1">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_108">
+                         <widget class="QLabel" name="urun_alt_adet_3_1">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_109">
+                         <widget class="QLabel" name="urun_alt_fiyat_3_1">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
-                          <property name="text">
-                           <string>TextLabel</string>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </item>
-                      <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_60">
-                        <item>
-                         <widget class="QLabel" name="label_110">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
                           </property>
                           <property name="text">
                            <string>TextLabel</string>
                           </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_111">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="text">
-                           <string>TextLabel</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_112">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="text">
-                           <string>TextLabel</string>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                        </layout>
                       </item>
                       <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_70">
+                       <layout class="QHBoxLayout" name="horizontalLayout_91">
                         <item>
-                         <widget class="QLabel" name="label_113">
+                         <widget class="QLabel" name="urun_alt_isim_4_1">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_114">
+                         <widget class="QLabel" name="urun_alt_adet_4_1">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_115">
+                         <widget class="QLabel" name="urun_alt_fiyat_4_1">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_92">
+                        <item>
+                         <widget class="QLabel" name="urun_alt_isim_5_1">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_adet_5_1">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_fiyat_5_1">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
@@ -5289,271 +4723,379 @@ p, li { white-space: pre-wrap; }
                    </layout>
                   </item>
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_50">
+                   <layout class="QHBoxLayout" name="horizontalLayout_93">
                     <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_88">
+                     <layout class="QHBoxLayout" name="horizontalLayout_94">
                       <item>
-                       <widget class="QLabel" name="label_150">
+                       <widget class="QLabel" name="urun_kod_label_2">
                         <property name="font">
                          <font>
                           <weight>75</weight>
                           <bold>true</bold>
                          </font>
                         </property>
+                        <property name="cursor">
+                         <cursorShape>IBeamCursor</cursorShape>
+                        </property>
                         <property name="text">
-                         <string>TextLabel</string>
+                         <string>Urun_1 Kodu</string>
                         </property>
                         <property name="alignment">
                          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
                         </property>
                        </widget>
                       </item>
                       <item>
-                       <widget class="QLabel" name="label_151">
+                       <widget class="QLabel" name="urun_adet_label_2">
                         <property name="font">
                          <font>
                           <weight>75</weight>
                           <bold>true</bold>
                          </font>
                         </property>
+                        <property name="cursor">
+                         <cursorShape>IBeamCursor</cursorShape>
+                        </property>
                         <property name="text">
                          <string>TextLabel</string>
                         </property>
                         <property name="alignment">
                          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
                         </property>
                        </widget>
                       </item>
                       <item>
-                       <widget class="QLabel" name="label_152">
+                       <widget class="QLabel" name="urun_ozl_label_2">
                         <property name="font">
                          <font>
                           <weight>75</weight>
                           <bold>true</bold>
                          </font>
                         </property>
+                        <property name="cursor">
+                         <cursorShape>IBeamCursor</cursorShape>
+                        </property>
                         <property name="text">
                          <string>TextLabel</string>
                         </property>
                         <property name="alignment">
                          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
                         </property>
                        </widget>
                       </item>
                      </layout>
                     </item>
                     <item>
-                     <layout class="QVBoxLayout" name="verticalLayout_22">
+                     <layout class="QVBoxLayout" name="verticalLayout_29">
                       <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_51">
+                       <layout class="QHBoxLayout" name="horizontalLayout_95">
                         <item>
-                         <widget class="QLabel" name="label_65">
+                         <widget class="QLabel" name="urun_alt_isim_1_2">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_66">
+                         <widget class="QLabel" name="urun_alt_adet_1_2">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_67">
+                         <widget class="QLabel" name="urun_alt_fiyat_1_2">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                        </layout>
                       </item>
                       <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_52">
+                       <layout class="QHBoxLayout" name="horizontalLayout_96">
                         <item>
-                         <widget class="QLabel" name="label_68">
+                         <widget class="QLabel" name="urun_alt_isim_2_2">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_69">
+                         <widget class="QLabel" name="urun_alt_adet_2_2">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_70">
+                         <widget class="QLabel" name="urun_alt_fiyat_2_2">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
-                          <property name="text">
-                           <string>TextLabel</string>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </item>
-                      <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_53">
-                        <item>
-                         <widget class="QLabel" name="label_71">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
                           </property>
                           <property name="text">
                            <string>TextLabel</string>
                           </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_88">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="text">
-                           <string>TextLabel</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_89">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="text">
-                           <string>TextLabel</string>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                        </layout>
                       </item>
                       <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_54">
+                       <layout class="QHBoxLayout" name="horizontalLayout_97">
                         <item>
-                         <widget class="QLabel" name="label_90">
+                         <widget class="QLabel" name="urun_alt_isim_3_2">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_91">
+                         <widget class="QLabel" name="urun_alt_adet_3_2">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_92">
+                         <widget class="QLabel" name="urun_alt_fiyat_3_2">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                        </layout>
                       </item>
                       <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_55">
+                       <layout class="QHBoxLayout" name="horizontalLayout_98">
                         <item>
-                         <widget class="QLabel" name="label_93">
+                         <widget class="QLabel" name="urun_alt_isim_4_2">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_94">
+                         <widget class="QLabel" name="urun_alt_adet_4_2">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_95">
+                         <widget class="QLabel" name="urun_alt_fiyat_4_2">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_99">
+                        <item>
+                         <widget class="QLabel" name="urun_alt_isim_5_2">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_adet_5_2">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_fiyat_5_2">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
@@ -5564,271 +5106,1145 @@ p, li { white-space: pre-wrap; }
                    </layout>
                   </item>
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_43">
+                   <layout class="QHBoxLayout" name="horizontalLayout_100">
                     <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_89">
+                     <layout class="QHBoxLayout" name="horizontalLayout_101">
                       <item>
-                       <widget class="QLabel" name="label_153">
+                       <widget class="QLabel" name="urun_kod_label_3">
                         <property name="font">
                          <font>
                           <weight>75</weight>
                           <bold>true</bold>
                          </font>
                         </property>
+                        <property name="cursor">
+                         <cursorShape>IBeamCursor</cursorShape>
+                        </property>
                         <property name="text">
-                         <string>TextLabel</string>
+                         <string>Urun_1 Kodu</string>
                         </property>
                         <property name="alignment">
                          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
                         </property>
                        </widget>
                       </item>
                       <item>
-                       <widget class="QLabel" name="label_154">
+                       <widget class="QLabel" name="urun_adet_label_3">
                         <property name="font">
                          <font>
                           <weight>75</weight>
                           <bold>true</bold>
                          </font>
                         </property>
+                        <property name="cursor">
+                         <cursorShape>IBeamCursor</cursorShape>
+                        </property>
                         <property name="text">
                          <string>TextLabel</string>
                         </property>
                         <property name="alignment">
                          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
                         </property>
                        </widget>
                       </item>
                       <item>
-                       <widget class="QLabel" name="label_155">
+                       <widget class="QLabel" name="urun_ozl_label_3">
                         <property name="font">
                          <font>
                           <weight>75</weight>
                           <bold>true</bold>
                          </font>
                         </property>
+                        <property name="cursor">
+                         <cursorShape>IBeamCursor</cursorShape>
+                        </property>
                         <property name="text">
                          <string>TextLabel</string>
                         </property>
                         <property name="alignment">
                          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
                         </property>
                        </widget>
                       </item>
                      </layout>
                     </item>
                     <item>
-                     <layout class="QVBoxLayout" name="verticalLayout_19">
+                     <layout class="QVBoxLayout" name="verticalLayout_30">
                       <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_44">
+                       <layout class="QHBoxLayout" name="horizontalLayout_102">
                         <item>
-                         <widget class="QLabel" name="label_73">
+                         <widget class="QLabel" name="urun_alt_isim_1_3">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_74">
+                         <widget class="QLabel" name="urun_alt_adet_1_3">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_75">
+                         <widget class="QLabel" name="urun_alt_fiyat_1_3">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                        </layout>
                       </item>
                       <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_45">
+                       <layout class="QHBoxLayout" name="horizontalLayout_103">
                         <item>
-                         <widget class="QLabel" name="label_76">
+                         <widget class="QLabel" name="urun_alt_isim_2_3">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_77">
+                         <widget class="QLabel" name="urun_alt_adet_2_3">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_78">
+                         <widget class="QLabel" name="urun_alt_fiyat_2_3">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
-                          <property name="text">
-                           <string>TextLabel</string>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </item>
-                      <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_46">
-                        <item>
-                         <widget class="QLabel" name="label_79">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
                           </property>
                           <property name="text">
                            <string>TextLabel</string>
                           </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_80">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="text">
-                           <string>TextLabel</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_81">
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="text">
-                           <string>TextLabel</string>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                        </layout>
                       </item>
                       <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_47">
+                       <layout class="QHBoxLayout" name="horizontalLayout_104">
                         <item>
-                         <widget class="QLabel" name="label_82">
+                         <widget class="QLabel" name="urun_alt_isim_3_3">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_83">
+                         <widget class="QLabel" name="urun_alt_adet_3_3">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_84">
+                         <widget class="QLabel" name="urun_alt_fiyat_3_3">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                        </layout>
                       </item>
                       <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_48">
+                       <layout class="QHBoxLayout" name="horizontalLayout_105">
                         <item>
-                         <widget class="QLabel" name="label_85">
+                         <widget class="QLabel" name="urun_alt_isim_4_3">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_86">
+                         <widget class="QLabel" name="urun_alt_adet_4_3">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_87">
+                         <widget class="QLabel" name="urun_alt_fiyat_4_3">
                           <property name="font">
                            <font>
                             <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
                           <property name="text">
                            <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_106">
+                        <item>
+                         <widget class="QLabel" name="urun_alt_isim_5_3">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_adet_5_3">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_fiyat_5_3">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_107">
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_108">
+                      <item>
+                       <widget class="QLabel" name="urun_kod_label_4">
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
+                        <property name="cursor">
+                         <cursorShape>IBeamCursor</cursorShape>
+                        </property>
+                        <property name="text">
+                         <string>Urun_1 Kodu</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="urun_adet_label_4">
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
+                        <property name="cursor">
+                         <cursorShape>IBeamCursor</cursorShape>
+                        </property>
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="urun_ozl_label_4">
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
+                        <property name="cursor">
+                         <cursorShape>IBeamCursor</cursorShape>
+                        </property>
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_31">
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_109">
+                        <item>
+                         <widget class="QLabel" name="urun_alt_isim_1_4">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_adet_1_4">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_fiyat_1_4">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_110">
+                        <item>
+                         <widget class="QLabel" name="urun_alt_isim_2_4">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_adet_2_4">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_fiyat_2_4">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_111">
+                        <item>
+                         <widget class="QLabel" name="urun_alt_isim_3_4">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_adet_3_4">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_fiyat_3_4">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_112">
+                        <item>
+                         <widget class="QLabel" name="urun_alt_isim_4_4">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_adet_4_4">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_fiyat_4_4">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_113">
+                        <item>
+                         <widget class="QLabel" name="urun_alt_isim_5_4">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_adet_5_4">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_fiyat_5_4">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_114">
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_115">
+                      <item>
+                       <widget class="QLabel" name="urun_kod_label_5">
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
+                        <property name="cursor">
+                         <cursorShape>IBeamCursor</cursorShape>
+                        </property>
+                        <property name="text">
+                         <string>Urun_1 Kodu</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="urun_adet_label_5">
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
+                        <property name="cursor">
+                         <cursorShape>IBeamCursor</cursorShape>
+                        </property>
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="urun_ozl_label_5">
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
+                        <property name="cursor">
+                         <cursorShape>IBeamCursor</cursorShape>
+                        </property>
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_33">
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_116">
+                        <item>
+                         <widget class="QLabel" name="urun_alt_isim_1_5">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_adet_1_5">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_fiyat_1_5">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_117">
+                        <item>
+                         <widget class="QLabel" name="urun_alt_isim_2_5">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_adet_2_5">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_fiyat_2_5">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_118">
+                        <item>
+                         <widget class="QLabel" name="urun_alt_isim_3_5">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_adet_3_5">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_fiyat_3_5">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_119">
+                        <item>
+                         <widget class="QLabel" name="urun_alt_isim_4_5">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_adet_4_5">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_fiyat_4_5">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_120">
+                        <item>
+                         <widget class="QLabel" name="urun_alt_isim_5_5">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_adet_5_5">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="urun_alt_fiyat_5_5">
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="cursor">
+                           <cursorShape>IBeamCursor</cursorShape>
+                          </property>
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                          <property name="textInteractionFlags">
+                           <set>Qt::TextSelectableByMouse</set>
                           </property>
                          </widget>
                         </item>
@@ -5840,58 +6256,6 @@ p, li { white-space: pre-wrap; }
                   </item>
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_11">
-                    <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_90">
-                      <item>
-                       <widget class="QLabel" name="label_156">
-                        <property name="font">
-                         <font>
-                          <weight>75</weight>
-                          <bold>true</bold>
-                         </font>
-                        </property>
-                        <property name="text">
-                         <string>TextLabel</string>
-                        </property>
-                        <property name="alignment">
-                         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QLabel" name="label_157">
-                        <property name="font">
-                         <font>
-                          <weight>75</weight>
-                          <bold>true</bold>
-                         </font>
-                        </property>
-                        <property name="text">
-                         <string>TextLabel</string>
-                        </property>
-                        <property name="alignment">
-                         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QLabel" name="label_158">
-                        <property name="font">
-                         <font>
-                          <weight>75</weight>
-                          <bold>true</bold>
-                         </font>
-                        </property>
-                        <property name="text">
-                         <string>TextLabel</string>
-                        </property>
-                        <property name="alignment">
-                         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
-                    </item>
                     <item>
                      <layout class="QVBoxLayout" name="verticalLayout_27">
                       <item>

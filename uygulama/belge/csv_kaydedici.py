@@ -523,3 +523,136 @@ class CSVKaydedici:
         except Exception as e:
             log.error(f"HATA: CSV kayıt okuma başarısız: {e}")
             return []
+    
+    def tab2_verilerini_kaydet(
+        self,
+        tab2_verileri: dict[str, Any],
+        logger: Optional[logging.Logger] = None
+    ) -> bool:
+        """
+        Tab_2'den gelen verileri CSV'ye kaydeder.
+        
+        Tab_2 Veri Formatı:
+        ------------------
+        - belge_tarih_line: Belge tarihi
+        - belge_projeadi_line: Proje adı
+        - belge_projeyeri_line: Proje yeri
+        - urun1_kod_line, urun1_adet_line, urun1_ozl_line: Ürün 1 bilgileri
+        - urun2_kod_line, urun2_adet_line, urun2_ozl_line: Ürün 2 bilgileri
+        - ... (6 ürüne kadar)
+        - toplamteklif_line: Toplam teklif tutarı
+        - teklif_radio, kesif_radio, tanim_radio: Belge tipi (yalnızca biri True)
+        - notlar_textEdit: Notlar (çok satırlı olabilir)
+        
+        Parametreler:
+        -------------
+        tab2_verileri : dict[str, Any]
+            Tab_2'den toplanan tüm veriler
+        logger : Optional[logging.Logger]
+            Logger referansı
+        
+        Döndürür:
+        ---------
+        bool
+            Başarılı ise True
+        """
+        log = logger or gunluk
+        
+        try:
+            # CSV dosyasının var olup olmadığını kontrol et
+            if not self.csv_yolu.exists():
+                log.warning("CSV dosyası bulunamadı, yeni dosya oluşturuluyor...")
+                self._csv_olustur()
+            
+            # Mevcut dosyayı oku ve başlıkları kontrol et
+            with self.csv_yolu.open('r', encoding='utf-8-sig') as f:
+                reader = csv.DictReader(f)
+                mevcut_basliklar = reader.fieldnames or []
+                kayitlar = list(reader)
+            
+            # Yeni başlıklar (Tab2 kolonları)
+            tab2_basliklar = [
+                "BelgeTarih",
+                "ProjeAdi_Tab2",
+                "ProjeYeri_Tab2",
+                "Urun1Kod",
+                "Urun1Adet",
+                "Urun1Ozl",
+                "Urun2Kod",
+                "Urun2Adet",
+                "Urun2Ozl",
+                "Urun3Kod",
+                "Urun3Adet",
+                "Urun3Ozl",
+                "Urun4Kod",
+                "Urun4Adet",
+                "Urun4Ozl",
+                "Urun5Kod",
+                "Urun5Adet",
+                "Urun5Ozl",
+                "Urun6Kod",
+                "Urun6Adet",
+                "Urun6Ozl",
+                "ToplamTeklif",
+                "BelgeTipi",
+                "Notlar"
+            ]
+            
+            # Yeni başlıkları ekle (eğer yoksa)
+            yeni_basliklar = list(mevcut_basliklar)
+            for baslik in tab2_basliklar:
+                if baslik not in yeni_basliklar:
+                    yeni_basliklar.append(baslik)
+            
+            # Belge tipi belirleme (radio button)
+            belge_tipi = ""
+            if tab2_verileri.get("teklif_radio", False):
+                belge_tipi = "Teklif"
+            elif tab2_verileri.get("kesif_radio", False):
+                belge_tipi = "Keşif"
+            elif tab2_verileri.get("tanim_radio", False):
+                belge_tipi = "Tanım"
+            
+            # Notlar alanını hazırla (çok satırlı ise çift tırnak ile koru)
+            notlar = str(tab2_verileri.get("notlar_textEdit", "")).strip()
+            
+            # Yeni kayıt oluştur
+            yeni_kayit = {
+                "BelgeTarih": str(tab2_verileri.get("belge_tarih_line", "")).strip(),
+                "ProjeAdi_Tab2": str(tab2_verileri.get("belge_projeadi_line", "")).strip(),
+                "ProjeYeri_Tab2": str(tab2_verileri.get("belge_projeyeri_line", "")).strip(),
+                "ToplamTeklif": str(tab2_verileri.get("toplamteklif_line", "")).strip(),
+                "BelgeTipi": belge_tipi,
+                "Notlar": notlar,
+            }
+            
+            # Ürün bilgilerini ekle (6 ürün)
+            for i in range(1, 7):
+                yeni_kayit[f"Urun{i}Kod"] = str(tab2_verileri.get(f"urun{i}_kod_line", "")).strip()
+                yeni_kayit[f"Urun{i}Adet"] = str(tab2_verileri.get(f"urun{i}_adet_line", "")).strip()
+                yeni_kayit[f"Urun{i}Ozl"] = str(tab2_verileri.get(f"urun{i}_ozl_line", "")).strip()
+            
+            # Eski kayıtlara boş değerler ekle
+            for kayit in kayitlar:
+                for baslik in tab2_basliklar:
+                    if baslik not in kayit:
+                        kayit[baslik] = ""
+            
+            # Yeni kaydı ekle
+            kayitlar.append(yeni_kayit)
+            
+            # CSV'ye geri yaz (güncellenmiş başlıklarla)
+            with self.csv_yolu.open('w', newline='', encoding='utf-8-sig') as f:
+                writer = csv.DictWriter(f, fieldnames=yeni_basliklar)
+                writer.writeheader()
+                writer.writerows(kayitlar)
+            
+            log.info(f"✓ Tab_2 verileri CSV'ye kaydedildi")
+            return True
+            
+        except Exception as e:
+            log.error(f"HATA: Tab_2 verileri kaydedilemedi: {e}")
+            import traceback
+            log.error(f"Detay: {traceback.format_exc()}")
+            return False
+

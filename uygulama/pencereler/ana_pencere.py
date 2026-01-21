@@ -219,6 +219,12 @@ class AnaPencere(QtWidgets.QMainWindow):
                     lambda checked=False, c=combo: self._urun_detay_ac(c)
                 )
         
+        # Tab_2 Kaydet butonu
+        kaydet_butonu = getattr(self, "pushButton_kaydet", None)
+        if kaydet_butonu is not None:
+            kaydet_butonu.clicked.connect(self._tab2_kaydet)
+            gunluk.info("Tab_2 'Kaydet' butonu bağlandı")
+        
         # Dosya menüsü action'ları
         # Dosyayı Aç -> Kayıttan Yükle
         action_dosyay_ac = getattr(self, "actionDosyay_Ac", None)
@@ -905,3 +911,106 @@ class AnaPencere(QtWidgets.QMainWindow):
             import traceback
             gunluk.error(traceback.format_exc())
             raise
+    
+    def _tab2_kaydet(self) -> None:
+        """
+        Tab_2'deki tüm verileri CSV'ye kaydeder.
+        
+        Bu metod:
+        - Tab_2'deki tüm girdileri toplar
+        - Radio button seçimini belirler
+        - CSV'ye kaydeder
+        - Kullanıcıya başarı/hata mesajı gösterir
+        """
+        try:
+            gunluk.info("Tab_2 kayıt işlemi başlatıldı")
+            
+            # Tab_2 verilerini topla
+            tab2_verileri = {}
+            
+            # Temel bilgiler
+            belge_tarih = getattr(self, "belge_tarih_line", None)
+            if belge_tarih is not None:
+                tab2_verileri["belge_tarih_line"] = belge_tarih.text()
+            
+            belge_projeadi = getattr(self, "belge_projeadi_line", None)
+            if belge_projeadi is not None:
+                tab2_verileri["belge_projeadi_line"] = belge_projeadi.text()
+            
+            belge_projeyeri = getattr(self, "belge_projeyeri_line", None)
+            if belge_projeyeri is not None:
+                tab2_verileri["belge_projeyeri_line"] = belge_projeyeri.text()
+            
+            # Ürün bilgileri (6 ürün)
+            for i in range(1, 7):
+                # Ürün kodu
+                urun_kod = getattr(self, f"urun{i}_kod_line", None)
+                if urun_kod is not None:
+                    tab2_verileri[f"urun{i}_kod_line"] = urun_kod.text()
+                
+                # Ürün adet
+                urun_adet = getattr(self, f"urun{i}_adet_line", None)
+                if urun_adet is not None:
+                    tab2_verileri[f"urun{i}_adet_line"] = urun_adet.text()
+                
+                # Ürün özellik
+                urun_ozl = getattr(self, f"urun{i}_ozl_line", None)
+                if urun_ozl is not None:
+                    tab2_verileri[f"urun{i}_ozl_line"] = urun_ozl.text()
+            
+            # Toplam teklif
+            toplam_teklif = getattr(self, "toplamteklif_line", None)
+            if toplam_teklif is not None:
+                tab2_verileri["toplamteklif_line"] = toplam_teklif.text()
+            
+            # Radio button'ları kontrol et
+            teklif_radio = getattr(self, "teklif_radio", None)
+            kesif_radio = getattr(self, "kesif_radio", None)
+            tanim_radio = getattr(self, "tanim_radio", None)
+            
+            tab2_verileri["teklif_radio"] = teklif_radio.isChecked() if teklif_radio is not None else False
+            tab2_verileri["kesif_radio"] = kesif_radio.isChecked() if kesif_radio is not None else False
+            tab2_verileri["tanim_radio"] = tanim_radio.isChecked() if tanim_radio is not None else False
+            
+            # Notlar (textEdit)
+            notlar = getattr(self, "notlar_textEdit", None)
+            if notlar is not None:
+                tab2_verileri["notlar_textEdit"] = notlar.toPlainText()
+            
+            # Veritabanı Kaydedici'yi oluştur
+            from uygulama.belge.veritabani_kaydedici import VeritabaniKaydedici
+            
+            kaydedici = VeritabaniKaydedici()
+            
+            # Kaydet
+            basarili = kaydedici.tab2_kaydi_ekle(tab2_verileri, gunluk)
+            
+            if basarili:
+                QMessageBox.information(
+                    self,
+                    "Başarılı",
+                    "Tab_2 verileri başarıyla veritabanına kaydedildi!",
+                    QMessageBox.Ok
+                )
+                gunluk.info("✓ Tab_2 verileri veritabanına kaydedildi")
+            else:
+                QMessageBox.warning(
+                    self,
+                    "Hata",
+                    "Tab_2 verileri kaydedilirken bir hata oluştu. Lütfen log dosyasını kontrol edin.",
+                    QMessageBox.Ok
+                )
+                gunluk.error("Tab_2 verileri kaydedilemedi")
+        
+        except Exception as e:
+            gunluk.error(f"Tab_2 kayıt hatası: {e}")
+            import traceback
+            gunluk.error(f"Detay: {traceback.format_exc()}")
+            
+            QMessageBox.critical(
+                self,
+                "Kritik Hata",
+                f"Tab_2 kayıt işlemi sırasında beklenmeyen bir hata oluştu:\n{str(e)}",
+                QMessageBox.Ok
+            )
+
