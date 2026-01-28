@@ -138,56 +138,18 @@ def kdv_tutari_hesapla(
 
     return (ara_toplam / 100) * kdv_orani
 
-
 def ebat_metni_olustur(
     en: str,
     boy: str,
     birim: str = "cm"
 ) -> str:
-    """
-    En ve boy değerlerinden ebat metni oluşturur.
-
-    GÜNCELLENDİ: Türk formatını destekler ve formatlanmış çıktı verir.
-
-    Parametreler:
-    -------------
-    en : str
-        En değeri (metin olarak, Türk formatı kabul edilir)
-    boy : str
-        Boy değeri (metin olarak, Türk formatı kabul edilir)
-    birim : str, optional
-        Ölçü birimi (varsayılan: "cm")
-
-    Döndürür:
-    ---------
-    str
-        Formatlanmış ebat metni veya boş string (geçersiz girdi)
-
-    Örnekler:
-    ---------
-    >>> ebat_metni_olustur("100", "200")
-    '100 x 200 cm'
-    >>> ebat_metni_olustur("150,5", "250,5", "mm")
-    '150,5 x 250,5 mm'
-    >>> ebat_metni_olustur("abc", "200")
-    ''
-    """
     en_f = guvenli_float_donustur(en)
     boy_f = guvenli_float_donustur(boy)
 
     if en_f > 0 and boy_f > 0:
-        # Türk formatında göster (eğer FiyatFormatlayici mevcutsa)
-        if FIYAT_FORMAT_MEVCUT:
-            # Ondalık kısmı varsa göster, yoksa tam sayı olarak
-            en_str = _format_olcu_degeri(en_f)
-            boy_str = _format_olcu_degeri(boy_f)
-            return f"{en_str} x {boy_str} {birim}"
-        else:
-            # Fallback: Basit formatla
-            return f"{en_f} x {boy_f} {birim}"
+        return f"{float(en_f)} x {float(boy_f)} {birim}"
 
     return ""
-
 
 def _format_olcu_degeri(deger: float) -> str:
     """
@@ -204,61 +166,23 @@ def _format_olcu_degeri(deger: float) -> str:
         deger_str = str(deger).replace('.', ',')
         return deger_str
 
-
 def ic_ebat_hesapla(
     en: str,
     boy: str,
     kenar_payi: float = VARSAYILAN_KENAR_PAYI,
     birim: str = "cm"
 ) -> str:
-    """
-    İç ebat hesaplar (dış ebattan kenar payı çıkararak).
-
-    GÜNCELLENDİ: Türk formatını destekler.
-
-    Parametreler:
-    -------------
-    en : str
-        Dış en değeri (metin olarak, Türk formatı kabul edilir)
-    boy : str
-        Dış boy değeri (metin olarak, Türk formatı kabul edilir)
-    kenar_payi : float, optional
-        Her kenardan çıkarılacak pay (varsayılan: 20.0)
-    birim : str, optional
-        Ölçü birimi (varsayılan: "cm")
-
-    Döndürür:
-    ---------
-    str
-        Formatlanmış iç ebat metni veya boş string
-
-    Örnekler:
-    ---------
-    >>> ic_ebat_hesapla("100", "200")
-    '80 x 180 cm'
-    >>> ic_ebat_hesapla("100", "200", kenar_payi=10)
-    '90 x 190 cm'
-    >>> ic_ebat_hesapla("30", "30")  # Kenar payından küçük
-    ''
-    """
     en_f = guvenli_float_donustur(en)
     boy_f = guvenli_float_donustur(boy)
 
-    # Kenar payından büyük olmalı
-    if en_f > kenar_payi and boy_f > kenar_payi:
-        ic_en = en_f - kenar_payi
-        ic_boy = boy_f - kenar_payi
+    # DIŞ ölçüler kenar payının en az 2 katı olmalı
+    if en_f <= kenar_payi * 2 or boy_f <= kenar_payi * 2:
+        return ""
 
-        # Formatla
-        if FIYAT_FORMAT_MEVCUT:
-            ic_en_str = _format_olcu_degeri(ic_en)
-            ic_boy_str = _format_olcu_degeri(ic_boy)
-            return f"{ic_en_str} x {ic_boy_str} {birim}"
-        else:
-            return f"{ic_en} x {ic_boy} {birim}"
+    ic_en = en_f - kenar_payi
+    ic_boy = boy_f - kenar_payi
 
-    return ""
-
+    return f"{float(ic_en)} x {float(ic_boy)} {birim}"
 
 def yuzde_hesapla(
     deger: float,

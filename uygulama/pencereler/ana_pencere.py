@@ -15,7 +15,7 @@ from datetime import date, timedelta
 from pathlib import Path
 from typing import Any, Optional
 
-from PyQt5 import QtWidgets, uic
+from PyQt5 import QtWidgets, uic, QtCore
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QTableWidgetItem
 from PyQt5.QtCore import QDate, Qt
 
@@ -242,6 +242,37 @@ class AnaPencere(QtWidgets.QMainWindow):
         if action_dosyay_ac is not None:
             action_dosyay_ac.triggered.connect(self.kayittan_yukle)
             gunluk.info("'Dosyayı Aç' action'ı bağlandı (kayıttan yükle)")
+        
+        # Format Düzenle -> Format Ayarları Dialog
+        action_format_duzenle = getattr(self, "actionFormat_Duzenle", None)
+        if action_format_duzenle is not None:
+            action_format_duzenle.triggered.connect(self._format_ayarlari_ac)
+            gunluk.info("'Format Düzenle' action'ı bağlandı")
+        
+        # === OTOMATIK UPPERCASE ===
+        uppercase_alanlar = [
+            'urun1_kod_line', 'urun2_kod_line', 'urun3_kod_line',
+            'urun4_kod_line', 'urun5_kod_line', 'urun6_kod_line',
+            'belge_tarih_line', 'belge_projeadi_line', 'belge_projeyeri_line'
+        ]
+        
+        for alan_adi in uppercase_alanlar:
+            line_edit = getattr(self, alan_adi, None)
+            if line_edit is not None:
+                # Lambda ile closure problemini çöz
+                line_edit.textChanged.connect(
+                    lambda text, widget=line_edit: self._otomatik_buyut(widget, text)
+                )
+        
+        # === OTOMATIK FİYAT FORMATLAMASI (Tab_2) ===
+        toplamteklif_line = getattr(self, "toplamteklif_line", None)
+        if toplamteklif_line is not None:
+            # Validator ekle (sadece rakam, nokta, virgül)
+            from uygulama.yardimcilar.turk_para_validator import line_edit_fiyat_validatoru_ekle, line_edit_otomatik_formatla
+            
+            # Otomatik formatlama ekle
+            line_edit_otomatik_formatla(toplamteklif_line, negatif_izin=False)
+            gunluk.info("toplamteklif_line'a otomatik fiyat formatlaması eklendi")
     
     def _turkce_upper(self, text: str) -> str:
         tr_map = {
@@ -262,6 +293,17 @@ class AnaPencere(QtWidgets.QMainWindow):
                 result.append(ch.upper())
 
         return "".join(result)
+    
+    def _otomatik_buyut(self, widget, text: str) -> None:
+        """QLineEdit'te metni otomatik Türkçe büyük harfe çevirir."""
+        upper_text = self._turkce_upper(text)
+        if text != upper_text:
+            cursor_pos = widget.cursorPosition()
+            widget.blockSignals(True)  # Sonsuz döngüyü önle
+            widget.setText(upper_text)
+            widget.setCursorPosition(cursor_pos)
+            widget.blockSignals(False)
+
 
     def _string_buyut(self, text: str):
         cursor = self.projeadi_line.cursorPosition()
@@ -923,6 +965,47 @@ class AnaPencere(QtWidgets.QMainWindow):
             gunluk.error(traceback.format_exc())
             raise
     
+    def _format_ayarlari_ac(self) -> None:
+        """
+        Format Ayarları dialogunu açar.
+        
+        Bu dialog, belge üretiminde kullanılan hardcode formatların
+        ayarlarını yönetir.
+        """
+        try:
+            gunluk.info("Format Ayarları dialogu açılıyor...")
+            
+            # FormatAyarlariDialog'u import et
+            from uygulama.pencereler.format_ayarlari_dialog import FormatAyarlariDialog
+            
+            # Dialog'u oluştur ve göster
+            dialog = FormatAyarlariDialog(self)
+            dialog.show()
+            
+            gunluk.info("✓ Format Ayarları dialogu açıldı")
+        
+        except ImportError as e:
+            gunluk.error(f"Format Ayarları modülü import hatası: {e}")
+            QMessageBox.critical(
+                self,
+                "Hata",
+                "Format Ayarları penceresi yüklenemedi!\n\n"
+                "Lütfen format_ayarlari_dialog.py dosyasının\n"
+                "./uygulama/pencereler/ klasöründe olduğundan emin olun.",
+                QMessageBox.Ok
+            )
+        
+        except Exception as e:
+            gunluk.error(f"Format Ayarları açma hatası: {e}")
+            import traceback
+            gunluk.error(traceback.format_exc())
+            QMessageBox.critical(
+                self,
+                "Hata",
+                f"Format Ayarları penceresi açılamadı:\n{str(e)}",
+                QMessageBox.Ok
+            )
+    
     def _tab2_kaydet(self) -> None:
         """
         Tab_2'deki tüm verileri CSV'ye kaydeder.
@@ -940,9 +1023,24 @@ class AnaPencere(QtWidgets.QMainWindow):
             tab2_verileri = {}
             
             # Temel bilgiler
+            # Tarih bilgisi (otomatik formatla)
             belge_tarih = getattr(self, "belge_tarih_line", None)
             if belge_tarih is not None:
-                tab2_verileri["belge_tarih_line"] = belge_tarih.text()
+                from uygulama.yardimcilar.tarih_yardimcilari import tarih_widget_formatla
+                
+                tarih_ham = belge_tarih.text().strip()
+                if tarih_ham:
+                    # Otomatik formatla: her format → DD-MM-YYYY
+                    tarih_formatli = tarih_widget_formatla(tarih_ham)
+                    if tarih_formatli:
+                        tab2_verileri["belge_tarih_line"] = tarih_formatli
+                        gunluk.info(f"Tarih formatlandı: {tarih_ham} → {tarih_formatli}")
+                    else:
+                        # Formatlanamadı, orijinali kullan
+                        tab2_verileri["belge_tarih_line"] = tarih_ham
+                        gunluk.warning(f"Tarih formatlanamadı: {tarih_ham}")
+                else:
+                    tab2_verileri["belge_tarih_line"] = ""
             
             belge_projeadi = getattr(self, "belge_projeadi_line", None)
             if belge_projeadi is not None:
@@ -987,6 +1085,56 @@ class AnaPencere(QtWidgets.QMainWindow):
             notlar = getattr(self, "notlar_textEdit", None)
             if notlar is not None:
                 tab2_verileri["notlar_textEdit"] = notlar.toPlainText()
+            
+            # === SERİ NUMARASI OLUŞTUR ===
+            from uygulama.belge.yardimcilar import seri_numarasi_olustur
+            from uygulama.yardimcilar.tarih_yardimcilari import tarih_donustur, bugun
+            
+            # Tarih formatını dönüştür (herhangi bir format → DDMMYY)
+            tarih_text = tab2_verileri.get("belge_tarih_line", "")
+            if tarih_text:
+                # Yeni yardımcı ile dönüştür
+                basarili, tarih_ddmmyy, _ = tarih_donustur(tarih_text, "seri")
+                if not basarili:
+                    # Formatlanamadıysa bugünü kullan
+                    tarih_ddmmyy = bugun("seri")
+                    gunluk.warning(f"Tarih dönüştürülemedi, bugün kullanıldı: {tarih_text}")
+            else:
+                # Tarih yoksa bugünü kullan
+                tarih_ddmmyy = bugun("seri")
+            
+            # Firma ve konum
+            firma = tab2_verileri.get("belge_projeadi_line", "PROJE")
+            konum = tab2_verileri.get("belge_projeyeri_line", "KONUM")
+            
+            # Ürün kodlarını topla
+            urun_kodlari = []
+            for i in range(1, 7):
+                urun_kod = tab2_verileri.get(f"urun{i}_kod_line", "").strip()
+                if urun_kod:
+                    urun_kodlari.append(urun_kod)
+            
+            # Revizyon (şimdilik R00)
+            revizyon = "R00"
+            
+            # Seri numarasını oluştur
+            seri_no = seri_numarasi_olustur(
+                tarih=tarih_ddmmyy,
+                firma=firma,
+                konum=konum,
+                urunler=urun_kodlari,
+                revizyon=revizyon
+            )
+            
+            # Serial_label'a yaz
+            serial_label = getattr(self, "Serial_label", None)
+            if serial_label is not None:
+                serial_label.setText(seri_no)
+                gunluk.info(f"Seri numarası oluşturuldu: {seri_no}")
+            
+            # Seri numarasını verilere ekle
+            tab2_verileri["seri_numarasi"] = seri_no
+            # === SERİ NUMARASI BİTİŞ ===
             
             # Veritabanı Kaydedici'yi oluştur
             from uygulama.belge.veritabani_kaydedici import VeritabaniKaydedici
@@ -1049,13 +1197,161 @@ class AnaPencere(QtWidgets.QMainWindow):
                 detay_butonu.clicked.connect(self._tab3_detay_goster)
                 gunluk.info("Tab_3 'Detay Göster' butonu bağlandı")
             
-            # Tablo satır seçimi
+            # Proje Detay Göster butonu (yeni)
+            proje_detay_button = getattr(self, "proje_detay_goster_button", None)
+            if proje_detay_button is not None:
+                proje_detay_button.clicked.connect(self._tab3_detay_goster)
+                gunluk.info("proje_detay_goster_button bağlandı")
+            
+            # Tablo satır seçimi - OTOMATİK GÖSTERME KAPALI
+            # (Sadece seçili satırı işaretle, detay gösterme)
             sonuc_tablosu = getattr(self, "tableWidget", None)
             if sonuc_tablosu is not None:
-                sonuc_tablosu.itemSelectionChanged.connect(self._tab3_satir_secildi)
-                gunluk.info("Tab_3 tablo seçimi bağlandı")
+                # itemSelectionChanged sinyalini BAĞLAMA
+                # Artık otomatik gösterme yok
+                gunluk.info("Tab_3 tablo seçimi hazır (otomatik gösterme kapalı)")
+            
+            # === ONAY VE HATIRLATMA BUTONLARI ===
+            onaylandi_button = getattr(self, "onaylandi_button", None)
+            if onaylandi_button is not None:
+                # Tıklandığında sadece renk değiştir
+                onaylandi_button.clicked.connect(lambda: self._buton_renk_guncelle(onaylandi_button))
+                # Başlangıç rengini ayarla
+                self._buton_renk_guncelle(onaylandi_button)
+                gunluk.info("onaylandi_button bağlandı")
+            
+            hatirlat_button = getattr(self, "hatirlat_button", None)
+            if hatirlat_button is not None:
+                # Tıklandığında sadece renk değiştir
+                hatirlat_button.clicked.connect(lambda: self._buton_renk_guncelle(hatirlat_button))
+                # Başlangıç rengini ayarla
+                self._buton_renk_guncelle(hatirlat_button)
+                gunluk.info("hatirlat_button bağlandı")
+            
+            # === VERİTABANI KAYDET BUTONU ===
+            veritabani_kaydet_button = getattr(self, "veritabani_kaydet_button", None)
+            if veritabani_kaydet_button is not None:
+                veritabani_kaydet_button.clicked.connect(self._tab3_veritabani_kaydet)
+                gunluk.info("veritabani_kaydet_button bağlandı")
+                gunluk.info("hatirlat_button bağlandı")
         except Exception as e:
             gunluk.error(f"Tab_3 sinyal bağlama hatası: {e}")
+    
+    def _buton_renk_guncelle(self, buton) -> None:
+        """Butonun checked durumuna göre arka plan rengini günceller."""
+        try:
+            if buton.isChecked():
+                # Yeşil arka plan (checked)
+                buton.setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;")
+            else:
+                # Kırmızı arka plan (unchecked)
+                buton.setStyleSheet("background-color: #f44336; color: white; font-weight: bold;")
+        except Exception as e:
+            gunluk.error(f"Buton renk güncelleme hatası: {e}")
+    
+    def _tab3_veritabani_kaydet(self) -> None:
+        """
+        Tab_3'te değiştirilen onay ve hatırlatma durumlarını veritabanına kaydeder.
+        """
+        try:
+            # Seçili belge ID'sini al
+            belge_id = self._secili_belge_id_al()
+            if not belge_id:
+                QMessageBox.warning(
+                    self,
+                    "Uyarı",
+                    "Lütfen önce bir belge seçin!",
+                    QMessageBox.Ok
+                )
+                return
+            
+            # Buton durumlarını al
+            onaylandi_button = getattr(self, "onaylandi_button", None)
+            hatirlat_button = getattr(self, "hatirlat_button", None)
+            
+            # Güncellemeleri hazırla
+            guncellemeler = {}
+            
+            if onaylandi_button is not None:
+                yeni_onay = 'Evet' if onaylandi_button.isChecked() else 'Hayır'
+                guncellemeler['form_onaylandi'] = yeni_onay
+            
+            if hatirlat_button is not None:
+                yeni_hatirlat = 'Aktif' if hatirlat_button.isChecked() else 'Pasif'
+                guncellemeler['hatirlatma_durumu'] = yeni_hatirlat
+            
+            if not guncellemeler:
+                QMessageBox.information(
+                    self,
+                    "Bilgi",
+                    "Kaydedilecek değişiklik yok.",
+                    QMessageBox.Ok
+                )
+                return
+            
+            # Veritabanını güncelle
+            from uygulama.veri.belge_onbellegi import BelgeOnbellegi
+            onbellek = BelgeOnbellegi()
+            
+            basarili = onbellek.belge_guncelle(belge_id, guncellemeler, gunluk)
+            
+            if basarili:
+                QMessageBox.information(
+                    self,
+                    "Başarılı",
+                    f"Değişiklikler kaydedildi!\n\nGüncellenen alanlar:\n" + 
+                    "\n".join([f"- {alan}: {deger}" for alan, deger in guncellemeler.items()]),
+                    QMessageBox.Ok
+                )
+                gunluk.info(f"✓ Tab_3 değişiklikler kaydedildi: Belge ID={belge_id}, {guncellemeler}")
+            else:
+                QMessageBox.critical(
+                    self,
+                    "Hata",
+                    "Değişiklikler kaydedilemedi!\nLütfen log dosyasını kontrol edin.",
+                    QMessageBox.Ok
+                )
+                gunluk.error(f"Tab_3 değişiklikler kaydedilemedi: Belge ID={belge_id}")
+        
+        except Exception as e:
+            gunluk.error(f"Tab_3 veritabanı kaydetme hatası: {e}")
+            import traceback
+            gunluk.error(traceback.format_exc())
+            QMessageBox.critical(
+                self,
+                "Kritik Hata",
+                f"Beklenmeyen bir hata oluştu:\n{str(e)}",
+                QMessageBox.Ok
+            )
+    
+    def _secili_belge_id_al(self) -> Optional[int]:
+        """Şu anda seçili olan belgenin ID'sini döner."""
+        try:
+            tablo = getattr(self, "tableWidget", None)
+            if tablo is None:
+                return None
+            
+            secili_satirlar = tablo.selectedItems()
+            if not secili_satirlar:
+                return None
+            
+            satir = secili_satirlar[0].row()
+            
+            # İlk kolondaki veriyi al (kayit_id, tablo_adi, kayit)
+            item = tablo.item(satir, 0)
+            if item is None:
+                return None
+            
+            kayit_data = item.data(QtCore.Qt.UserRole)
+            if not kayit_data:
+                return None
+            
+            kayit_id, _, _ = kayit_data
+            return kayit_id
+        
+        except Exception as e:
+            gunluk.error(f"Seçili belge ID alma hatası: {e}")
+            return None
     
     def _tab3_ara(self) -> None:
         """Veritabanında BASİT arama yapar - HATASIZ."""
@@ -1080,45 +1376,64 @@ class AnaPencere(QtWidgets.QMainWindow):
             from uygulama.belge.veritabani_kaydedici import VeritabaniKaydedici
             kaydedici = VeritabaniKaydedici()
             
-            # Tüm kayıtları çek
+            # === YENİ YAPI: Tek tablo, filtreli arama ===
+            # Tüm belgeler (UYGULAMA + MANUEL)
             tum_kayitlar = []
             
-            # belge_kayitlari
             try:
-                belge_kayitlari = kaydedici.kayit_ara(
-                    tarih_baslangic=secili_tarih if secili_tarih else None,
-                    limit=1000
-                )
-                tum_kayitlar.extend([(k, 'belge_kayitlari') for k in belge_kayitlari])
-            except Exception as e:
-                gunluk.warning(f"belge_kayitlari arama hatası: {e}")
-            
-            # tab2_kayitlari
-            try:
-                tab2_kayitlari = kaydedici.tab2_kayitlari_ara(
-                    tarih_baslangic=secili_tarih if secili_tarih else None,
-                    limit=1000
-                )
-                tum_kayitlar.extend([(k, 'tab2_kayitlari') for k in tab2_kayitlari])
-            except Exception as e:
-                gunluk.warning(f"tab2_kayitlari arama hatası: {e}")
-            
-            # Arama metni varsa filtrele
-            if arama_metni:
-                filtrelenmis = []
-                for kayit, tablo_adi in tum_kayitlar:
-                    # Basit string araması - her alanda
-                    eslesme = False
-                    
-                    for alan, deger in kayit.items():
-                        if deger and arama_metni in str(deger).lower():
-                            eslesme = True
-                            break
-                    
-                    if eslesme:
-                        filtrelenmis.append((kayit, tablo_adi))
+                # Tarih filtresi ile ara
+                filtreler = {}
+                if secili_tarih:
+                    filtreler['tarih_baslangic'] = secili_tarih
+                filtreler['limit'] = 1000
                 
-                tum_kayitlar = filtrelenmis
+                belgeler = kaydedici.kayit_ara(**filtreler)
+                
+                # Her belgeyi kaydet (tablo_adi olarak 'belgeler' kullan)
+                for belge in belgeler:
+                    tum_kayitlar.append((belge, 'belgeler'))
+                
+                gunluk.debug(f"{len(belgeler)} belge bulundu")
+                
+            except Exception as e:
+                gunluk.error(f"Belge arama hatası: {e}")
+                import traceback
+                gunluk.error(traceback.format_exc())
+            
+            # Arama metni varsa filtrele (AKILLI ARAMA)
+            if arama_metni:
+                # Ayraçlarla kelime ayır: boşluk, nokta, virgül, tire
+                import re
+                arama_kelimeleri = re.split(r'[\s\.,\-]+', arama_metni.strip())
+                arama_kelimeleri = [k.lower() for k in arama_kelimeleri if k]  # Boş olanları çıkar
+                
+                if arama_kelimeleri:
+                    gunluk.info(f"Arama kelimeleri: {arama_kelimeleri}")
+                    
+                    filtrelenmis = []
+                    for kayit, tablo_adi in tum_kayitlar:
+                        # TÜM kelimeleri içermeli (AND mantığı)
+                        tum_kelimeler_bulundu = True
+                        
+                        for kelime in arama_kelimeleri:
+                            # Bu kelime kaydın herhangi bir alanında var mı?
+                            kelime_bulundu = False
+                            
+                            for alan, deger in kayit.items():
+                                if deger and kelime in str(deger).lower():
+                                    kelime_bulundu = True
+                                    break
+                            
+                            if not kelime_bulundu:
+                                # Bu kelime bulunamadı, kayıt eşleşmiyor
+                                tum_kelimeler_bulundu = False
+                                break
+                        
+                        if tum_kelimeler_bulundu:
+                            filtrelenmis.append((kayit, tablo_adi))
+                    
+                    tum_kayitlar = filtrelenmis
+                    gunluk.info(f"Filtreleme sonrası: {len(tum_kayitlar)} sonuç")
             
             # Tabloya doldur
             self._tab3_sonuclari_tabloya_doldur(tum_kayitlar)
@@ -1164,68 +1479,139 @@ class AnaPencere(QtWidgets.QMainWindow):
         except Exception as e:
             gunluk.error(f"Tablo doldurma hatası: {e}")
     
-    def _tab3_satir_secildi(self) -> None:
-        """Tabloda satır seçildiğinde detayları gösterir."""
-        try:
-            tablo = getattr(self, "tableWidget", None)
-            if tablo is None:
-                return
-            
-            satir_no = tablo.currentRow()
-            if satir_no < 0:
-                self._tab3_detaylari_temizle()
-                return
-            
-            ilk_sutun = tablo.item(satir_no, 0)
-            if ilk_sutun is None:
-                return
-            
-            kayit_data = ilk_sutun.data(Qt.UserRole)
-            if kayit_data is None:
-                return
-            
-            kayit_id, tablo_adi, kayit = kayit_data
-            self._tab3_detaylari_goster(kayit, tablo_adi)
-            
-        except Exception as e:
-            gunluk.error(f"Satır seçimi hatası: {e}")
+    # _tab3_satir_secildi metodu kaldırıldı - artık otomatik gösterme yok
+    # Detay göstermek için proje_detay_goster_button kullanılıyor
     
     def _tab3_detay_goster(self) -> None:
-        """Detay göster butonu."""
-        self._tab3_satir_secildi()
+        """
+        Detay göster butonu - Seçili belgeyi veritabanından çeker ve gösterir.
+        """
+        try:
+            # Seçili belge ID'sini al
+            belge_id = self._secili_belge_id_al()
+            
+            if not belge_id:
+                QMessageBox.warning(
+                    self,
+                    "Uyarı",
+                    "Lütfen önce tabloda bir belge seçin!",
+                    QMessageBox.Ok
+                )
+                return
+            
+            # Veritabanından belgeyi çek (FRESH DATA)
+            from uygulama.veri.belge_onbellegi import BelgeOnbellegi
+            onbellek = BelgeOnbellegi()
+            
+            # Belgeyi ID ile ara
+            belgeler = onbellek.belge_ara(limit=1)
+            
+            # SQL'de ID ile direkt arama yapalım
+            import sqlite3
+            with sqlite3.connect(str(onbellek.veritabani_yolu)) as baglanti:
+                baglanti.row_factory = sqlite3.Row
+                imlec = baglanti.cursor()
+                imlec.execute("SELECT * FROM belgeler WHERE id = ?", (belge_id,))
+                satir = imlec.fetchone()
+                
+                if satir:
+                    kayit = dict(satir)
+                    self._tab3_detaylari_goster(kayit, 'belgeler')
+                    gunluk.info(f"✓ Belge detayı veritabanından yüklendi: ID={belge_id}")
+                else:
+                    QMessageBox.warning(
+                        self,
+                        "Hata",
+                        f"Belge bulunamadı! (ID: {belge_id})",
+                        QMessageBox.Ok
+                    )
+                    gunluk.error(f"Belge bulunamadı: ID={belge_id}")
+        
+        except Exception as e:
+            gunluk.error(f"Detay göster hatası: {e}")
+            import traceback
+            gunluk.error(traceback.format_exc())
+            QMessageBox.critical(
+                self,
+                "Hata",
+                f"Detay gösterilirken hata oluştu:\n{str(e)}",
+                QMessageBox.Ok
+            )
+    
     
     def _tab3_detaylari_goster(self, kayit: dict, tablo_adi: str) -> None:
         """Detayları sağ panelde gösterir."""
         try:
             # Temel bilgiler
             self._tab3_label_ayarla("proje_adi_label", kayit.get('proje_adi', ''))
-            
-            proje_yeri = kayit.get('proje_konum', '') or kayit.get('proje_yeri', '')
-            self._tab3_label_ayarla("proje_yeri_label", proje_yeri)
-            
+            self._tab3_label_ayarla("proje_yeri_label", kayit.get('proje_konum', ''))
             self._tab3_label_ayarla("revizyon_label", kayit.get('revizyon_numarasi', ''))
-            
-            tarih = kayit.get('tarih', '') or kayit.get('belge_tarih', '')
-            self._tab3_label_ayarla("tarih_label", tarih)
-            
+            self._tab3_label_ayarla("tarih_label", kayit.get('tarih', ''))
             self._tab3_label_ayarla("serinumara_label", kayit.get('seri_numarasi', ''))
             self._tab3_label_ayarla("dosyayolu_label", kayit.get('dosya_yolu', ''))
             self._tab3_label_ayarla("duzenleyen_isim_label", kayit.get('olusturan_kisi', ''))
             self._tab3_label_ayarla("notes_label", kayit.get('notlar', ''))
+            self._tab3_label_ayarla("label_102", kayit.get('kdvli_toplam_fiyat', ''))
             
-            fiyat = kayit.get('kdvli_toplam_fiyat', '') or kayit.get('toplam_teklif', '')
-            self._tab3_label_ayarla("label_102", fiyat)
+            # Toplam fiyat label'ı (yeni)
+            kdvli_toplam = kayit.get('kdvli_toplam_fiyat', '').strip()
+            if kdvli_toplam and kdvli_toplam != '0,00' and kdvli_toplam != '0':
+                self._tab3_label_ayarla("toplam_fiyat_label", kdvli_toplam)
+            else:
+                self._tab3_label_ayarla("toplam_fiyat_label", "Fiyat bilgisi yok")
             
-            # Ürünleri göster
-            if tablo_adi == 'tab2_kayitlari':
-                for i in range(6):
-                    urun_no = i + 1
-                    self._tab3_label_ayarla(f"urun_kod_label_{i}", kayit.get(f'urun{urun_no}_kod', ''))
-                    self._tab3_label_ayarla(f"urun_adet_label_{i}", kayit.get(f'urun{urun_no}_adet', ''))
-                    self._tab3_label_ayarla(f"urun_ozl_label_{i}", kayit.get(f'urun{urun_no}_ozl', ''))
+            # Onay durumu butonları
+            onay_butonu = getattr(self, "onaylandi_button", None)
+            if onay_butonu is not None:
+                onay_butonu.setChecked(kayit.get('form_onaylandi', 'Hayır') == 'Evet')
+                self._buton_renk_guncelle(onay_butonu)
+            
+            hatirlat_butonu = getattr(self, "hatirlat_button", None)
+            if hatirlat_butonu is not None:
+                hatirlat_butonu.setChecked(kayit.get('hatirlatma_durumu', 'Pasif') == 'Aktif')
+                self._buton_renk_guncelle(hatirlat_butonu)
+            
+            # === ÜRÜN BİLGİLERİNİ GÖSTER ===
+            # Yeni yapı: belge_urunler tablosundan çek
+            belge_id = kayit.get('id')
+            if belge_id:
+                try:
+                    from uygulama.belge.veritabani_kaydedici import VeritabaniKaydedici
+                    kaydedici = VeritabaniKaydedici()
+                    
+                    # Ürünleri getir
+                    urunler = kaydedici.onbellek.belge_urunlerini_getir(belge_id)
+                    
+                    # İlk 6 ürünü göster (UI'da 6 ürün alanı var)
+                    for i in range(6):
+                        if i < len(urunler):
+                            urun = urunler[i]
+                            self._tab3_label_ayarla(f"urun_kod_label_{i}", urun.get('urun_kodu', ''))
+                            self._tab3_label_ayarla(f"urun_adet_label_{i}", urun.get('urun_adet', ''))
+                            self._tab3_label_ayarla(f"urun_ozl_label_{i}", urun.get('urun_ozellik', ''))
+                        else:
+                            # Boş göster
+                            self._tab3_label_ayarla(f"urun_kod_label_{i}", "")
+                            self._tab3_label_ayarla(f"urun_adet_label_{i}", "")
+                            self._tab3_label_ayarla(f"urun_ozl_label_{i}", "")
+                    
+                    gunluk.debug(f"✓ {len(urunler)} ürün gösterildi")
+                    
+                except Exception as e:
+                    gunluk.error(f"Ürün getirme hatası: {e}")
+            
+            # === ÜRÜN ALT BİLGİLERİNİ DOLDUR (5x6 tablo) ===
+            # Şimdilik boş bırak - gelecekte kullanılabilir
+            for satir in range(1, 6):
+                for sutun in range(0, 6):
+                    self._tab3_label_ayarla(f"urun_alt_isim_{satir}_{sutun}", "")
+                    self._tab3_label_ayarla(f"urun_alt_adet_{satir}_{sutun}", "")
+                    self._tab3_label_ayarla(f"urun_alt_fiyat_{satir}_{sutun}", "")
             
         except Exception as e:
             gunluk.error(f"Detay gösterme hatası: {e}")
+            import traceback
+            gunluk.error(traceback.format_exc())
     
     def _tab3_label_ayarla(self, label_adi: str, metin: str) -> None:
         """Label metnini güvenli ayarlar."""

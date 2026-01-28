@@ -107,3 +107,110 @@
 2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Seri numarası: SN:210126-TÜLOMSAŞ-ANKARA-TÜRKIYE-LK-XP868G-R01
 2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | Kod: IDX1|I=Ankara|U=Türkiye|F=Cafer Umut Özpınar|R=R00|PE=LK:150 x 150 cm,-:-,-:-,-:-,-:-,-:-
 2026-01-21 15:42:14 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | Temizlik: 1 kritik log dosyası korundu
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞLATILDI
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | Geçici dizin temizleniyor...
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | Veri dizini: kaynaklar
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | Şablonlar dizini: kaynaklar/sablonlar
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | Çıktı dizini: ciktilar
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | Eşleme kuralları yükleniyor...
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | 3 bölüm, 34 kural yüklendi
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | Global placeholder eşlemesi oluşturuluyor...
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | Global eşleme: 15 placeholder
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | Ürüne özel placeholder eşlemeleri oluşturuluyor...
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu |   Ürün 'LK': 22 placeholder
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | Başlık metni oluşturuluyor...
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | 3 ürün başlığı yüklendi: urunbasliklari.txt
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | Başlık metni: 'ESSMAN DUMAN TAHLIYE KAPAKLARI FİYAT TEKLİFİ'
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | ADIM 1: BAŞLIK ŞABLONU RENDER EDİLİYOR
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | Render: STANDART_BASLIK.docx -> STANDART_BASLIK__766135c180.docx
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | 4 paragrafta placeholder değiştirildi
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | ✓ Başlık render edildi: STANDART_BASLIK__766135c180.docx
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | ADIM 2: ÜRÜN ŞABLONLARI RENDER EDİLİYOR
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | Ürün işleniyor [1/1]: LK
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | Render: LK_TANIM.docx -> LK_TANIM__c23312bf4f.docx
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | 3 paragrafta placeholder değiştirildi
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu |   ✓ TANIM render edildi: LK_TANIM__c23312bf4f.docx
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | Render: LK_TABLO.docx -> LK_TABLO__006fb26873.docx
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | 6 paragrafta placeholder değiştirildi
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu |   ✓ TABLO render edildi: LK_TABLO__006fb26873.docx
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | ADIM 3: BELGE BİRLEŞTİRME HAZIRLANIYOR
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | 1 TANIM belgesi ekleniyor
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | 1 TABLO belgesi ekleniyor
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | EK: FİYAT TABLOSU OLUŞTURULUYOR (SATIR SATIR)
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | ------------------------------------------------------------
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | Fiyat tablosu: 3 normal, 2 opsiyon satır
+2026-01-21 16:21:03 | DEBUG    | BelgeOlusturucu | Toplam (sadece normal): 4.428,00, KDV: 885,60, Genel Toplam: 5.313,60
+2026-01-21 16:21:03 | DEBUG    | BelgeOlusturucu | Opsiyon satır renklendirildi: BUTON - RGB(173, 216, 230)
+2026-01-21 16:21:03 | DEBUG    | BelgeOlusturucu | Opsiyon satır renklendirildi: HAVALANDIRMA MOTORU - RGB(255, 218, 185)
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu yazıldı: FIYAT__20260121_162103.docx
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu |   - Normal ürünler: 3
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu |   - Opsiyon ürünler: 2
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu |   - Genel toplam (KDV dahil, sadece normal): 5.313,60
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | ✓ Fiyat tablosu oluşturuldu: FIYAT__20260121_162103.docx
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | Şartlar ekleniyor: SARTLAR.docx
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | Toplam birleştirilecek: 5 belge (başlık + 4 ek)
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | ADIM 4: ÇIKTI DOSYA ADI OLUŞTURULUYOR
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | Seri numarası oluşturuluyor...
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | Seri numarası: SN:210126-DENEME-ÇANAKKALE-TÜRKIYE-LK-IBFOIM-R00
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | Dosya adı: DENEME-210126-IBFOIM-R00.docx
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | ADIM 5: BELGELER BİRLEŞTİRİLİYOR
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu | Belge birleştirme başladı (temel: STANDART_BASLIK__766135c180.docx)
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu |   [1/4] Ekleniyor: LK_TANIM__c23312bf4f.docx
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu |   [2/4] Ekleniyor: LK_TABLO__006fb26873.docx
+2026-01-21 16:21:03 | INFO     | BelgeOlusturucu |   [3/4] Ekleniyor: FIYAT__20260121_162103.docx
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu |   [4/4] Ekleniyor: SARTLAR.docx
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | Birleştirilmiş belge kaydedildi: DENEME-210126-IBFOIM-R00__MERGED.docx
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ✓ Belgeler birleştirildi: DENEME-210126-IBFOIM-R00__MERGED.docx
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ADIM 6: SON GLOBAL PLACEHOLDER'LAR UYGULANIYOR
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulanıyor: DENEME-210126-IBFOIM-R00__MERGED.docx
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | 12 paragrafta placeholder değiştirildi
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | Global placeholder'lar uygulandı: DENEME-210126-IBFOIM-R00.docx
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ✓ Son belge kaydedildi: ciktilar/DENEME-210126-IBFOIM-R00.docx
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ADIM 7: SERİ NUMARASI FOOTER'A YAZILIYOR
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | Seri numarası footer'a yazıldı: SN:210126-DENEME-ÇANAKKALE-TÜRKIYE-LK-IBFOIM-R00 (1 konum)
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ✓ Seri numarası eklendi: SN:210126-DENEME-ÇANAKKALE-TÜRKIYE-LK-IBFOIM-R00
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ADIM 8: BELGE VERİLERİ ZTF DOSYASINA KAYDEDILIYOR
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:04 | DEBUG    | BelgeOlusturucu | Belge bulunamadı: DENEME-210126-IBFOIM-R00
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ✓ Belge kaydedildi: DENEME-210126-IBFOIM-R00
+2026-01-21 16:21:04 | DEBUG    | BelgeOlusturucu |   - Sıkıştırma: %41.1
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ✓ Belge SQLite'a kaydedildi: DENEME-210126-IBFOIM-R00
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ✓ Belge verileri ZTF dosyasına kaydedildi
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ADIM 9: CSV KAYDI EKLENİYOR
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | Fiyat tablosu: 5 ürün CSV'ye eklendi
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: SN:210126-DENEME-ÇANAKKALE-TÜRKIYE-LK-IBFOIM-R00
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ✓ CSV kaydı eklendi: /home/cafer/Documents/MyWorkspace/ZET Yapı/Application/FormOlusturma/kayitlar/belge_kayitlari.csv
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | GEÇİCİ DOSYALAR TEMİZLENİYOR
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | Geçici dizin temizlendi: 5 dosya silindi
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | TEKLİF FORMU OLUŞTURMA BAŞARIYLA TAMAMLANDI
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ============================================================
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | Çıktı dosyası: ciktilar/DENEME-210126-IBFOIM-R00.docx
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | Dosya boyutu: 139.43 KB
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | Dahil edilen ürünler: LK
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | Seri numarası: SN:210126-DENEME-ÇANAKKALE-TÜRKIYE-LK-IBFOIM-R00
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | Kod: IDX1|I=Çanakkale|U=Türkiye|F=Cafer Umut Özpınar|R=R00|PE=LK:123 x 123 cm,-:-,-:-,-:-,-:-,-:-
+2026-01-21 16:21:04 | INFO     | BelgeOlusturucu | ============================================================

@@ -31,73 +31,30 @@ def guvenli_float_donustur(
     metin: str,
     varsayilan: float = 0.0
 ) -> float:
-    """
-    Metni güvenli şekilde float'a dönüştürür.
-
-    GÜNCELLENDİ: Artık Türk para formatını destekler!
-    - "1.256,80" → 1256.8
-    - "1256,80" → 1256.8
-    - "1256.8" → 1256.8
-    - "1256" → 1256.0
-
-    Boş string, None veya dönüştürülemeyen değerler için
-    varsayılan değer döndürür.
-
-    Parametreler:
-    -------------
-    metin : str
-        Dönüştürülecek metin (Türk formatı veya standart float)
-    varsayilan : float, optional
-        Dönüşüm başarısız olursa kullanılacak değer (varsayılan: 0.0)
-
-    Döndürür:
-    ---------
-    float
-        Dönüştürülen değer veya varsayılan
-
-    Örnekler:
-    ---------
-    >>> guvenli_float_donustur("123.45")
-    123.45
-    >>> guvenli_float_donustur("1.256,80")
-    1256.8
-    >>> guvenli_float_donustur("1256,8")
-    1256.8
-    >>> guvenli_float_donustur("abc")
-    0.0
-    >>> guvenli_float_donustur("", varsayilan=-1.0)
-    -1.0
-    >>> guvenli_float_donustur("  42.5  ")
-    42.5
-    """
     if metin is None:
         return varsayilan
 
+    temiz = str(metin).strip()
+    if not temiz:
+        return varsayilan
+
     try:
-        temiz = str(metin).strip()
-        if not temiz:
-            return varsayilan
-
-        # Eğer FiyatFormatlayici mevcutsa, onu kullan
-        # (Türk formatını da destekler)
         if FIYAT_FORMAT_MEVCUT:
-            return FiyatFormatlayici.turk_format_to_float(temiz)
+            deger = FiyatFormatlayici.turk_format_to_float(temiz)
+            # KRİTİK: dönüşüm başarısızsa varsayılana dön
+            return deger if deger != 0.0 or temiz in ("0", "0.0", "0,0") else varsayilan
 
-        # Fallback: Basit float dönüşümü
-        # Türk formatı desteği için basit kontrol
+        # fallback
         virgul_sayisi = temiz.count(',')
         nokta_sayisi = temiz.count('.')
 
-        # Türk formatı: "1.256,80" veya "1256,80"
-        if virgul_sayisi == 1 and nokta_sayisi >= 0:
-            # Binlik ayırıcıları sil, virgülü noktaya çevir
+        if virgul_sayisi == 1:
             temiz = temiz.replace('.', '').replace(',', '.')
 
         return float(temiz)
 
     except (ValueError, TypeError):
         return varsayilan
-
 
 def guvenli_int_donustur(
     metin: str,
@@ -215,14 +172,20 @@ def guvenli_dosya_adi(
     # Türkçe karakterleri temizle
     temiz = turkce_karakterleri_temizle(metin)
 
-    # Sadece alfanumerik, boşluk ve alt çizgi karakterlerini tut
-    temiz = re.sub(r"[^A-Za-z0-9_ ]+", "", temiz)
+    # Ayraçları ve boşlukları _ yap
+    temiz = re.sub(r"[\/\\:\s]+", bosluk_karakteri, temiz)
+
+    # Geri kalan özel karakterleri sil
+    temiz = re.sub(r"[^A-Za-z0-9_]+", "", temiz)
 
     # Boşlukları değiştir
     temiz = temiz.strip().replace(" ", bosluk_karakteri)
 
     # Birden fazla alt çizgiyi teke indir
     temiz = re.sub(r"_+", "_", temiz)
+
+    # Başta ve sonda kalan alt çizgileri temizle
+    temiz = temiz.strip(bosluk_karakteri)
 
     # Maksimum uzunluk kontrolü
     if maksimum_uzunluk and len(temiz) > maksimum_uzunluk:

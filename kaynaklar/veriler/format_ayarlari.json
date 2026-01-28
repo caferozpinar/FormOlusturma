@@ -1,0 +1,103 @@
+{
+  "formlar": {
+    "Fiyat Teklifi": {
+      "duzen": [
+        "Başlık",
+        "Ürün Açıklama Metinleri",
+        "Ürün Tanım Tabloları",
+        "Fiyat Tablosu",
+        "Şartlar"
+      ],
+      "urun_siralamasi": [
+        "LK",
+        "ZTK",
+        "ST",
+        "LB",
+        "ZR20",
+        "ZR25",
+        "ZR30",
+        "ZT12",
+        "ZT16",
+        "ZT20",
+        "ZP30",
+        "ZP40",
+        "ZPC40",
+        "MODULER",
+        "EURA",
+        "FUMETICA",
+        "LABYRINTH",
+        "APOLLO",
+        "DKL"
+      ]
+    },
+    "Keşif Özeti": {
+      "duzen": [
+        "Başlık",
+        "Ürün Tanım Tabloları",
+        "Fiyat Tablosu"
+      ],
+      "urun_siralamasi": [
+        "LK",
+        "ZTK",
+        "ST",
+        "LB",
+        "ZR20",
+        "ZR25",
+        "ZR30",
+        "ZT12",
+        "ZT16",
+        "ZT20",
+        "ZP30",
+        "ZP40",
+        "ZPC40",
+        "MODULER",
+        "EURA",
+        "FUMETICA",
+        "LABYRINTH",
+        "APOLLO",
+        "DKL"
+      ]
+    },
+    "Tanım Formu": {
+      "duzen": [
+        "Başlık",
+        "Ürün Açıklama Metinleri",
+        "Şartlar"
+      ],
+      "urun_siralamasi": [
+        "LK",
+        "ZTK",
+        "ST",
+        "LB",
+        "ZR20",
+        "ZR25",
+        "ZR30",
+        "ZT12",
+        "ZT16",
+        "ZT20",
+        "ZP30",
+        "ZP40",
+        "ZPC40",
+        "MODULER",
+        "EURA",
+        "FUMETICA",
+        "LABYRINTH",
+        "APOLLO",
+        "DKL"
+      ]
+    }
+  },
+  "sablon_esleme": {
+    "Başlık": "STANDART_BASLIK.docx",
+    "Ürün Açıklama Metinleri": {
+      "LK": "LK_TANIM.docx",
+      "ZP30": "ZP30_TANIM.docx"
+    },
+    "Ürün Tanım Tabloları": {
+      "LK": "LK_TABLO.docx",
+      "ZP30": "ZP30_TABLO.docx"
+    },
+    "Fiyat Tablosu": "FIYAT_TABLO.docx",
+    "Şartlar": "SARTLAR.docx"
+  }
+}

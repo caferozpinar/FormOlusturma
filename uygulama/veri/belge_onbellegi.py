@@ -1,21 +1,20 @@
 """
-Belge Önbellek Yöneticisi - SQLite Backend (Genişletilmiş)
-===========================================================
+Belge Önbellek Yöneticisi - SQLite Backend (v3.0)
+=================================================
 
-Belge verilerini merkezi SQLite veritabanında saklar.
-+ İki yeni tablo: belge_kayitlari ve tab2_kayitlari
+Birleşik veritabanı yapısı:
+- belgeler: Ana belge tablosu (UYGULAMA + MANUEL)
+- belge_urunler: Ürün detayları (1-N ilişki)
 
-Tablolar:
----------
-1. belge_verileri: Orijinal belge önbelleği (mevcut)
-2. belge_kayitlari: CSV kaydedici verilerinin veritabanı versiyonu (YENİ)
-3. tab2_kayitlari: Tab_2 form girdileri (YENİ)
+Değişiklikler (v2.x → v3.0):
+- ✅ Tek ana tablo: belgeler
+- ✅ Esnek ürün sayısı: belge_urunler (1-N)
+- ✅ Geriye uyumsuz: Eski tablolar kaldırıldı
+- ✅ Daha basit API
 """
 
 import sqlite3
 import json
-import gzip
-import base64
 from pathlib import Path
 from datetime import datetime
 from typing import Any, Optional
@@ -27,28 +26,40 @@ gunluk = logging.getLogger(__name__)
 
 class BelgeOnbellegi:
     """
-    Belge verilerini SQLite veritabanında saklar ve yönetir.
+    Belge verilerini SQLite veritabanında saklar (LOW-LEVEL).
     
-    Yeni Özellikler (v2.1):
-    ----------------------
-    - belge_kayitlari tablosu: Ana belge kayıtları (CSV yerine)
-    - tab2_kayitlari tablosu: Tab_2 form girdileri
-    - Hızlı sorgulama: tarih, proje adı, konum, ürün kodları
-    - Index'li aramalar
+    Tablolar:
+    ---------
+    1. belgeler: Ana belge kayıtları
+    2. belge_urunler: Ürün detayları (1-N)
+    
+    Kullanım:
+    ---------
+    >>> onbellek = BelgeOnbellegi()
+    >>> belge_id = onbellek.belge_ekle({
+    ...     'seri_numarasi': 'SN:...',
+    ...     'tarih': '2026-01-28',
+    ...     'proje_adi': 'Test',
+    ...     'proje_konum': 'İstanbul',
+    ...     'belge_kaynak': 'UYGULAMA'
+    ... })
+    >>> onbellek.belge_urun_ekle(belge_id, 1, {
+    ...     'urun_kodu': 'LK',
+    ...     'urun_adi': 'HAVALANDIRMA',
+    ...     'urun_adet': '10'
+    ... })
     """
     
-    UYGULAMA_SURUMU = "2.1.0"
+    UYGULAMA_SURUMU = "3.0.0"
     
     def __init__(self, veritabani_yolu: Optional[str | Path] = None):
         """
         Parametreler:
         -------------
         veritabani_yolu : str | Path | None
-            SQLite veritabanı dosya yolu.
-            None ise varsayılan: ./veri/belge_onbellegi.db
+            SQLite veritabanı yolu. None ise: ./veri/belge_onbellegi.db
         """
         if veritabani_yolu is None:
-            # Varsayılan konum: ./veri/belge_onbellegi.db
             veri_klasoru = Path('./veri')
             veri_klasoru.mkdir(exist_ok=True)
             self.veritabani_yolu = veri_klasoru / 'belge_onbellegi.db'
@@ -58,10 +69,11 @@ class BelgeOnbellegi:
         
         # Veritabanını başlat
         self._veritabani_baslat()
+        gunluk.info(f"BelgeOnbellegi v{self.UYGULAMA_SURUMU} hazır: {self.veritabani_yolu}")
     
     @contextmanager
     def _baglanti_al(self):
-        """Veritabanı bağlantısı context manager"""
+        """Veritabanı bağlantısı context manager."""
         baglanti = sqlite3.connect(str(self.veritabani_yolu))
         baglanti.row_factory = sqlite3.Row  # Dict-like access
         try:
@@ -69,700 +81,300 @@ class BelgeOnbellegi:
             baglanti.commit()
         except Exception as e:
             baglanti.rollback()
+            gunluk.error(f"Veritabanı hatası: {e}")
             raise e
         finally:
             baglanti.close()
     
     def _veritabani_baslat(self):
-        """Veritabanı tablolarını oluşturur (yoksa)"""
+        """
+        Veritabanı tablolarını oluşturur.
+        
+        Not: Eski tabloları SİLMEZ, sadece yenilerini oluşturur.
+        Eski tabloları silmek için: python yeni_veritabani_olustur.py
+        """
         with self._baglanti_al() as baglanti:
             imlec = baglanti.cursor()
             
-            # =========================================================================
-            # TABLO 1: belge_verileri (Orijinal - Mevcut)
-            # =========================================================================
+            # TABLO: belgeler
             imlec.execute("""
-                CREATE TABLE IF NOT EXISTS belge_verileri (
-                    dosya_adi TEXT PRIMARY KEY,
-                    seri_numarasi TEXT NOT NULL,
-                    veri_json TEXT NOT NULL,
-                    olusturma_tarihi TEXT NOT NULL,
-                    guncelleme_tarihi TEXT NOT NULL,
+                CREATE TABLE IF NOT EXISTS belgeler (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    seri_numarasi TEXT UNIQUE NOT NULL,
+                    tarih DATE NOT NULL,
+                    proje_adi TEXT NOT NULL,
+                    proje_konum TEXT NOT NULL,
+                    belge_kaynak TEXT NOT NULL CHECK(belge_kaynak IN ('UYGULAMA', 'MANUEL')),
+                    belge_tipi TEXT,
+                    revizyon_numarasi TEXT DEFAULT 'R00',
+                    form_onaylandi TEXT DEFAULT 'Hayır' CHECK(form_onaylandi IN ('Evet', 'Hayır')),
+                    hatirlatma_durumu TEXT DEFAULT 'Pasif' CHECK(hatirlatma_durumu IN ('Aktif', 'Pasif')),
+                    dosya_adi TEXT,
+                    dosya_yolu TEXT,
+                    kdv_orani TEXT,
+                    kdvli_toplam_fiyat TEXT,
+                    olusturan_kisi TEXT,
+                    olusturma_saati TEXT,
+                    kayit_zamani TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    son_guncelleme_tarihi DATE,
+                    notlar TEXT,
+                    ztf_veri_json TEXT,
                     uygulama_surumu TEXT
                 )
             """)
             
             # Index'ler
-            imlec.execute("""
-                CREATE INDEX IF NOT EXISTS idx_seri 
-                ON belge_verileri(seri_numarasi)
-            """)
+            imlec.execute("CREATE INDEX IF NOT EXISTS idx_seri_numarasi ON belgeler(seri_numarasi)")
+            imlec.execute("CREATE INDEX IF NOT EXISTS idx_tarih ON belgeler(tarih)")
+            imlec.execute("CREATE INDEX IF NOT EXISTS idx_proje_adi ON belgeler(proje_adi)")
+            imlec.execute("CREATE INDEX IF NOT EXISTS idx_belge_kaynak ON belgeler(belge_kaynak)")
             
+            # TABLO: belge_urunler
             imlec.execute("""
-                CREATE INDEX IF NOT EXISTS idx_olusturma 
-                ON belge_verileri(olusturma_tarihi DESC)
-            """)
-            
-            # =========================================================================
-            # TABLO 2: belge_kayitlari (YENİ - CSV kaydedici yerine)
-            # =========================================================================
-            imlec.execute("""
-                CREATE TABLE IF NOT EXISTS belge_kayitlari (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    seri_numarasi TEXT UNIQUE NOT NULL,
-                    tarih TEXT NOT NULL,
-                    proje_adi TEXT,
-                    proje_konum TEXT,
-                    urun_kodlari TEXT,
-                    revizyon_numarasi TEXT,
-                    dosya_adi TEXT,
-                    dosya_yolu TEXT,
-                    olusturan_kisi TEXT,
-                    olusturma_saati TEXT,
-                    kdv_orani TEXT,
-                    kdvli_toplam_fiyat TEXT,
-                    form_onaylandi TEXT DEFAULT 'Hayır',
-                    son_guncelleme_tarihi TEXT,
-                    hatirlatma_durumu TEXT DEFAULT 'Pasif',
-                    kayit_zamani TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """)
-            
-            # Index'ler (hızlı arama için)
-            imlec.execute("""
-                CREATE INDEX IF NOT EXISTS idx_belge_seri 
-                ON belge_kayitlari(seri_numarasi)
-            """)
-            
-            imlec.execute("""
-                CREATE INDEX IF NOT EXISTS idx_belge_tarih 
-                ON belge_kayitlari(tarih DESC)
-            """)
-            
-            imlec.execute("""
-                CREATE INDEX IF NOT EXISTS idx_belge_proje 
-                ON belge_kayitlari(proje_adi)
-            """)
-            
-            imlec.execute("""
-                CREATE INDEX IF NOT EXISTS idx_belge_konum 
-                ON belge_kayitlari(proje_konum)
-            """)
-            
-            # Full-text search için (ürün kodları)
-            imlec.execute("""
-                CREATE INDEX IF NOT EXISTS idx_belge_urunler 
-                ON belge_kayitlari(urun_kodlari)
-            """)
-            
-            # =========================================================================
-            # TABLO 2.5: belge_urun_detaylari (30 ürün için ayrı tablo - normalleştirme)
-            # =========================================================================
-            imlec.execute("""
-                CREATE TABLE IF NOT EXISTS belge_urun_detaylari (
+                CREATE TABLE IF NOT EXISTS belge_urunler (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     belge_id INTEGER NOT NULL,
-                    urun_sira INTEGER NOT NULL,
+                    sira_no INTEGER NOT NULL,
+                    urun_kodu TEXT,
                     urun_adi TEXT,
                     urun_adet TEXT,
+                    urun_ozellik TEXT,
                     urun_birim_fiyat TEXT,
                     urun_toplam_fiyat TEXT,
-                    FOREIGN KEY (belge_id) REFERENCES belge_kayitlari(id) ON DELETE CASCADE
+                    FOREIGN KEY (belge_id) REFERENCES belgeler(id) ON DELETE CASCADE,
+                    UNIQUE(belge_id, sira_no)
                 )
             """)
             
-            imlec.execute("""
-                CREATE INDEX IF NOT EXISTS idx_urun_belge 
-                ON belge_urun_detaylari(belge_id)
-            """)
+            imlec.execute("CREATE INDEX IF NOT EXISTS idx_belge_id ON belge_urunler(belge_id)")
             
-            # =========================================================================
-            # TABLO 3: tab2_kayitlari (YENİ - Tab_2 form girdileri)
-            # =========================================================================
-            imlec.execute("""
-                CREATE TABLE IF NOT EXISTS tab2_kayitlari (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    belge_tarih TEXT,
-                    proje_adi TEXT,
-                    proje_yeri TEXT,
-                    urun1_kod TEXT,
-                    urun1_adet TEXT,
-                    urun1_ozl TEXT,
-                    urun2_kod TEXT,
-                    urun2_adet TEXT,
-                    urun2_ozl TEXT,
-                    urun3_kod TEXT,
-                    urun3_adet TEXT,
-                    urun3_ozl TEXT,
-                    urun4_kod TEXT,
-                    urun4_adet TEXT,
-                    urun4_ozl TEXT,
-                    urun5_kod TEXT,
-                    urun5_adet TEXT,
-                    urun5_ozl TEXT,
-                    urun6_kod TEXT,
-                    urun6_adet TEXT,
-                    urun6_ozl TEXT,
-                    toplam_teklif TEXT,
-                    belge_tipi TEXT,
-                    notlar TEXT,
-                    kayit_zamani TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """)
-            
-            # Index'ler (hızlı arama için)
-            imlec.execute("""
-                CREATE INDEX IF NOT EXISTS idx_tab2_tarih 
-                ON tab2_kayitlari(belge_tarih DESC)
-            """)
-            
-            imlec.execute("""
-                CREATE INDEX IF NOT EXISTS idx_tab2_proje 
-                ON tab2_kayitlari(proje_adi)
-            """)
-            
-            imlec.execute("""
-                CREATE INDEX IF NOT EXISTS idx_tab2_yer 
-                ON tab2_kayitlari(proje_yeri)
-            """)
-            
-            imlec.execute("""
-                CREATE INDEX IF NOT EXISTS idx_tab2_tip 
-                ON tab2_kayitlari(belge_tipi)
-            """)
-            
-            gunluk.debug(f"✓ Veritabanı hazır (3 tablo): {self.veritabani_yolu}")
+            gunluk.debug("Veritabanı tabloları kontrol edildi")
     
     # =========================================================================
-    # ORİJİNAL METODLAR (belge_verileri tablosu için)
+    # BELGE KAYITLARI - CRUD
     # =========================================================================
     
-    def _veriyi_sikistir(self, veri: dict) -> str:
-        """Veriyi sıkıştırır ve base64 string'e çevirir."""
-        json_str = json.dumps(veri, ensure_ascii=False)
-        json_bytes = json_str.encode('utf-8')
-        sikistirilmis = gzip.compress(json_bytes, compresslevel=9)
-        base64_str = base64.b64encode(sikistirilmis).decode('ascii')
-        return base64_str
-    
-    def _veriyi_ac(self, sikistirilmis_str: str) -> dict:
-        """Sıkıştırılmış veriyi açar."""
-        sikistirilmis = base64.b64decode(sikistirilmis_str.encode('ascii'))
-        json_bytes = gzip.decompress(sikistirilmis)
-        json_str = json_bytes.decode('utf-8')
-        veri = json.loads(json_str)
-        return veri
-    
-    def kaydet(
+    def belge_ekle(
         self,
-        dosya_adi: str,
-        seri_numarasi: str,
-        veri: dict[str, Any],
-        uygulama_surumu: str = None,
+        kayit: dict[str, Any],
         logger: Optional[logging.Logger] = None
-    ) -> bool:
+    ) -> Optional[int]:
         """
-        Belge verilerini veritabanına kaydeder (orijinal tablo).
+        Yeni belge kaydı ekler.
         
         Parametreler:
         -------------
-        dosya_adi : str
-            Belge dosya adı (örn: 'IZELTAS-080126-59HOY1-R01')
-        seri_numarasi : str
-            Belge seri numarası (örn: '59HOY1')
-        veri : dict
-            Kaydedilecek veri yapısı
-        uygulama_surumu : str
-            Uygulama sürüm numarası
-        logger : Logger
-            Logger referansı
-        
-        Döndürür:
-        ---------
-        bool
-            Başarılı ise True
-        """
-        if uygulama_surumu is None:
-            uygulama_surumu = self.UYGULAMA_SURUMU
-        
-        log = logger or gunluk
-        
-        try:
-            # Mevcut kayıt var mı kontrol et
-            mevcut = self.yukle(dosya_adi, logger=log)
-            
-            # Veriyi sıkıştır
-            orijinal_boyut = len(json.dumps(veri, ensure_ascii=False).encode('utf-8'))
-            sikistirilmis_veri = self._veriyi_sikistir(veri)
-            sikistirilmis_boyut = len(sikistirilmis_veri)
-            
-            # Zaman damgaları
-            simdi = datetime.now().isoformat()
-            olusturma_tarihi = mevcut.get('olusturma_tarihi', simdi) if mevcut else simdi
-            
-            # Veritabanına kaydet
-            with self._baglanti_al() as baglanti:
-                imlec = baglanti.cursor()
-                
-                imlec.execute("""
-                    INSERT OR REPLACE INTO belge_verileri
-                    (dosya_adi, seri_numarasi, veri_json, olusturma_tarihi, 
-                     guncelleme_tarihi, uygulama_surumu)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                """, (
-                    dosya_adi,
-                    seri_numarasi,
-                    sikistirilmis_veri,
-                    olusturma_tarihi,
-                    simdi,
-                    uygulama_surumu
-                ))
-            
-            # İstatistikler
-            oran = (1 - sikistirilmis_boyut / orijinal_boyut) * 100
-            
-            if mevcut:
-                log.info(f"✓ Belge güncellendi: {dosya_adi}")
-            else:
-                log.info(f"✓ Belge kaydedildi: {dosya_adi}")
-            
-            log.debug(f"  - Sıkıştırma: %{oran:.1f}")
-            
-            return True
-            
-        except Exception as e:
-            log.error(f"HATA: Belge kaydetme başarısız: {e}")
-            import traceback
-            log.error(traceback.format_exc())
-            return False
-    
-    def yukle(
-        self,
-        dosya_adi: str,
-        logger: Optional[logging.Logger] = None
-    ) -> Optional[dict[str, Any]]:
-        """Belge verilerini dosya adı ile yükler (orijinal tablo)."""
-        log = logger or gunluk
-        
-        try:
-            # .docx uzantısını kaldır (varsa)
-            if dosya_adi.endswith('.docx'):
-                dosya_adi = dosya_adi[:-5]
-            
-            with self._baglanti_al() as baglanti:
-                imlec = baglanti.cursor()
-                
-                imlec.execute("""
-                    SELECT veri_json, olusturma_tarihi, guncelleme_tarihi
-                    FROM belge_verileri
-                    WHERE dosya_adi = ?
-                """, (dosya_adi,))
-                
-                satir = imlec.fetchone()
-                
-                if satir is None:
-                    log.debug(f"Belge bulunamadı: {dosya_adi}")
-                    return None
-                
-                # Veriyi aç
-                veri = self._veriyi_ac(satir['veri_json'])
-                veri['olusturma_tarihi'] = satir['olusturma_tarihi']
-                veri['guncelleme_tarihi'] = satir['guncelleme_tarihi']
-                
-                log.debug(f"✓ Belge yüklendi: {dosya_adi}")
-                return veri
-                
-        except Exception as e:
-            log.error(f"HATA: Belge yükleme başarısız: {e}")
-            return None
-    
-    def seri_ile_yukle(
-        self,
-        seri_numarasi: str,
-        logger: Optional[logging.Logger] = None
-    ) -> Optional[dict[str, Any]]:
-        """Belge verilerini seri numarası ile yükler (orijinal tablo)."""
-        log = logger or gunluk
-        
-        try:
-            with self._baglanti_al() as baglanti:
-                imlec = baglanti.cursor()
-                
-                imlec.execute("""
-                    SELECT dosya_adi, veri_json, 
-                           olusturma_tarihi, guncelleme_tarihi
-                    FROM belge_verileri
-                    WHERE seri_numarasi = ?
-                    ORDER BY guncelleme_tarihi DESC
-                    LIMIT 1
-                """, (seri_numarasi,))
-                
-                satir = imlec.fetchone()
-                
-                if satir is None:
-                    log.debug(f"Seri numarası bulunamadı: {seri_numarasi}")
-                    return None
-                
-                # Veriyi aç
-                veri = self._veriyi_ac(satir['veri_json'])
-                veri['dosya_adi'] = satir['dosya_adi']
-                veri['olusturma_tarihi'] = satir['olusturma_tarihi']
-                veri['guncelleme_tarihi'] = satir['guncelleme_tarihi']
-                
-                log.debug(f"✓ Belge yüklendi (seri): {seri_numarasi}")
-                return veri
-                
-        except Exception as e:
-            log.error(f"HATA: Seri ile yükleme başarısız: {e}")
-            return None
-    
-    def var_mi(
-        self,
-        dosya_adi: str,
-        logger: Optional[logging.Logger] = None
-    ) -> bool:
-        """Belgenin veritabanında olup olmadığını kontrol eder."""
-        try:
-            if dosya_adi.endswith('.docx'):
-                dosya_adi = dosya_adi[:-5]
-            
-            with self._baglanti_al() as baglanti:
-                imlec = baglanti.cursor()
-                
-                imlec.execute("""
-                    SELECT COUNT(*) FROM belge_verileri
-                    WHERE dosya_adi = ?
-                """, (dosya_adi,))
-                
-                adet = imlec.fetchone()[0]
-                return adet > 0
-                
-        except Exception as e:
-            log = logger or gunluk
-            log.error(f"HATA: Varlık kontrolü başarısız: {e}")
-            return False
-    
-    def sil(
-        self,
-        dosya_adi: str,
-        logger: Optional[logging.Logger] = None
-    ) -> bool:
-        """Belge verilerini önbellekten siler."""
-        log = logger or gunluk
-        
-        try:
-            if dosya_adi.endswith('.docx'):
-                dosya_adi = dosya_adi[:-5]
-            
-            with self._baglanti_al() as baglanti:
-                imlec = baglanti.cursor()
-                
-                imlec.execute("""
-                    DELETE FROM belge_verileri
-                    WHERE dosya_adi = ?
-                """, (dosya_adi,))
-                
-                if imlec.rowcount > 0:
-                    log.info(f"✓ Belge silindi: {dosya_adi}")
-                    return True
-                else:
-                    log.warning(f"Belge zaten yok: {dosya_adi}")
-                    return True
-                
-        except Exception as e:
-            log.error(f"HATA: Belge silme başarısız: {e}")
-            return False
-    
-    def tum_belgeleri_listele(
-        self,
-        limit: Optional[int] = None,
-        logger: Optional[logging.Logger] = None
-    ) -> list[dict[str, str]]:
-        """Tüm belgeleri listeler (metadata)."""
-        log = logger or gunluk
-        
-        try:
-            with self._baglanti_al() as baglanti:
-                imlec = baglanti.cursor()
-                
-                if limit:
-                    imlec.execute("""
-                        SELECT dosya_adi, seri_numarasi, 
-                               olusturma_tarihi, guncelleme_tarihi
-                        FROM belge_verileri
-                        ORDER BY guncelleme_tarihi DESC
-                        LIMIT ?
-                    """, (limit,))
-                else:
-                    imlec.execute("""
-                        SELECT dosya_adi, seri_numarasi, 
-                               olusturma_tarihi, guncelleme_tarihi
-                        FROM belge_verileri
-                        ORDER BY guncelleme_tarihi DESC
-                    """)
-                
-                satirlar = imlec.fetchall()
-                belgeler = [dict(satir) for satir in satirlar]
-                
-                log.debug(f"Toplam {len(belgeler)} belge listelendi")
-                return belgeler
-                
-        except Exception as e:
-            log.error(f"HATA: Listeleme başarısız: {e}")
-            return []
-    
-    def istatistikler(
-        self,
-        logger: Optional[logging.Logger] = None
-    ) -> dict[str, Any]:
-        """Veritabanı istatistiklerini döner."""
-        log = logger or gunluk
-        
-        try:
-            with self._baglanti_al() as baglanti:
-                imlec = baglanti.cursor()
-                
-                # belge_verileri
-                imlec.execute("SELECT COUNT(*) FROM belge_verileri")
-                toplam_belge = imlec.fetchone()[0]
-                
-                # belge_kayitlari
-                imlec.execute("SELECT COUNT(*) FROM belge_kayitlari")
-                toplam_kayit = imlec.fetchone()[0]
-                
-                # tab2_kayitlari
-                imlec.execute("SELECT COUNT(*) FROM tab2_kayitlari")
-                toplam_tab2 = imlec.fetchone()[0]
-                
-                # Veritabanı boyutu
-                veritabani_boyutu = self.veritabani_yolu.stat().st_size
-                
-                istatistikler = {
-                    'toplam_belge': toplam_belge,
-                    'toplam_kayit': toplam_kayit,
-                    'toplam_tab2': toplam_tab2,
-                    'veritabani_boyutu': veritabani_boyutu,
-                }
-                
-                log.info("Veritabanı istatistikleri:")
-                log.info(f"  - Belge önbelleği: {toplam_belge:,}")
-                log.info(f"  - Belge kayıtları: {toplam_kayit:,}")
-                log.info(f"  - Tab2 kayıtları: {toplam_tab2:,}")
-                log.info(f"  - Boyut: {veritabani_boyutu:,} byte")
-                
-                return istatistikler
-                
-        except Exception as e:
-            log.error(f"HATA: İstatistik hesaplama başarısız: {e}")
-            return {}
-    
-    # =========================================================================
-    # YENİ METODLAR - TABLO 2: belge_kayitlari
-    # =========================================================================
-    
-    def belge_kaydi_ekle(
-        self,
-        kayit_verileri: dict[str, Any],
-        urun_detaylari: list[dict[str, str]],
-        logger: Optional[logging.Logger] = None
-    ) -> bool:
-        """
-        Belge kaydı ekler (CSV kaydedici yerine).
-        
-        Parametreler:
-        -------------
-        kayit_verileri : dict
-            {
-                'seri_numarasi': str,
-                'tarih': str,
-                'proje_adi': str,
-                'proje_konum': str,
-                'urun_kodlari': str (virgülle ayrılmış),
-                'revizyon_numarasi': str,
-                'dosya_adi': str,
-                'dosya_yolu': str,
-                'olusturan_kisi': str,
-                'olusturma_saati': str,
-                'kdv_orani': str,
-                'kdvli_toplam_fiyat': str
-            }
-        urun_detaylari : list[dict]
-            [
-                {
-                    'urun_adi': str,
-                    'urun_adet': str,
-                    'urun_birim_fiyat': str,
-                    'urun_toplam_fiyat': str
-                },
-                ... (30 ürüne kadar)
-            ]
+        kayit : dict
+            Belge verileri. Zorunlu alanlar:
+            - seri_numarasi
+            - tarih
+            - proje_adi
+            - proje_konum
+            - belge_kaynak ('UYGULAMA' veya 'MANUEL')
         logger : Logger
         
         Döndürür:
         ---------
-        bool
-            Başarılı ise True
+        int | None
+            Eklenen belge ID'si veya None (hata)
+        
+        Örnek:
+        ------
+        >>> belge_id = onbellek.belge_ekle({
+        ...     'seri_numarasi': 'SN:280126-TEST-IST-R00',
+        ...     'tarih': '2026-01-28',
+        ...     'proje_adi': 'Test Projesi',
+        ...     'proje_konum': 'İstanbul',
+        ...     'belge_kaynak': 'UYGULAMA',
+        ...     'kdvli_toplam_fiyat': '1000,00'
+        ... })
         """
         log = logger or gunluk
         
         try:
-            simdi = datetime.now().strftime("%Y-%m-%d")
-            
             with self._baglanti_al() as baglanti:
                 imlec = baglanti.cursor()
                 
-                # Ana kayıt
-                imlec.execute("""
-                    INSERT OR REPLACE INTO belge_kayitlari
-                    (seri_numarasi, tarih, proje_adi, proje_konum, urun_kodlari,
-                     revizyon_numarasi, dosya_adi, dosya_yolu, olusturan_kisi,
-                     olusturma_saati, kdv_orani, kdvli_toplam_fiyat,
-                     son_guncelleme_tarihi)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (
-                    kayit_verileri.get('seri_numarasi'),
-                    kayit_verileri.get('tarih', simdi),
-                    kayit_verileri.get('proje_adi', ''),
-                    kayit_verileri.get('proje_konum', ''),
-                    kayit_verileri.get('urun_kodlari', ''),
-                    kayit_verileri.get('revizyon_numarasi', 'R01'),
-                    kayit_verileri.get('dosya_adi', ''),
-                    kayit_verileri.get('dosya_yolu', ''),
-                    kayit_verileri.get('olusturan_kisi', ''),
-                    kayit_verileri.get('olusturma_saati', datetime.now().strftime("%H:%M:%S")),
-                    kayit_verileri.get('kdv_orani', '0'),
-                    kayit_verileri.get('kdvli_toplam_fiyat', '0,00'),
-                    simdi
-                ))
+                # SQL hazırla
+                kolonlar = ', '.join(kayit.keys())
+                placeholders = ', '.join(['?' for _ in kayit])
+                sql = f"INSERT INTO belgeler ({kolonlar}) VALUES ({placeholders})"
                 
+                # Çalıştır
+                imlec.execute(sql, list(kayit.values()))
                 belge_id = imlec.lastrowid
                 
-                # Ürün detayları (önce eski kayıtları sil)
-                imlec.execute("DELETE FROM belge_urun_detaylari WHERE belge_id = ?", (belge_id,))
-                
-                # Yeni ürünleri ekle
-                for sira, urun in enumerate(urun_detaylari, start=1):
-                    if sira > 30:  # Maksimum 30 ürün
-                        break
-                    
-                    imlec.execute("""
-                        INSERT INTO belge_urun_detaylari
-                        (belge_id, urun_sira, urun_adi, urun_adet, 
-                         urun_birim_fiyat, urun_toplam_fiyat)
-                        VALUES (?, ?, ?, ?, ?, ?)
-                    """, (
-                        belge_id,
-                        sira,
-                        urun.get('urun_adi', ''),
-                        urun.get('urun_adet', ''),
-                        urun.get('urun_birim_fiyat', ''),
-                        urun.get('urun_toplam_fiyat', '')
-                    ))
-            
-            log.info(f"✓ Belge kaydı eklendi: {kayit_verileri.get('seri_numarasi')}")
-            log.debug(f"  - Ürün sayısı: {len(urun_detaylari)}")
-            
-            return True
-            
+                log.info(f"✓ Belge eklendi: ID={belge_id}, Seri={kayit.get('seri_numarasi')}")
+                return belge_id
+        
+        except sqlite3.IntegrityError as e:
+            log.error(f"Belge ekleme hatası (unique constraint): {e}")
+            return None
         except Exception as e:
-            log.error(f"HATA: Belge kaydı eklenemedi: {e}")
-            import traceback
-            log.error(traceback.format_exc())
-            return False
+            log.error(f"Belge ekleme hatası: {e}")
+            return None
     
-    def belge_kaydi_ara(
+    def belge_urun_ekle(
         self,
-        seri_numarasi: Optional[str] = None,
-        proje_adi: Optional[str] = None,
-        proje_konum: Optional[str] = None,
-        tarih_baslangic: Optional[str] = None,
-        tarih_bitis: Optional[str] = None,
-        urun_kodu: Optional[str] = None,
-        limit: int = 100,
+        belge_id: int,
+        sira_no: int,
+        urun: dict[str, str],
         logger: Optional[logging.Logger] = None
-    ) -> list[dict[str, Any]]:
+    ) -> bool:
         """
-        Belge kayıtlarını sorgular (çok yönlü arama).
+        Belgeye ürün ekler.
         
         Parametreler:
         -------------
-        seri_numarasi : str | None
-            Seri numarası ile arama
-        proje_adi : str | None
-            Proje adı ile arama (LIKE)
-        proje_konum : str | None
-            Proje konumu ile arama (LIKE)
-        tarih_baslangic : str | None
-            Başlangıç tarihi (YYYY-MM-DD)
-        tarih_bitis : str | None
-            Bitiş tarihi (YYYY-MM-DD)
-        urun_kodu : str | None
-            Ürün kodu ile arama (LIKE)
-        limit : int
-            Maksimum sonuç sayısı
+        belge_id : int
+            Belge ID
+        sira_no : int
+            Ürün sıra numarası (1, 2, 3, ...)
+        urun : dict
+            Ürün verileri:
+            - urun_kodu
+            - urun_adi
+            - urun_adet
+            - urun_ozellik
+            - urun_birim_fiyat
+            - urun_toplam_fiyat
         logger : Logger
+        
+        Döndürür:
+        ---------
+        bool
+            Başarılı ise True
+        
+        Örnek:
+        ------
+        >>> onbellek.belge_urun_ekle(1, 1, {
+        ...     'urun_kodu': 'LK',
+        ...     'urun_adi': 'HAVALANDIRMA KAPAK SETİ',
+        ...     'urun_adet': '10',
+        ...     'urun_birim_fiyat': '50,00',
+        ...     'urun_toplam_fiyat': '500,00'
+        ... })
+        """
+        log = logger or gunluk
+        
+        try:
+            with self._baglanti_al() as baglanti:
+                imlec = baglanti.cursor()
+                
+                imlec.execute("""
+                    INSERT INTO belge_urunler (
+                        belge_id, sira_no, urun_kodu, urun_adi, urun_adet,
+                        urun_ozellik, urun_birim_fiyat, urun_toplam_fiyat
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    belge_id,
+                    sira_no,
+                    urun.get('urun_kodu', ''),
+                    urun.get('urun_adi', ''),
+                    urun.get('urun_adet', ''),
+                    urun.get('urun_ozellik', ''),
+                    urun.get('urun_birim_fiyat', ''),
+                    urun.get('urun_toplam_fiyat', '')
+                ))
+                
+                log.debug(f"✓ Ürün eklendi: Belge={belge_id}, Sıra={sira_no}")
+                return True
+        
+        except Exception as e:
+            log.error(f"Ürün ekleme hatası: {e}")
+            return False
+    
+    def belge_ara(
+        self,
+        **filtreler
+    ) -> list[dict[str, Any]]:
+        """
+        Belge arar (çok yönlü).
+        
+        Parametreler:
+        -------------
+        **filtreler : dict
+            Arama kriterleri:
+            - seri_numarasi: str
+            - proje_adi: str (LIKE)
+            - proje_konum: str (LIKE)
+            - belge_kaynak: str ('UYGULAMA' veya 'MANUEL')
+            - tarih_baslangic: str (>=)
+            - tarih_bitis: str (<=)
+            - limit: int
         
         Döndürür:
         ---------
         list[dict]
-            Bulunan kayıtlar
-        """
-        log = logger or gunluk
+            Bulunan belgeler
         
+        Örnek:
+        ------
+        >>> belgeler = onbellek.belge_ara(
+        ...     proje_adi='TEST',
+        ...     belge_kaynak='UYGULAMA',
+        ...     limit=10
+        ... )
+        """
         try:
             with self._baglanti_al() as baglanti:
                 imlec = baglanti.cursor()
                 
-                # Sorgu oluştur
-                sorgu = "SELECT * FROM belge_kayitlari WHERE 1=1"
+                # WHERE clause oluştur
+                kosullar = []
                 parametreler = []
                 
-                if seri_numarasi:
-                    sorgu += " AND seri_numarasi = ?"
-                    parametreler.append(seri_numarasi)
+                if 'seri_numarasi' in filtreler:
+                    kosullar.append("seri_numarasi = ?")
+                    parametreler.append(filtreler['seri_numarasi'])
                 
-                if proje_adi:
-                    sorgu += " AND proje_adi LIKE ?"
-                    parametreler.append(f"%{proje_adi}%")
+                if 'proje_adi' in filtreler:
+                    kosullar.append("proje_adi LIKE ?")
+                    parametreler.append(f"%{filtreler['proje_adi']}%")
                 
-                if proje_konum:
-                    sorgu += " AND proje_konum LIKE ?"
-                    parametreler.append(f"%{proje_konum}%")
+                if 'proje_konum' in filtreler:
+                    kosullar.append("proje_konum LIKE ?")
+                    parametreler.append(f"%{filtreler['proje_konum']}%")
                 
-                if tarih_baslangic:
-                    sorgu += " AND tarih >= ?"
-                    parametreler.append(tarih_baslangic)
+                if 'belge_kaynak' in filtreler:
+                    kosullar.append("belge_kaynak = ?")
+                    parametreler.append(filtreler['belge_kaynak'])
                 
-                if tarih_bitis:
-                    sorgu += " AND tarih <= ?"
-                    parametreler.append(tarih_bitis)
+                if 'tarih_baslangic' in filtreler:
+                    kosullar.append("tarih >= ?")
+                    parametreler.append(filtreler['tarih_baslangic'])
                 
-                if urun_kodu:
-                    sorgu += " AND urun_kodlari LIKE ?"
-                    parametreler.append(f"%{urun_kodu}%")
+                if 'tarih_bitis' in filtreler:
+                    kosullar.append("tarih <= ?")
+                    parametreler.append(filtreler['tarih_bitis'])
                 
-                sorgu += " ORDER BY tarih DESC, kayit_zamani DESC LIMIT ?"
-                parametreler.append(limit)
+                # SQL oluştur
+                sql = "SELECT * FROM belgeler"
+                if kosullar:
+                    sql += " WHERE " + " AND ".join(kosullar)
+                sql += " ORDER BY tarih DESC"
                 
-                imlec.execute(sorgu, tuple(parametreler))
+                if 'limit' in filtreler:
+                    sql += f" LIMIT {filtreler['limit']}"
+                
+                # Çalıştır
+                imlec.execute(sql, parametreler)
                 satirlar = imlec.fetchall()
                 
-                kayitlar = [dict(satir) for satir in satirlar]
-                
-                log.info(f"Belge arama: {len(kayitlar)} sonuç bulundu")
-                return kayitlar
-                
+                # Dict'e çevir
+                return [dict(satir) for satir in satirlar]
+        
         except Exception as e:
-            log.error(f"HATA: Belge arama başarısız: {e}")
+            gunluk.error(f"Belge arama hatası: {e}")
             return []
     
-    def belge_kaydi_urun_detaylari_al(
+    def belge_urunlerini_getir(
         self,
         belge_id: int,
         logger: Optional[logging.Logger] = None
-    ) -> list[dict[str, str]]:
+    ) -> list[dict[str, Any]]:
         """
-        Belgeye ait ürün detaylarını getirir.
+        Belgenin tüm ürünlerini getirir.
         
         Parametreler:
         -------------
@@ -773,7 +385,7 @@ class BelgeOnbellegi:
         Döndürür:
         ---------
         list[dict]
-            Ürün detayları
+            Ürün listesi (sıra_no'ya göre sıralı)
         """
         log = logger or gunluk
         
@@ -782,49 +394,30 @@ class BelgeOnbellegi:
                 imlec = baglanti.cursor()
                 
                 imlec.execute("""
-                    SELECT urun_sira, urun_adi, urun_adet, 
-                           urun_birim_fiyat, urun_toplam_fiyat
-                    FROM belge_urun_detaylari
+                    SELECT * FROM belge_urunler
                     WHERE belge_id = ?
-                    ORDER BY urun_sira ASC
+                    ORDER BY sira_no
                 """, (belge_id,))
                 
                 satirlar = imlec.fetchall()
-                urunler = [dict(satir) for satir in satirlar]
-                
-                return urunler
-                
+                return [dict(satir) for satir in satirlar]
+        
         except Exception as e:
-            log.error(f"HATA: Ürün detayları alınamadı: {e}")
+            log.error(f"Ürün getirme hatası: {e}")
             return []
     
-    # =========================================================================
-    # YENİ METODLAR - TABLO 3: tab2_kayitlari
-    # =========================================================================
-    
-    def tab2_kaydi_ekle(
+    def belge_sil(
         self,
-        tab2_verileri: dict[str, Any],
+        belge_id: int,
         logger: Optional[logging.Logger] = None
     ) -> bool:
         """
-        Tab_2 form verilerini veritabanına kaydeder.
+        Belgeyi siler (ürünler CASCADE ile otomatik silinir).
         
         Parametreler:
         -------------
-        tab2_verileri : dict
-            {
-                'belge_tarih': str,
-                'proje_adi': str,
-                'proje_yeri': str,
-                'urun1_kod': str,
-                'urun1_adet': str,
-                'urun1_ozl': str,
-                ... (urun6'ya kadar)
-                'toplam_teklif': str,
-                'belge_tipi': str,
-                'notlar': str
-            }
+        belge_id : int
+            Belge ID
         logger : Logger
         
         Döndürür:
@@ -837,141 +430,178 @@ class BelgeOnbellegi:
         try:
             with self._baglanti_al() as baglanti:
                 imlec = baglanti.cursor()
+                imlec.execute("DELETE FROM belgeler WHERE id = ?", (belge_id,))
                 
-                imlec.execute("""
-                    INSERT INTO tab2_kayitlari
-                    (belge_tarih, proje_adi, proje_yeri,
-                     urun1_kod, urun1_adet, urun1_ozl,
-                     urun2_kod, urun2_adet, urun2_ozl,
-                     urun3_kod, urun3_adet, urun3_ozl,
-                     urun4_kod, urun4_adet, urun4_ozl,
-                     urun5_kod, urun5_adet, urun5_ozl,
-                     urun6_kod, urun6_adet, urun6_ozl,
-                     toplam_teklif, belge_tipi, notlar)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (
-                    tab2_verileri.get('belge_tarih', ''),
-                    tab2_verileri.get('proje_adi', ''),
-                    tab2_verileri.get('proje_yeri', ''),
-                    tab2_verileri.get('urun1_kod', ''),
-                    tab2_verileri.get('urun1_adet', ''),
-                    tab2_verileri.get('urun1_ozl', ''),
-                    tab2_verileri.get('urun2_kod', ''),
-                    tab2_verileri.get('urun2_adet', ''),
-                    tab2_verileri.get('urun2_ozl', ''),
-                    tab2_verileri.get('urun3_kod', ''),
-                    tab2_verileri.get('urun3_adet', ''),
-                    tab2_verileri.get('urun3_ozl', ''),
-                    tab2_verileri.get('urun4_kod', ''),
-                    tab2_verileri.get('urun4_adet', ''),
-                    tab2_verileri.get('urun4_ozl', ''),
-                    tab2_verileri.get('urun5_kod', ''),
-                    tab2_verileri.get('urun5_adet', ''),
-                    tab2_verileri.get('urun5_ozl', ''),
-                    tab2_verileri.get('urun6_kod', ''),
-                    tab2_verileri.get('urun6_adet', ''),
-                    tab2_verileri.get('urun6_ozl', ''),
-                    tab2_verileri.get('toplam_teklif', ''),
-                    tab2_verileri.get('belge_tipi', ''),
-                    tab2_verileri.get('notlar', '')
-                ))
-            
-            log.info(f"✓ Tab2 kaydı eklendi (ID: {imlec.lastrowid})")
-            return True
-            
+                log.info(f"✓ Belge silindi: ID={belge_id}")
+                return True
+        
         except Exception as e:
-            log.error(f"HATA: Tab2 kaydı eklenemedi: {e}")
-            import traceback
-            log.error(traceback.format_exc())
+            log.error(f"Belge silme hatası: {e}")
             return False
     
-    def tab2_kayitlari_ara(
+    def belge_guncelle(
         self,
-        proje_adi: Optional[str] = None,
-        proje_yeri: Optional[str] = None,
-        belge_tipi: Optional[str] = None,
-        tarih_baslangic: Optional[str] = None,
-        tarih_bitis: Optional[str] = None,
-        urun_kodu: Optional[str] = None,
-        limit: int = 100,
+        belge_id: int,
+        guncellemeler: dict[str, Any],
         logger: Optional[logging.Logger] = None
-    ) -> list[dict[str, Any]]:
+    ) -> bool:
         """
-        Tab2 kayıtlarını sorgular.
+        Belgeyi günceller (kısmi güncelleme).
         
         Parametreler:
         -------------
-        proje_adi : str | None
-            Proje adı (LIKE)
-        proje_yeri : str | None
-            Proje yeri (LIKE)
-        belge_tipi : str | None
-            Belge tipi (Teklif/Keşif/Tanım)
-        tarih_baslangic : str | None
-            Başlangıç tarihi
-        tarih_bitis : str | None
-            Bitiş tarihi
-        urun_kodu : str | None
-            Ürün kodu arama (tüm ürünlerde)
-        limit : int
-            Maksimum sonuç
+        belge_id : int
+            Belge ID
+        guncellemeler : dict
+            Güncellenecek alan-değer çiftleri
+            Örnek: {'form_onaylandi': 'Evet', 'hatirlatma_durumu': 'Aktif'}
         logger : Logger
         
         Döndürür:
         ---------
-        list[dict]
-            Bulunan kayıtlar
+        bool
+            Başarılı ise True
+        
+        Örnek:
+        ------
+        >>> onbellek.belge_guncelle(5, {'form_onaylandi': 'Evet'})
+        True
         """
         log = logger or gunluk
+        
+        if not guncellemeler:
+            log.warning("Güncelleme yapılacak alan yok")
+            return False
         
         try:
             with self._baglanti_al() as baglanti:
                 imlec = baglanti.cursor()
                 
-                # Sorgu oluştur
-                sorgu = "SELECT * FROM tab2_kayitlari WHERE 1=1"
-                parametreler = []
+                # SQL oluştur
+                set_clause = ', '.join([f"{alan} = ?" for alan in guncellemeler.keys()])
+                sql = f"UPDATE belgeler SET {set_clause} WHERE id = ?"
                 
-                if proje_adi:
-                    sorgu += " AND proje_adi LIKE ?"
-                    parametreler.append(f"%{proje_adi}%")
+                # Parametreleri hazırla
+                parametreler = list(guncellemeler.values()) + [belge_id]
                 
-                if proje_yeri:
-                    sorgu += " AND proje_yeri LIKE ?"
-                    parametreler.append(f"%{proje_yeri}%")
+                # Çalıştır
+                imlec.execute(sql, parametreler)
                 
-                if belge_tipi:
-                    sorgu += " AND belge_tipi = ?"
-                    parametreler.append(belge_tipi)
-                
-                if tarih_baslangic:
-                    sorgu += " AND belge_tarih >= ?"
-                    parametreler.append(tarih_baslangic)
-                
-                if tarih_bitis:
-                    sorgu += " AND belge_tarih <= ?"
-                    parametreler.append(tarih_bitis)
-                
-                if urun_kodu:
-                    # Tüm ürün kod kolonlarında ara
-                    sorgu += """ AND (
-                        urun1_kod LIKE ? OR urun2_kod LIKE ? OR 
-                        urun3_kod LIKE ? OR urun4_kod LIKE ? OR 
-                        urun5_kod LIKE ? OR urun6_kod LIKE ?
-                    )"""
-                    parametreler.extend([f"%{urun_kodu}%"] * 6)
-                
-                sorgu += " ORDER BY belge_tarih DESC, kayit_zamani DESC LIMIT ?"
-                parametreler.append(limit)
-                
-                imlec.execute(sorgu, tuple(parametreler))
-                satirlar = imlec.fetchall()
-                
-                kayitlar = [dict(satir) for satir in satirlar]
-                
-                log.info(f"Tab2 arama: {len(kayitlar)} sonuç bulundu")
-                return kayitlar
-                
+                if imlec.rowcount > 0:
+                    log.info(f"✓ Belge güncellendi: ID={belge_id}, Alanlar={list(guncellemeler.keys())}")
+                    return True
+                else:
+                    log.warning(f"Belge bulunamadı: ID={belge_id}")
+                    return False
+        
         except Exception as e:
-            log.error(f"HATA: Tab2 arama başarısız: {e}")
-            return []
+            log.error(f"Belge güncelleme hatası: {e}")
+            return False
+    
+    # =========================================================================
+    # İSTATİSTİKLER
+    # =========================================================================
+    
+    def istatistikler(
+        self,
+        logger: Optional[logging.Logger] = None
+    ) -> dict[str, Any]:
+        """
+        Veritabanı istatistiklerini döner.
+        
+        Döndürür:
+        ---------
+        dict
+            İstatistikler
+        """
+        try:
+            with self._baglanti_al() as baglanti:
+                imlec = baglanti.cursor()
+                
+                # Toplam belge
+                imlec.execute("SELECT COUNT(*) FROM belgeler")
+                toplam_belge = imlec.fetchone()[0]
+                
+                # Uygulama belgeleri
+                imlec.execute("SELECT COUNT(*) FROM belgeler WHERE belge_kaynak = 'UYGULAMA'")
+                uygulama_belge = imlec.fetchone()[0]
+                
+                # Manuel belgeler
+                imlec.execute("SELECT COUNT(*) FROM belgeler WHERE belge_kaynak = 'MANUEL'")
+                manuel_belge = imlec.fetchone()[0]
+                
+                # Toplam ürün
+                imlec.execute("SELECT COUNT(*) FROM belge_urunler")
+                toplam_urun = imlec.fetchone()[0]
+                
+                return {
+                    'toplam_belge': toplam_belge,
+                    'uygulama_belge': uygulama_belge,
+                    'manuel_belge': manuel_belge,
+                    'toplam_urun': toplam_urun
+                }
+        
+        except Exception as e:
+            gunluk.error(f"İstatistik hatası: {e}")
+            return {}
+
+
+# Test
+if __name__ == "__main__":
+    import logging
+    logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+    
+    print("=" * 60)
+    print("BELGE ÖNBELLEĞİ v3.0 - TEST")
+    print("=" * 60)
+    
+    onbellek = BelgeOnbellegi()
+    
+    print("\n1. Test belgesi ekleme...")
+    belge_id = onbellek.belge_ekle({
+        'seri_numarasi': 'SN:280126-TEST-ISTANBUL-LK-ABC123-R00',
+        'tarih': '2026-01-28',
+        'proje_adi': 'TEST PROJESİ V3',
+        'proje_konum': 'İstanbul',
+        'belge_kaynak': 'MANUEL',
+        'belge_tipi': 'FİYAT_TEKLİFİ',
+        'kdvli_toplam_fiyat': '1500,00'
+    })
+    
+    if belge_id:
+        print(f"✓ Belge ID: {belge_id}")
+        
+        print("\n2. Test ürünleri ekleme...")
+        onbellek.belge_urun_ekle(belge_id, 1, {
+            'urun_kodu': 'LK',
+            'urun_adi': 'HAVALANDIRMA KAPAK SETİ',
+            'urun_adet': '10',
+            'urun_birim_fiyat': '75,00',
+            'urun_toplam_fiyat': '750,00'
+        })
+        
+        onbellek.belge_urun_ekle(belge_id, 2, {
+            'urun_kodu': 'ZP30',
+            'urun_adi': 'DUMAN TAHLIYE FANI',
+            'urun_adet': '5',
+            'urun_birim_fiyat': '150,00',
+            'urun_toplam_fiyat': '750,00'
+        })
+        
+        print("\n3. Belge arama...")
+        belgeler = onbellek.belge_ara(proje_adi='TEST', limit=5)
+        print(f"✓ {len(belgeler)} belge bulundu")
+        
+        print("\n4. Ürünleri getirme...")
+        urunler = onbellek.belge_urunlerini_getir(belge_id)
+        print(f"✓ {len(urunler)} ürün bulundu")
+        for u in urunler:
+            print(f"  - {u['urun_kodu']}: {u['urun_adi']} x{u['urun_adet']}")
+        
+        print("\n5. İstatistikler...")
+        stats = onbellek.istatistikler()
+        print(f"✓ Toplam belge: {stats['toplam_belge']}")
+        print(f"✓ Manuel belge: {stats['manuel_belge']}")
+        print(f"✓ Toplam ürün: {stats['toplam_urun']}")
+        
+        print("\n✅ TEST BAŞARILI!")
