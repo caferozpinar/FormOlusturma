@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Ortak yardımcı fonksiyonlar.
+"""
+
+import hashlib
+import logging
+import os
+from datetime import datetime
+from pathlib import Path
+
+
+# ─────────────────────────────────────────────
+# LOGLAMA
+# ─────────────────────────────────────────────
+
+def logger_olustur(ad: str, log_dizini: str = "loglar") -> logging.Logger:
+    """Modül bazlı logger oluşturur."""
+    Path(log_dizini).mkdir(parents=True, exist_ok=True)
+
+    logger = logging.getLogger(ad)
+    if logger.handlers:
+        return logger
+
+    logger.setLevel(logging.DEBUG)
+
+    # Dosya handler
+    dosya_adi = os.path.join(log_dizini, f"{datetime.now():%Y-%m-%d}.log")
+    fh = logging.FileHandler(dosya_adi, encoding="utf-8")
+    fh.setLevel(logging.DEBUG)
+
+    # Konsol handler
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+
+    fmt = logging.Formatter(
+        "%(asctime)s | %(name)-20s | %(levelname)-7s | %(message)s",
+        datefmt="%H:%M:%S"
+    )
+    fh.setFormatter(fmt)
+    ch.setFormatter(fmt)
+
+    logger.addHandler(fh)
+    logger.addHandler(ch)
+    return logger
+
+
+# ─────────────────────────────────────────────
+# HASH ÜRETİMİ
+# ─────────────────────────────────────────────
+
+def proje_hash_uret(firma: str, konum: str, tesis: str) -> str:
+    """
+    Proje için 6 karakterlik benzersiz hash üretir.
+    firma + konum + tesis + timestamp birleşiminden.
+    """
+    kaynak = f"{firma}|{konum}|{tesis}|{datetime.now().isoformat()}"
+    tam_hash = hashlib.sha256(kaynak.encode("utf-8")).hexdigest()
+    return tam_hash[:6]
+
+
+# ─────────────────────────────────────────────
+# TARİH YARDIMCILARI
+# ─────────────────────────────────────────────
+
+def simdi_iso() -> str:
+    """Şu anki zamanı ISO formatında döndürür."""
+    return datetime.now().isoformat()
+
+
+def tarih_formatla(iso_str: str, fmt: str = "%d.%m.%Y %H:%M") -> str:
+    """ISO tarih stringini okunabilir formata çevirir."""
+    try:
+        dt = datetime.fromisoformat(iso_str)
+        return dt.strftime(fmt)
+    except (ValueError, TypeError):
+        return iso_str or ""
+
+
+def tarih_sadece_gun(iso_str: str) -> str:
+    """ISO tarih stringinden sadece gün döndürür."""
+    return tarih_formatla(iso_str, "%d.%m.%Y")

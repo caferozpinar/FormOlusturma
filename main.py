@@ -1,98 +1,88 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-Form Oluşturma Uygulaması - Ana Giriş Noktası
-=============================================
+Proje Yönetim Sistemi — Ana Giriş Noktası.
+Veritabanı, migration, servisler ve UI burada başlatılır.
 
-Bu dosya uygulamanın giriş noktasıdır.
-Tüm iş mantığı uygulama/ paketi altındadır.
-
-Kullanım:
----------
-    python main.py
-
-Yazar: Form Oluşturma Ekibi
-Sürüm: 2.0.0
+Varsayılan giriş bilgileri:
+  Kullanıcı: admin
+  Şifre: admin123
 """
 
 import sys
-import logging
+import os
 
-from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QApplication
 
-from uygulama import AnaPencere, oturum, yapilandirma, __version__
-from uygulama.pencereler.giris_penceresi import GirisPenceresi
+# Proje kök dizinini Python path'ine ekle
+PROJE_KOKU = os.path.dirname(os.path.abspath(__file__))
+if PROJE_KOKU not in sys.path:
+    sys.path.insert(0, PROJE_KOKU)
 
+from uygulama.altyapi.veritabani import Veritabani
+from uygulama.altyapi.migration import MigrationMotoru
+from uygulama.altyapi.kullanici_repo import KullaniciRepository
+from uygulama.altyapi.proje_repo import ProjeRepository
+from uygulama.altyapi.log_repo import LogRepository
+from uygulama.servisler.kimlik_servisi import KimlikServisi
+from uygulama.servisler.proje_servisi import ProjeServisi
+from uygulama.ortak.app_state import app_state
+from uygulama.arayuz.stiller import STYLESHEET
+from uygulama.arayuz.ana_pencere import AnaPencere
+from uygulama.ortak.yardimcilar import logger_olustur
 
-def gunlukleyici_ayarla() -> logging.Logger:
-    """Uygulama günlükleyicisini yapılandırır."""
-    gunlukleyici = logging.getLogger("FormUygulamasi")
-    gunlukleyici.setLevel(logging.DEBUG)
-    
-    # Konsol handler
-    if not gunlukleyici.handlers:
-        konsol = logging.StreamHandler()
-        konsol.setLevel(logging.INFO)
-        
-        bicim = logging.Formatter(
-            '%(asctime)s | %(levelname)-8s | %(name)s | %(message)s',
-            datefmt='%Y-%m-%d %H:%M:%S'
-        )
-        konsol.setFormatter(bicim)
-        gunlukleyici.addHandler(konsol)
-    
-    return gunlukleyici
+logger = logger_olustur("main")
 
 
-def main() -> int:
-    """
-    Uygulamanın ana giriş noktası.
-    
-    Returns:
-        Çıkış kodu (0 = başarılı)
-    """
-    # Günlükleyiciyi ayarla
-    gunluk = gunlukleyici_ayarla()
-    
-    gunluk.info("=" * 60)
-    gunluk.info(f"Form Oluşturma Uygulaması v{__version__} başlatılıyor...")
-    gunluk.info("=" * 60)
-    
-    # Gerekli dizinleri oluştur
-    yapilandirma.dizinleri_olustur()
-    
-    # Qt uygulaması oluştur
-    uygulama = QtWidgets.QApplication(sys.argv)
-    
-    # ÖNEMLİ: Kullanıcı girişi kontrolü
-    gunluk.info("Kullanıcı girişi bekleniyor...")
-    giris_sonucu = GirisPenceresi.giris_kontrolu()
-    
-    # Giriş iptal edildiyse uygulamayı kapat
-    if giris_sonucu is None:
-        gunluk.info("Kullanıcı girişi iptal edildi")
-        return 0
-    
-    # Kullanıcı bilgilerini ayır
-    kullanici_adi, gercek_ad = giris_sonucu
-    
-    gunluk.info(f"Kullanıcı girişi başarılı: {kullanici_adi} ({gercek_ad})")
-    
-    # Kullanıcı bilgilerini oturuma kaydet
-    oturum.kullanici_adi = kullanici_adi
-    oturum.gercek_ad = gercek_ad
-    
-    # Ana pencereyi oluştur ve göster
-    pencere = AnaPencere(oturum, yapilandirma)
+def baslat():
+    """Uygulamayı başlatır."""
+
+    # ── 1. Veritabanı ──
+    db_yolu = os.path.join(PROJE_KOKU, "veri", "proje_yonetimi.db")
+    db = Veritabani(db_yolu)
+    db.baglan()
+    logger.info(f"Veritabanı: {db_yolu}")
+
+    # ── 2. Migration ──
+    migration = MigrationMotoru(db)
+    uygulanan = migration.uygula()
+    if uygulanan > 0:
+        logger.info(f"{uygulanan} migration uygulandı.")
+
+    # ── 3. Repository'ler ──
+    kullanici_repo = KullaniciRepository(db)
+    proje_repo = ProjeRepository(db)
+    log_repo = LogRepository(db)
+
+    # ── 4. Servisler ──
+    kimlik_servisi = KimlikServisi(kullanici_repo, log_repo)
+    proje_servisi = ProjeServisi(proje_repo, log_repo)
+
+    # ── 5. Varsayılan admin ──
+    kimlik_servisi.varsayilan_admin_olustur()
+
+    # ── 6. App State ──
+    state = app_state()
+    state.db_yolu = db_yolu
+
+    # ── 7. UI Başlat ──
+    app = QApplication(sys.argv)
+    app.setStyleSheet(STYLESHEET)
+    app.setStyle("Fusion")
+
+    pencere = AnaPencere(kimlik_servisi, proje_servisi, log_repo)
     pencere.show()
-    
-    gunluk.info("Ana pencere gösterildi")
-    
-    # Uygulama döngüsünü başlat
-    cikis_kodu = uygulama.exec_()
-    
-    gunluk.info(f"Uygulama kapatıldı (çıkış kodu: {cikis_kodu})")
-    return cikis_kodu
+
+    logger.info("Uygulama başlatıldı.")
+    logger.info("Varsayılan giriş: admin / admin123")
+
+    kod = app.exec_()
+
+    # ── 8. Temizlik ──
+    db.kapat()
+    logger.info("Uygulama kapatıldı.")
+    sys.exit(kod)
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    baslat()
