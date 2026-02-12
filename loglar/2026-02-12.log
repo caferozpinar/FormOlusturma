@@ -80,3 +80,12 @@
 15:13:50 | proje_servisi        | INFO    | Proje kapatıldı: c0419d
 15:21:34 | veritabani           | INFO    | Veritabanı bağlantısı kapatıldı.
 15:21:34 | main                 | INFO    | Uygulama kapatıldı.
+15:22:41 | veritabani           | INFO    | Veritabanı bağlantısı açıldı: /home/cafer/Documents/MyWorkspace/ZET Yapı/Application/FormOlusturma/veri/proje_yonetimi.db
+15:22:41 | main                 | INFO    | Veritabanı: /home/cafer/Documents/MyWorkspace/ZET Yapı/Application/FormOlusturma/veri/proje_yonetimi.db
+15:22:41 | migration            | INFO    | Tüm migration'lar güncel.
+15:22:41 | main                 | INFO    | Uygulama başlatıldı.
+15:22:41 | main                 | INFO    | Varsayılan giriş: admin / admin123
+15:22:43 | kimlik_servisi       | WARNING | Başarısız giriş: admin (yanlış şifre)
+15:22:46 | kimlik_servisi       | INFO    | Giriş başarılı: admin (Admin)
+15:22:57 | veritabani           | INFO    | Veritabanı bağlantısı kapatıldı.
+15:22:57 | main                 | INFO    | Uygulama kapatıldı.
