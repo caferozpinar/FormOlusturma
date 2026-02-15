@@ -29,7 +29,8 @@ class AnaPencere(QMainWindow):
 
     def __init__(self, kimlik_servisi, proje_servisi, belge_servisi,
                  urun_servisi, sync_servisi, yetki_servisi, log_repo,
-                 analitik_servisi=None):
+                 analitik_servisi=None, konum_servisi=None,
+                 tesis_servisi=None):
         super().__init__()
         self.kimlik_servisi = kimlik_servisi
         self.proje_servisi = proje_servisi
@@ -39,6 +40,8 @@ class AnaPencere(QMainWindow):
         self.yetki_servisi = yetki_servisi
         self.log_repo = log_repo
         self.analitik_servisi = analitik_servisi
+        self.konum_servisi = konum_servisi
+        self.tesis_servisi = tesis_servisi
 
         self.setWindowTitle("Proje Yönetim Sistemi")
         self.setMinimumSize(1200, 780)
@@ -52,14 +55,17 @@ class AnaPencere(QMainWindow):
 
     def _sayfalari_olustur(self):
         self.login_sayfa = LoginPage(self.kimlik_servisi)
-        self.proje_listesi_sayfa = ProjectListPage(self.proje_servisi)
+        self.proje_listesi_sayfa = ProjectListPage(
+            self.proje_servisi, self.konum_servisi,
+            self.tesis_servisi, self.urun_servisi)
         self.proje_detay_sayfa = ProjectDetailPage(
             self.proje_servisi, self.belge_servisi, self.log_repo)
         self.dokuman_sayfa = DocumentPage()
         self.sync_sayfa = SyncPage(self.sync_servisi)
         self.admin_sayfa = AdminPanelPage(
             self.urun_servisi, self.kimlik_servisi,
-            self.log_repo, self.yetki_servisi)
+            self.log_repo, self.yetki_servisi,
+            self.konum_servisi, self.tesis_servisi)
         self.analitik_sayfa = AnalitikPage(self.analitik_servisi)
 
         self.stack.addWidget(self.login_sayfa)           # 0

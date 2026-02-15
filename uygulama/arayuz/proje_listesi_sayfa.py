@@ -28,9 +28,13 @@ class ProjectListPage(QWidget):
     open_analitik = pyqtSignal()
     cikis_yap = pyqtSignal()
 
-    def __init__(self, proje_servisi, parent=None):
+    def __init__(self, proje_servisi, konum_servisi=None,
+                 tesis_servisi=None, urun_servisi=None, parent=None):
         super().__init__(parent)
         self.proje_servisi = proje_servisi
+        self.konum_servisi = konum_servisi
+        self.tesis_servisi = tesis_servisi
+        self.urun_servisi = urun_servisi
         self._projeler = []  # mevcut proje listesi cache
         self._build()
 
@@ -213,7 +217,9 @@ class ProjectListPage(QWidget):
     def _yeni_proje(self):
         """Yeni proje dialog'unu açar."""
         from uygulama.arayuz.proje_dialog import ProjeDialog
-        dialog = ProjeDialog(self.proje_servisi, parent=self)
+        dialog = ProjeDialog(self.proje_servisi,
+                             self.konum_servisi, self.tesis_servisi,
+                             self.urun_servisi, parent=self)
         if dialog.exec_() and dialog.sonuc_proje:
             self._verileri_yukle()
             # Yeni projeyi direkt aç
@@ -271,7 +277,9 @@ class ProjectListPage(QWidget):
     def _proje_duzenle(self, proje):
         """Proje düzenleme dialog'u."""
         from uygulama.arayuz.proje_dialog import ProjeDialog
-        dialog = ProjeDialog(self.proje_servisi, proje=proje, parent=self)
+        dialog = ProjeDialog(self.proje_servisi,
+                             self.konum_servisi, self.tesis_servisi,
+                             self.urun_servisi, proje=proje, parent=self)
         if dialog.exec_():
             self._verileri_yukle()
 

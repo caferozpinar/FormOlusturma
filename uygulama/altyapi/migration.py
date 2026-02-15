@@ -300,6 +300,97 @@ MIGRATIONS: list[tuple[int, str, str]] = [
         CREATE INDEX IF NOT EXISTS idx_conflict_sync
             ON sync_conflicts(sync_id);
     """),
+
+    # ─── LOOKUP TABLOLARI (DB-Tabanlı Refactor) ───
+
+    (19, "Ülkeler tablosu", """
+        CREATE TABLE IF NOT EXISTS ulkeler (
+            id TEXT PRIMARY KEY,
+            ad TEXT NOT NULL,
+            aktif INTEGER NOT NULL DEFAULT 1,
+            olusturma_tarihi TEXT NOT NULL DEFAULT (datetime('now')),
+            silindi INTEGER NOT NULL DEFAULT 0
+        );
+        CREATE INDEX IF NOT EXISTS idx_ulkeler_ad ON ulkeler(ad);
+    """),
+
+    (20, "Şehirler tablosu", """
+        CREATE TABLE IF NOT EXISTS sehirler (
+            id TEXT PRIMARY KEY,
+            ulke_id TEXT NOT NULL,
+            ad TEXT NOT NULL,
+            aktif INTEGER NOT NULL DEFAULT 1,
+            olusturma_tarihi TEXT NOT NULL DEFAULT (datetime('now')),
+            silindi INTEGER NOT NULL DEFAULT 0,
+            FOREIGN KEY (ulke_id) REFERENCES ulkeler(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_sehirler_ulke ON sehirler(ulke_id);
+        CREATE INDEX IF NOT EXISTS idx_sehirler_ad ON sehirler(ad);
+    """),
+
+    (21, "Tesis türleri tablosu", """
+        CREATE TABLE IF NOT EXISTS tesis_turleri (
+            id TEXT PRIMARY KEY,
+            ad TEXT NOT NULL,
+            aktif INTEGER NOT NULL DEFAULT 1,
+            olusturma_tarihi TEXT NOT NULL DEFAULT (datetime('now')),
+            silindi INTEGER NOT NULL DEFAULT 0
+        );
+        CREATE INDEX IF NOT EXISTS idx_tesis_ad ON tesis_turleri(ad);
+    """),
+
+    (22, "Proje-ürün bağlantısı tablosu", """
+        CREATE TABLE IF NOT EXISTS proje_urunleri (
+            id TEXT PRIMARY KEY,
+            proje_id TEXT NOT NULL,
+            urun_id TEXT NOT NULL,
+            urun_snapshot TEXT NOT NULL DEFAULT '{}',
+            silinme_tarihi TEXT,
+            FOREIGN KEY (proje_id) REFERENCES projeler(id),
+            FOREIGN KEY (urun_id) REFERENCES urunler(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_proje_urun_proje
+            ON proje_urunleri(proje_id) WHERE silinme_tarihi IS NULL;
+    """),
+
+    (23, "Seed data: Ülke, Şehir, Tesis Türleri", """
+        INSERT OR IGNORE INTO ulkeler (id, ad) VALUES
+            ('ulke-tr', 'Türkiye'),
+            ('ulke-de', 'Almanya'),
+            ('ulke-gb', 'İngiltere'),
+            ('ulke-nl', 'Hollanda'),
+            ('ulke-fr', 'Fransa');
+
+        INSERT OR IGNORE INTO sehirler (id, ulke_id, ad) VALUES
+            ('shr-ist', 'ulke-tr', 'İstanbul'),
+            ('shr-ank', 'ulke-tr', 'Ankara'),
+            ('shr-izm', 'ulke-tr', 'İzmir'),
+            ('shr-brs', 'ulke-tr', 'Bursa'),
+            ('shr-ant', 'ulke-tr', 'Antalya'),
+            ('shr-kny', 'ulke-tr', 'Konya'),
+            ('shr-adn', 'ulke-tr', 'Adana'),
+            ('shr-ber', 'ulke-de', 'Berlin'),
+            ('shr-mun', 'ulke-de', 'Münih'),
+            ('shr-ham', 'ulke-de', 'Hamburg'),
+            ('shr-lon', 'ulke-gb', 'Londra'),
+            ('shr-man', 'ulke-gb', 'Manchester'),
+            ('shr-ams', 'ulke-nl', 'Amsterdam'),
+            ('shr-rot', 'ulke-nl', 'Rotterdam'),
+            ('shr-par', 'ulke-fr', 'Paris'),
+            ('shr-lyo', 'ulke-fr', 'Lyon');
+
+        INSERT OR IGNORE INTO tesis_turleri (id, ad) VALUES
+            ('tt-fabrika', 'Fabrika'),
+            ('tt-depo', 'Depo'),
+            ('tt-ofis', 'Ofis'),
+            ('tt-magaza', 'Mağaza'),
+            ('tt-hastane', 'Hastane'),
+            ('tt-okul', 'Okul'),
+            ('tt-otel', 'Otel'),
+            ('tt-avm', 'AVM'),
+            ('tt-rezidans', 'Rezidans'),
+            ('tt-diger', 'Diğer');
+    """),
 ]
 
 

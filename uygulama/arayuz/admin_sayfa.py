@@ -17,12 +17,15 @@ class AdminPanelPage(QWidget):
     go_back = pyqtSignal()
 
     def __init__(self, urun_servisi=None, kimlik_servisi=None,
-                 log_repo=None, yetki_servisi=None, parent=None):
+                 log_repo=None, yetki_servisi=None,
+                 konum_servisi=None, tesis_servisi=None, parent=None):
         super().__init__(parent)
         self.urun_servisi = urun_servisi
         self.kimlik_servisi = kimlik_servisi
         self.log_repo = log_repo
         self.yetki_servisi = yetki_servisi
+        self.konum_servisi = konum_servisi
+        self.tesis_servisi = tesis_servisi
         self._urunler = []
         self._alanlar = []
         self._alt_kalemler = []
@@ -47,6 +50,8 @@ class AdminPanelPage(QWidget):
         self.tabs.addTab(self._build_alanlar_tab(), "Ürün Alanları")
         self.tabs.addTab(self._build_alt_kalemler_tab(), "Alt Kalemler")
         self.tabs.addTab(self._build_kullanicilar_tab(), "Kullanıcılar")
+        self.tabs.addTab(self._build_konum_tab(), "Konum")
+        self.tabs.addTab(self._build_tesis_tab(), "Tesis Türleri")
         self.tabs.addTab(self._build_loglar_tab(), "Audit Log")
         self.tabs.addTab(self._build_yetki_tab(), "Yetkiler")
         layout.addWidget(self.tabs)
@@ -128,7 +133,8 @@ class AdminPanelPage(QWidget):
     # ── VERİ YÜKLEME ──
     def sayfa_gosterildi(self):
         self._urunleri_yukle(); self._alt_kalemleri_yukle()
-        self._kullanicilari_yukle(); self._loglari_yukle()
+        self._kullanicilari_yukle(); self._konumlari_yukle()
+        self._tesisleri_yukle(); self._loglari_yukle()
         self._yetkileri_yukle()
 
     def _urunleri_yukle(self):
@@ -313,7 +319,114 @@ class AdminPanelPage(QWidget):
         self._kullanicilari_yukle()
 
     # ═════════════════════════════════════════
-    # TAB 5: AUDIT LOG
+    # TAB 5: KONUM (ÜLKE / ŞEHİR)
+    # ═════════════════════════════════════════
+
+    def _build_konum_tab(self):
+        w = QWidget(); l = QVBoxLayout(w); l.setContentsMargins(16, 16, 16, 16)
+
+        # Ülkeler
+        uh = QHBoxLayout()
+        uh.addWidget(QLabel("Ülkeler:")); uh.addStretch()
+        b_ulke = QPushButton("+ Ülke"); b_ulke.clicked.connect(self._ulke_ekle)
+        uh.addWidget(b_ulke)
+        l.addLayout(uh)
+
+        self.ulke_table = QTableView(); setup_table(self.ulke_table)
+        self.ulke_model = SimpleTableModel(["Ad", "Aktif"])
+        self.ulke_table.setModel(self.ulke_model)
+        self.ulke_table.setMaximumHeight(150)
+        self.ulke_table.clicked.connect(self._ulke_tiklandi)
+        l.addWidget(self.ulke_table)
+
+        # Şehirler (seçili ülkeye göre)
+        sh = QHBoxLayout()
+        self.sehir_baslik = QLabel("Şehirler:"); sh.addWidget(self.sehir_baslik)
+        sh.addStretch()
+        b_sehir = QPushButton("+ Şehir"); b_sehir.clicked.connect(self._sehir_ekle)
+        sh.addWidget(b_sehir)
+        l.addLayout(sh)
+
+        self.sehir_table = QTableView(); setup_table(self.sehir_table)
+        self.sehir_model = SimpleTableModel(["Ad", "Aktif"])
+        self.sehir_table.setModel(self.sehir_model)
+        l.addWidget(self.sehir_table)
+        return w
+
+    def _build_tesis_tab(self):
+        w = QWidget(); l = QVBoxLayout(w); l.setContentsMargins(16, 16, 16, 16)
+        th = QHBoxLayout()
+        th.addWidget(QLabel("Tesis Türleri:")); th.addStretch()
+        b_ekle = QPushButton("+ Tesis Türü"); b_ekle.clicked.connect(self._tesis_ekle)
+        th.addWidget(b_ekle)
+        l.addLayout(th)
+
+        self.tesis_table = QTableView(); setup_table(self.tesis_table)
+        self.tesis_model = SimpleTableModel(["Ad", "Aktif"])
+        self.tesis_table.setModel(self.tesis_model)
+        l.addWidget(self.tesis_table)
+        return w
+
+    # ── KONUM VERİ ──
+    _ulkeler = []
+    _secili_ulke_konum = None
+    _sehirler = []
+
+    def _konumlari_yukle(self):
+        if not self.konum_servisi: return
+        self._ulkeler = self.konum_servisi.ulke_listesi(sadece_aktif=False)
+        veri = [[u["ad"], "✓" if u["aktif"] else "—"] for u in self._ulkeler]
+        self.ulke_model.veri_guncelle(veri)
+
+    def _ulke_tiklandi(self, idx):
+        if idx.row() >= len(self._ulkeler): return
+        self._secili_ulke_konum = self._ulkeler[idx.row()]["id"]
+        ulke_ad = self._ulkeler[idx.row()]["ad"]
+        self.sehir_baslik.setText(f"Şehirler ({ulke_ad}):")
+        self._sehirleri_yukle()
+
+    def _sehirleri_yukle(self):
+        if not self.konum_servisi or not self._secili_ulke_konum: return
+        self._sehirler = self.konum_servisi.sehir_listesi(
+            self._secili_ulke_konum, sadece_aktif=False)
+        veri = [[s["ad"], "✓" if s["aktif"] else "—"] for s in self._sehirler]
+        self.sehir_model.veri_guncelle(veri)
+
+    def _ulke_ekle(self):
+        if not self.konum_servisi: return
+        ad, ok = QInputDialog.getText(self, "Ülke Ekle", "Ülke Adı:")
+        if ok and ad:
+            ok, msg, _ = self.konum_servisi.ulke_ekle(ad)
+            if not ok: QMessageBox.warning(self, "Hata", msg)
+            self._konumlari_yukle()
+
+    def _sehir_ekle(self):
+        if not self.konum_servisi or not self._secili_ulke_konum: return
+        ad, ok = QInputDialog.getText(self, "Şehir Ekle", "Şehir Adı:")
+        if ok and ad:
+            ok, msg, _ = self.konum_servisi.sehir_ekle(self._secili_ulke_konum, ad)
+            if not ok: QMessageBox.warning(self, "Hata", msg)
+            self._sehirleri_yukle()
+
+    # ── TESİS VERİ ──
+    _tesisler = []
+
+    def _tesisleri_yukle(self):
+        if not self.tesis_servisi: return
+        self._tesisler = self.tesis_servisi.listele(sadece_aktif=False)
+        veri = [[t["ad"], "✓" if t["aktif"] else "—"] for t in self._tesisler]
+        self.tesis_model.veri_guncelle(veri)
+
+    def _tesis_ekle(self):
+        if not self.tesis_servisi: return
+        ad, ok = QInputDialog.getText(self, "Tesis Türü Ekle", "Tesis Türü:")
+        if ok and ad:
+            ok, msg, _ = self.tesis_servisi.ekle(ad)
+            if not ok: QMessageBox.warning(self, "Hata", msg)
+            self._tesisleri_yukle()
+
+    # ═════════════════════════════════════════
+    # TAB 7: AUDIT LOG
     # ═════════════════════════════════════════
 
     def _build_loglar_tab(self):

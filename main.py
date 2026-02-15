@@ -27,6 +27,8 @@ from uygulama.altyapi.belge_repo import BelgeRepository
 from uygulama.altyapi.maliyet_repo import MaliyetRepository
 from uygulama.altyapi.urun_repo import UrunRepository
 from uygulama.altyapi.sync_repo import SyncRepository
+from uygulama.altyapi.konum_repo import KonumRepository
+from uygulama.altyapi.tesis_repo import TesisRepository
 from uygulama.altyapi.log_repo import LogRepository
 from uygulama.servisler.kimlik_servisi import KimlikServisi
 from uygulama.servisler.proje_servisi import ProjeServisi
@@ -38,6 +40,8 @@ from uygulama.servisler.maliyet_servisi import (
 from uygulama.servisler.urun_servisi import UrunServisi
 from uygulama.servisler.sync_servisi import SyncServisi
 from uygulama.servisler.yetki_servisi import YetkiServisi
+from uygulama.servisler.konum_servisi import KonumServisi
+from uygulama.servisler.tesis_servisi import TesisServisi
 from uygulama.altyapi.analitik_repo import AnalitikRepository
 from uygulama.servisler.analitik_servisi import AnalitikServisi
 from uygulama.ortak.app_state import app_state
@@ -70,6 +74,8 @@ def baslat():
     maliyet_repo = MaliyetRepository(db)
     urun_repo = UrunRepository(db)
     sync_repo = SyncRepository(db)
+    konum_repo = KonumRepository(db)
+    tesis_repo = TesisRepository(db)
     log_repo = LogRepository(db)
 
     # ── 4. Servisler ──
@@ -79,6 +85,8 @@ def baslat():
     urun_servisi = UrunServisi(urun_repo, log_repo)
     sync_servisi = SyncServisi(sync_repo, log_repo)
     yetki_servisi = YetkiServisi(log_repo)
+    konum_servisi = KonumServisi(konum_repo)
+    tesis_servisi = TesisServisi(tesis_repo)
     analitik_repo = AnalitikRepository(db)
     analitik_servisi = AnalitikServisi(analitik_repo)
 
@@ -102,7 +110,7 @@ def baslat():
 
     pencere = AnaPencere(kimlik_servisi, proje_servisi, belge_servisi,
                          urun_servisi, sync_servisi, yetki_servisi, log_repo,
-                         analitik_servisi)
+                         analitik_servisi, konum_servisi, tesis_servisi)
     pencere.show()
 
     logger.info("Uygulama başlatıldı.")
