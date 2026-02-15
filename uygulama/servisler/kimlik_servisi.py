@@ -201,6 +201,10 @@ class KimlikServisi:
         """Tüm kullanıcıları listeler."""
         return self.kullanici_repo.tumu(aktif_sadece)
 
+    def kullanici_listele(self, aktif_sadece: bool = False) -> list[Kullanici]:
+        """Admin paneli için tüm kullanıcıları listeler."""
+        return self.kullanici_repo.tumu(aktif_sadece)
+
     # ─────────────────────────────────────────
     # İLK KURULUM
     # ─────────────────────────────────────────
@@ -241,3 +245,7 @@ class KimlikServisi:
             self.log_repo.kaydet(log)
         except Exception as e:
             logger.error(f"Log kaydı hatası: {e}")
+
+    def tum_kullanicilar(self) -> list:
+        """Tüm kullanıcıları listeler (soft delete hariç)."""
+        return self.kullanici_repo.tumu()

@@ -48,11 +48,13 @@ class AlanTipi(enum.Enum):
 
 class IslemTipi(enum.Enum):
     """Audit log için işlem türleri."""
+    # Proje
     PROJE_OLUSTUR = "PROJE_OLUSTUR"
     PROJE_GUNCELLE = "PROJE_GUNCELLE"
     PROJE_KAPAT = "PROJE_KAPAT"
     PROJE_AKTIFLE = "PROJE_AKTIFLE"
     PROJE_SIL = "PROJE_SIL"
+    # Belge
     BELGE_OLUSTUR = "BELGE_OLUSTUR"
     BELGE_GUNCELLE = "BELGE_GUNCELLE"
     BELGE_ONAYLA = "BELGE_ONAYLA"
@@ -60,13 +62,30 @@ class IslemTipi(enum.Enum):
     BELGE_GONDER = "BELGE_GONDER"
     BELGE_SIL = "BELGE_SIL"
     REVIZYON_AC = "REVIZYON_AC"
+    # Kullanıcı
     KULLANICI_OLUSTUR = "KULLANICI_OLUSTUR"
     KULLANICI_GUNCELLE = "KULLANICI_GUNCELLE"
     KULLANICI_SIL = "KULLANICI_SIL"
+    KULLANICI_ROL_DEGISTIR = "KULLANICI_ROL_DEGISTIR"
+    KULLANICI_DEAKTIF = "KULLANICI_DEAKTIF"
     GIRIS_BASARILI = "GIRIS_BASARILI"
     GIRIS_BASARISIZ = "GIRIS_BASARISIZ"
+    # Ürün ve Alan
+    URUN_OLUSTUR = "URUN_OLUSTUR"
+    URUN_GUNCELLE = "URUN_GUNCELLE"
+    URUN_SIL = "URUN_SIL"
+    ALAN_EKLE = "ALAN_EKLE"
+    ALAN_SIL = "ALAN_SIL"
+    ALT_KALEM_OLUSTUR = "ALT_KALEM_OLUSTUR"
+    # Maliyet
+    MALIYET_VERSIYON = "MALIYET_VERSIYON"
+    MALIYET_HESAPLA = "MALIYET_HESAPLA"
+    # Sync
     SYNC_BASLAT = "SYNC_BASLAT"
     SYNC_TAMAMLA = "SYNC_TAMAMLA"
+    SYNC_CONFLICT = "SYNC_CONFLICT"
+    # Yetki
+    YETKI_REDDEDILDI = "YETKI_REDDEDILDI"
 
 
 # ─────────────────────────────────────────────
@@ -102,6 +121,7 @@ class Proje:
     urun_seti: str = ""
     hash_kodu: str = ""
     durum: ProjeDurumu = ProjeDurumu.ACTIVE
+    kar_orani: float = 0.0
     olusturan_id: str = ""
     olusturma_tarihi: str = field(default_factory=_simdi)
     guncelleme_tarihi: str = field(default_factory=_simdi)
@@ -195,7 +215,59 @@ class BelgeAltKalemi:
     dahil: bool = True
     miktar: int = 1
     birim_fiyat: float = 0.0
+    kar_orani_override: Optional[float] = None
+    kombinasyon_id: Optional[str] = None
+    versiyon_id: Optional[str] = None
     silinme_tarihi: Optional[str] = None
+
+
+# ─────────────────────────────────────────────
+# MALİYET MOTORU V2 MODELLERİ
+# ─────────────────────────────────────────────
+
+@dataclass
+class ParametreKombinasyonu:
+    id: str = field(default_factory=_yeni_uuid)
+    alt_kalem_id: str = ""
+    kombinasyon_hash: str = ""
+    parametre_json: str = "{}"
+    aktif_mi: bool = True
+    created_at: str = field(default_factory=_simdi)
+
+
+@dataclass
+class MaliyetVersiyonu:
+    id: str = field(default_factory=_yeni_uuid)
+    kombinasyon_id: str = ""
+    versiyon_no: int = 1
+    aktif_mi: bool = True
+    created_at: str = field(default_factory=_simdi)
+
+
+@dataclass
+class MaliyetGirdiDegeri:
+    id: str = field(default_factory=_yeni_uuid)
+    versiyon_id: str = ""
+    girdi_adi: str = ""
+    deger: str = ""
+
+
+@dataclass
+class MaliyetFormulu:
+    id: str = field(default_factory=_yeni_uuid)
+    versiyon_id: str = ""
+    alan_adi: str = ""
+    formul: str = ""
+
+
+@dataclass
+class KonumMaliyetCarpani:
+    id: str = field(default_factory=_yeni_uuid)
+    konum: str = ""
+    tasima_carpani: float = 1.0
+    iscilik_carpani: float = 1.0
+    yil: int = 2026
+    created_at: str = field(default_factory=_simdi)
 
 
 @dataclass

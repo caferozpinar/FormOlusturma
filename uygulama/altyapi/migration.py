@@ -192,6 +192,114 @@ MIGRATIONS: list[tuple[int, str, str]] = [
         CREATE INDEX IF NOT EXISTS idx_log_hedef
             ON hareket_loglari(hedef_tablo, hedef_id);
     """),
+
+    # ─── MALİYET MOTORU V2 ───
+
+    (13, "Parametre kombinasyonları tablosu", """
+        CREATE TABLE IF NOT EXISTS alt_kalem_parametre_kombinasyonlari (
+            id TEXT PRIMARY KEY,
+            alt_kalem_id TEXT NOT NULL,
+            kombinasyon_hash TEXT NOT NULL,
+            parametre_json TEXT NOT NULL DEFAULT '{}',
+            aktif_mi INTEGER NOT NULL DEFAULT 1,
+            created_at TEXT NOT NULL DEFAULT (datetime('now')),
+            FOREIGN KEY (alt_kalem_id) REFERENCES alt_kalemler(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_komb_alt_kalem
+            ON alt_kalem_parametre_kombinasyonlari(alt_kalem_id, kombinasyon_hash)
+            WHERE aktif_mi = 1;
+    """),
+
+    (14, "Maliyet versiyonlama tabloları", """
+        CREATE TABLE IF NOT EXISTS alt_kalem_maliyet_versiyonlari (
+            id TEXT PRIMARY KEY,
+            kombinasyon_id TEXT NOT NULL,
+            versiyon_no INTEGER NOT NULL DEFAULT 1,
+            aktif_mi INTEGER NOT NULL DEFAULT 1,
+            created_at TEXT NOT NULL DEFAULT (datetime('now')),
+            FOREIGN KEY (kombinasyon_id)
+                REFERENCES alt_kalem_parametre_kombinasyonlari(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_mv_komb
+            ON alt_kalem_maliyet_versiyonlari(kombinasyon_id)
+            WHERE aktif_mi = 1;
+
+        CREATE TABLE IF NOT EXISTS alt_kalem_maliyet_girdi_degerleri (
+            id TEXT PRIMARY KEY,
+            versiyon_id TEXT NOT NULL,
+            girdi_adi TEXT NOT NULL,
+            deger TEXT NOT NULL DEFAULT '',
+            FOREIGN KEY (versiyon_id)
+                REFERENCES alt_kalem_maliyet_versiyonlari(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_mg_versiyon
+            ON alt_kalem_maliyet_girdi_degerleri(versiyon_id);
+
+        CREATE TABLE IF NOT EXISTS alt_kalem_maliyet_formulleri (
+            id TEXT PRIMARY KEY,
+            versiyon_id TEXT NOT NULL,
+            alan_adi TEXT NOT NULL,
+            formul TEXT NOT NULL DEFAULT '',
+            FOREIGN KEY (versiyon_id)
+                REFERENCES alt_kalem_maliyet_versiyonlari(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_mf_versiyon
+            ON alt_kalem_maliyet_formulleri(versiyon_id);
+    """),
+
+    (15, "Konum maliyet çarpanları tablosu", """
+        CREATE TABLE IF NOT EXISTS konum_maliyet_carpanlari (
+            id TEXT PRIMARY KEY,
+            konum TEXT NOT NULL,
+            tasima_carpani REAL NOT NULL DEFAULT 1.0,
+            iscilik_carpani REAL NOT NULL DEFAULT 1.0,
+            yil INTEGER NOT NULL,
+            created_at TEXT NOT NULL DEFAULT (datetime('now'))
+        );
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_konum_yil
+            ON konum_maliyet_carpanlari(konum, yil);
+    """),
+
+    (16, "Belge alt kalemine kar override ve kombinasyon referansı", """
+        ALTER TABLE belge_alt_kalemleri ADD COLUMN kar_orani_override REAL;
+        ALTER TABLE belge_alt_kalemleri ADD COLUMN kombinasyon_id TEXT;
+        ALTER TABLE belge_alt_kalemleri ADD COLUMN versiyon_id TEXT;
+
+        ALTER TABLE projeler ADD COLUMN kar_orani REAL NOT NULL DEFAULT 0.0;
+    """),
+
+    # ─── SYNC SİSTEMİ ───
+
+    (17, "Sync metadata tablosu", """
+        CREATE TABLE IF NOT EXISTS sync_metadata (
+            id TEXT PRIMARY KEY,
+            tur TEXT NOT NULL DEFAULT 'MANUAL',
+            durum TEXT NOT NULL DEFAULT 'BASLATILDI',
+            hedef TEXT NOT NULL DEFAULT '',
+            detay TEXT NOT NULL DEFAULT '',
+            sync_tarihi TEXT NOT NULL DEFAULT (datetime('now')),
+            tamamlanma_tarihi TEXT
+        );
+        CREATE INDEX IF NOT EXISTS idx_sync_tarih
+            ON sync_metadata(sync_tarihi DESC);
+    """),
+
+    (18, "Sync conflict tablosu", """
+        CREATE TABLE IF NOT EXISTS sync_conflicts (
+            id TEXT PRIMARY KEY,
+            sync_id TEXT NOT NULL,
+            tablo TEXT NOT NULL,
+            kayit_id TEXT NOT NULL,
+            alan TEXT NOT NULL DEFAULT '',
+            yerel_deger TEXT NOT NULL DEFAULT '',
+            uzak_deger TEXT NOT NULL DEFAULT '',
+            cozum TEXT NOT NULL DEFAULT 'BEKLIYOR',
+            tarih TEXT NOT NULL DEFAULT (datetime('now')),
+            FOREIGN KEY (sync_id) REFERENCES sync_metadata(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_conflict_sync
+            ON sync_conflicts(sync_id);
+    """),
 ]
 
 

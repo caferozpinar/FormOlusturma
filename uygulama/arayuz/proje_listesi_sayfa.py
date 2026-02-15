@@ -25,6 +25,7 @@ class ProjectListPage(QWidget):
     open_project = pyqtSignal(str)      # proje_id gönderir
     open_sync = pyqtSignal()
     open_admin = pyqtSignal()
+    open_analitik = pyqtSignal()
     cikis_yap = pyqtSignal()
 
     def __init__(self, proje_servisi, parent=None):
@@ -105,6 +106,7 @@ class ProjectListPage(QWidget):
         user_menu = QMenu(self)
         self.admin_action = user_menu.addAction(
             "Admin Paneli", self.open_admin.emit)
+        user_menu.addAction("📊 Analitik", self.open_analitik.emit)
         user_menu.addSeparator()
         user_menu.addAction("Çıkış Yap", self.cikis_yap.emit)
         self.btn_user.setMenu(user_menu)

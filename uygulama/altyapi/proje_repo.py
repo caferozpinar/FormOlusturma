@@ -30,6 +30,7 @@ class ProjeRepository:
             urun_seti=row["urun_seti"],
             hash_kodu=row["hash_kodu"],
             durum=ProjeDurumu(row["durum"]),
+            kar_orani=row["kar_orani"] if "kar_orani" in row.keys() else 0.0,
             olusturan_id=row["olusturan_id"],
             olusturma_tarihi=row["olusturma_tarihi"],
             guncelleme_tarihi=row["guncelleme_tarihi"],
@@ -106,10 +107,10 @@ class ProjeRepository:
             conn.execute(
                 """UPDATE projeler SET
                    firma = ?, konum = ?, tesis = ?, urun_seti = ?,
-                   durum = ?, guncelleme_tarihi = ?
+                   durum = ?, kar_orani = ?, guncelleme_tarihi = ?
                    WHERE id = ?""",
                 (proje.firma, proje.konum, proje.tesis, proje.urun_seti,
-                 proje.durum.value, simdi_iso(), proje.id)
+                 proje.durum.value, proje.kar_orani, simdi_iso(), proje.id)
             )
         logger.info(f"Proje güncellendi: {proje.firma} [{proje.hash_kodu}]")
 
