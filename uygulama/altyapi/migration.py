@@ -391,6 +391,12 @@ MIGRATIONS: list[tuple[int, str, str]] = [
             ('tt-rezidans', 'Rezidans'),
             ('tt-diger', 'Diğer');
     """),
+
+    (24, "Proje-ürün tablosuna sıra kolonu ve unique constraint", """
+        ALTER TABLE proje_urunleri ADD COLUMN sira INTEGER NOT NULL DEFAULT 0;
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_proje_urun_unique
+            ON proje_urunleri(proje_id, urun_id) WHERE silinme_tarihi IS NULL;
+    """),
 ]
 
 

@@ -29,6 +29,7 @@ from uygulama.altyapi.urun_repo import UrunRepository
 from uygulama.altyapi.sync_repo import SyncRepository
 from uygulama.altyapi.konum_repo import KonumRepository
 from uygulama.altyapi.tesis_repo import TesisRepository
+from uygulama.altyapi.proje_urun_repo import ProjeUrunRepository
 from uygulama.altyapi.log_repo import LogRepository
 from uygulama.servisler.kimlik_servisi import KimlikServisi
 from uygulama.servisler.proje_servisi import ProjeServisi
@@ -76,11 +77,12 @@ def baslat():
     sync_repo = SyncRepository(db)
     konum_repo = KonumRepository(db)
     tesis_repo = TesisRepository(db)
+    proje_urun_repo = ProjeUrunRepository(db)
     log_repo = LogRepository(db)
 
     # ── 4. Servisler ──
     kimlik_servisi = KimlikServisi(kullanici_repo, log_repo)
-    proje_servisi = ProjeServisi(proje_repo, log_repo)
+    proje_servisi = ProjeServisi(proje_repo, log_repo, proje_urun_repo)
     belge_servisi = BelgeServisi(belge_repo, proje_repo, log_repo, maliyet_repo)
     urun_servisi = UrunServisi(urun_repo, log_repo)
     sync_servisi = SyncServisi(sync_repo, log_repo)

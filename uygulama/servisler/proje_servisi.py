@@ -21,9 +21,11 @@ logger = logger_olustur("proje_servisi")
 class ProjeServisi:
     """Proje yönetim servisi."""
 
-    def __init__(self, proje_repo: ProjeRepository, log_repo: LogRepository):
+    def __init__(self, proje_repo: ProjeRepository, log_repo: LogRepository,
+                 proje_urun_repo=None):
         self.proje_repo = proje_repo
         self.log_repo = log_repo
+        self.proje_urun_repo = proje_urun_repo
 
     # ─────────────────────────────────────────
     # OLUŞTURMA
@@ -250,3 +252,95 @@ class ProjeServisi:
             self.log_repo.kaydet(log)
         except Exception as e:
             logger.error(f"Log kaydı hatası: {e}")
+
+    # ─────────────────────────────────────────
+    # PROJE ÜRÜN YÖNETİMİ
+    # ─────────────────────────────────────────
+
+    def urun_projeye_ekle(self, proje_id: str,
+                           urun_id: str) -> Tuple[bool, str, Optional[str]]:
+        """
+        Ürünü projeye ekler.
+        - Duplicate kontrol
+        - Otomatik sıra (max+1)
+        - Snapshot kayıt
+        Returns: (ok, mesaj, proje_urun_id)
+        """
+        state = app_state()
+        if not state.giris_yapildi:
+            return False, "Giriş yapılmamış.", None
+
+        if not self.proje_urun_repo:
+            return False, "Proje ürün repo mevcut değil.", None
+
+        # Duplicate kontrol
+        if self.proje_urun_repo.urun_zaten_ekli_mi(proje_id, urun_id):
+            return False, "Bu ürün zaten projeye ekli.", None
+
+        # Ürün aktif mi kontrol
+        urun_repo = self.proje_urun_repo.db
+        urun_row = urun_repo.getir_tek(
+            """SELECT kod, ad, aktif FROM urunler
+               WHERE id = ? AND silinme_tarihi IS NULL""",
+            (urun_id,))
+        if not urun_row:
+            return False, "Ürün bulunamadı.", None
+        if not urun_row["aktif"]:
+            return False, "Pasif ürün eklenemez.", None
+
+        # Sıra hesapla
+        sira = self.proje_urun_repo.max_sira(proje_id) + 1
+
+        # Snapshot oluştur
+        snapshot = {
+            "urun_id": urun_id,
+            "kod": urun_row["kod"],
+            "ad": urun_row["ad"],
+            "sira": sira,
+        }
+
+        pu_id = self.proje_urun_repo.urun_ekle(
+            proje_id, urun_id, sira, snapshot)
+
+        self._log_kaydet(
+            IslemTipi.URUN_OLUSTUR, "proje_urunleri", pu_id,
+            f"Ürün projeye eklendi: {urun_row['kod']} → {proje_id[:8]}")
+
+        return True, f"{urun_row['kod']} eklendi.", pu_id
+
+    def urun_projeden_sil(self, proje_urun_id: str,
+                           proje_id: str) -> Tuple[bool, str]:
+        """Ürünü projeden siler ve sıraları yeniden düzenler."""
+        state = app_state()
+        if not state.giris_yapildi:
+            return False, "Giriş yapılmamış."
+        if not self.proje_urun_repo:
+            return False, "Proje ürün repo mevcut değil."
+
+        self.proje_urun_repo.urun_sil(proje_urun_id)
+        self.proje_urun_repo.siralari_yeniden_indexle(proje_id)
+        return True, "Ürün silindi."
+
+    def urun_sira_degistir(self, proje_id: str,
+                            sira_listesi: list[str]) -> Tuple[bool, str]:
+        """
+        Sıra değiştir. sira_listesi: [proje_urun_id, ...] yeni sırayla.
+        """
+        if not self.proje_urun_repo:
+            return False, "Proje ürün repo mevcut değil."
+
+        guncelleme = [(pu_id, i + 1) for i, pu_id in enumerate(sira_listesi)]
+        self.proje_urun_repo.toplu_sira_guncelle(guncelleme)
+        return True, "Sıralama güncellendi."
+
+    def proje_urunleri(self, proje_id: str) -> list[dict]:
+        """Projenin ürün listesini döndürür."""
+        if not self.proje_urun_repo:
+            return []
+        return self.proje_urun_repo.proje_urunleri_getir(proje_id)
+
+    def proje_urun_snapshot(self, proje_id: str) -> list[dict]:
+        """Snapshot için ürün listesi."""
+        if not self.proje_urun_repo:
+            return []
+        return self.proje_urun_repo.snapshot_olustur(proje_id)
