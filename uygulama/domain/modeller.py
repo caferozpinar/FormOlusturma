@@ -270,6 +270,105 @@ class KonumMaliyetCarpani:
     created_at: str = field(default_factory=_simdi)
 
 
+# ─────────────────────────────────────────────
+# ENTERPRISE VERSİYONLU MALİYET MODELLERİ
+# ─────────────────────────────────────────────
+
+@dataclass
+class ParametreTip:
+    id: str = field(default_factory=_yeni_uuid)
+    kod: str = ""
+    python_tipi: str = "str"
+    ui_bilesen: str = "text"
+    json_schema: str = "{}"
+
+@dataclass
+class UrunVersiyon:
+    id: str = field(default_factory=_yeni_uuid)
+    urun_id: str = ""
+    versiyon_no: int = 1
+    aktif_mi: bool = True
+    olusturma_tarihi: str = field(default_factory=_simdi)
+
+@dataclass
+class UrunParametre:
+    id: str = field(default_factory=_yeni_uuid)
+    urun_versiyon_id: str = ""
+    ad: str = ""
+    tip_id: str = ""
+    zorunlu: bool = False
+    varsayilan_deger: str = ""
+    aktif_mi: bool = True
+    sira: int = 0
+
+@dataclass
+class AltKalemVersiyon:
+    id: str = field(default_factory=_yeni_uuid)
+    alt_kalem_id: str = ""
+    urun_versiyon_id: str = ""
+    versiyon_no: int = 1
+    aktif_mi: bool = True
+    olusturma_tarihi: str = field(default_factory=_simdi)
+
+@dataclass
+class AltKalemParametre:
+    id: str = field(default_factory=_yeni_uuid)
+    alt_kalem_versiyon_id: str = ""
+    ad: str = ""
+    tip_id: str = ""
+    zorunlu: bool = False
+    varsayilan_deger: str = ""
+    aktif_mi: bool = True
+    urun_param_ref_id: Optional[str] = None
+    sira: int = 0
+
+@dataclass
+class MaliyetSablon:
+    id: str = field(default_factory=_yeni_uuid)
+    alt_kalem_versiyon_id: str = ""
+    formul_ifadesi: str = "0"
+    varsayilan_formul_mu: bool = True
+    aktif_mi: bool = True
+    kar_orani: float = 0.0
+    olusturma_tarihi: str = field(default_factory=_simdi)
+
+@dataclass
+class MaliyetParametre:
+    id: str = field(default_factory=_yeni_uuid)
+    maliyet_sablon_id: str = ""
+    ad: str = ""
+    degisken_kodu: str = ""
+    varsayilan_deger: float = 0.0
+
+@dataclass
+class KonumFiyat:
+    id: str = field(default_factory=_yeni_uuid)
+    ulke: str = ""
+    sehir: str = ""
+    fiyat: float = 0.0
+
+@dataclass
+class ProjeMaliyetSnapshot:
+    id: str = field(default_factory=_yeni_uuid)
+    proje_id: str = ""
+    belge_id: Optional[str] = None
+    revizyon_no: int = 1
+    urun_id: str = ""
+    urun_versiyon_id: str = ""
+    alt_kalem_id: str = ""
+    alt_kalem_versiyon_id: str = ""
+    parametre_degerleri: str = "{}"
+    formul_ifadesi: str = "0"
+    birim_fiyat: float = 0.0
+    miktar: int = 1
+    toplam_fiyat: float = 0.0
+    kar_orani: float = 0.0
+    konum_fiyat: float = 0.0
+    opsiyon_mu: bool = False
+    olusturma_yili: int = 2026
+    olusturma_tarihi: str = field(default_factory=_simdi)
+
+
 @dataclass
 class HareketLogu:
     id: str = field(default_factory=_yeni_uuid)

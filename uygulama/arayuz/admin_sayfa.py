@@ -18,7 +18,8 @@ class AdminPanelPage(QWidget):
 
     def __init__(self, urun_servisi=None, kimlik_servisi=None,
                  log_repo=None, yetki_servisi=None,
-                 konum_servisi=None, tesis_servisi=None, parent=None):
+                 konum_servisi=None, tesis_servisi=None,
+                 em_repo=None, em_srv=None, parent=None):
         super().__init__(parent)
         self.urun_servisi = urun_servisi
         self.kimlik_servisi = kimlik_servisi
@@ -26,6 +27,8 @@ class AdminPanelPage(QWidget):
         self.yetki_servisi = yetki_servisi
         self.konum_servisi = konum_servisi
         self.tesis_servisi = tesis_servisi
+        self.em_repo = em_repo
+        self.em_srv = em_srv
         self._urunler = []
         self._alanlar = []
         self._alt_kalemler = []
@@ -46,7 +49,11 @@ class AdminPanelPage(QWidget):
         layout.addLayout(header)
 
         self.tabs = QTabWidget()
-        self.tabs.addTab(self._build_urunler_tab(), "Ürünler")
+        # Enterprise Ürün Yönetimi (Stacked Layout)
+        from uygulama.arayuz.admin_urun_sayfa import AdminUrunSayfasi
+        self.admin_urun = AdminUrunSayfasi(
+            self.urun_servisi, self.em_repo, self.em_srv)
+        self.tabs.addTab(self.admin_urun, "Ürün Yönetimi")
         self.tabs.addTab(self._build_alanlar_tab(), "Ürün Alanları")
         self.tabs.addTab(self._build_alt_kalemler_tab(), "Alt Kalemler")
         self.tabs.addTab(self._build_kullanicilar_tab(), "Kullanıcılar")
@@ -57,27 +64,17 @@ class AdminPanelPage(QWidget):
         layout.addWidget(self.tabs)
 
     # ── TAB BUILDERS ──
-    def _build_urunler_tab(self):
-        w = QWidget(); l = QVBoxLayout(w); l.setContentsMargins(16, 16, 16, 16)
-        self.urun_table = QTableView(); setup_table(self.urun_table)
-        self.urun_model = SimpleTableModel(["Kod", "Ad", "Aktif", "Alan Sayısı"])
-        self.urun_table.setModel(self.urun_model)
-        self.urun_table.clicked.connect(self._urun_secildi)
-        l.addWidget(self.urun_table)
-        br = QHBoxLayout()
-        for txt, slot, obj in [("+ Ürün Ekle", self._urun_ekle, "primary"),
-                                ("Düzenle", self._urun_duzenle, None),
-                                ("Aktif/Pasif", self._urun_aktiflik, None),
-                                ("Sil", self._urun_sil, "danger")]:
-            b = QPushButton(txt); b.clicked.connect(slot)
-            if obj: b.setObjectName(obj)
-            br.addWidget(b)
-        br.addStretch(); l.addLayout(br)
-        return w
 
     def _build_alanlar_tab(self):
         w = QWidget(); l = QVBoxLayout(w); l.setContentsMargins(16, 16, 16, 16)
-        self.alan_urun_label = QLabel("Önce Ürünler tab'ından bir ürün seçin.")
+        # Ürün seçim dropdown
+        uh = QHBoxLayout()
+        uh.addWidget(QLabel("Ürün:"))
+        self.alan_urun_combo = QComboBox(); self.alan_urun_combo.setMinimumWidth(250)
+        self.alan_urun_combo.currentIndexChanged.connect(self._alan_urun_secildi)
+        uh.addWidget(self.alan_urun_combo); uh.addStretch()
+        l.addLayout(uh)
+        self.alan_urun_label = QLabel("")
         self.alan_urun_label.setObjectName("subtitle"); l.addWidget(self.alan_urun_label)
         self.alan_table = QTableView(); setup_table(self.alan_table)
         self.alan_model = SimpleTableModel(["Etiket", "Anahtar", "Tip", "Zorunlu", "Sıra", "Min", "Max"])
@@ -132,6 +129,7 @@ class AdminPanelPage(QWidget):
 
     # ── VERİ YÜKLEME ──
     def sayfa_gosterildi(self):
+        self.admin_urun.yukle()
         self._urunleri_yukle(); self._alt_kalemleri_yukle()
         self._kullanicilari_yukle(); self._konumlari_yukle()
         self._tesisleri_yukle(); self._loglari_yukle()
@@ -140,11 +138,21 @@ class AdminPanelPage(QWidget):
     def _urunleri_yukle(self):
         if not self.urun_servisi: return
         self._urunler = self.urun_servisi.listele(sadece_aktif=False)
-        veri = []
+        self.alan_urun_combo.blockSignals(True)
+        self.alan_urun_combo.clear()
+        self.alan_urun_combo.addItem("— Ürün seçin —", "")
         for u in self._urunler:
-            alanlar = self.urun_servisi.alanlari_getir(u.id)
-            veri.append([u.kod, u.ad, "✓" if u.aktif else "✗", str(len(alanlar))])
-        self.urun_model.veri_guncelle(veri)
+            self.alan_urun_combo.addItem(f"{u.kod} — {u.ad}", u.id)
+        self.alan_urun_combo.blockSignals(False)
+
+    def _alan_urun_secildi(self):
+        urun_id = self.alan_urun_combo.currentData()
+        if urun_id:
+            self._secili_urun_id = urun_id
+            self._alanlari_yukle(); self._urun_alt_kalemlerini_yukle()
+        else:
+            self._secili_urun_id = None
+            self.alan_model.veri_guncelle([])
 
     def _alanlari_yukle(self):
         if not self.urun_servisi or not self._secili_urun_id:
@@ -177,44 +185,14 @@ class AdminPanelPage(QWidget):
         self._kullanicilar = self.kimlik_servisi.kullanici_listele()
         self.user_model.veri_guncelle([[u.kullanici_adi, u.rol.value, "✓" if u.aktif else "✗"] for u in self._kullanicilar])
 
-    # ── ÜRÜN İŞLEMLERİ ──
+    # ── ESKİ ÜRÜN İŞLEMLERİ (AdminUrunSayfasi'na taşındı) ──
     def _urun_secildi(self):
-        idx = self.urun_table.currentIndex()
-        if idx.isValid() and idx.row() < len(self._urunler):
-            self._secili_urun_id = self._urunler[idx.row()].id
-            self._alanlari_yukle(); self._urun_alt_kalemlerini_yukle()
+        pass  # Artık alan_urun_combo ile çalışıyor
 
-    def _urun_ekle(self):
-        kod, ok1 = QInputDialog.getText(self, "Yeni Ürün", "Ürün Kodu:")
-        if not ok1 or not kod: return
-        ad, ok2 = QInputDialog.getText(self, "Yeni Ürün", "Ürün Adı:")
-        if not ok2 or not ad: return
-        ok, msg, _ = self.urun_servisi.olustur(kod, ad)
-        if not ok: QMessageBox.warning(self, "Hata", msg)
-        self._urunleri_yukle()
-
-    def _urun_duzenle(self):
-        idx = self.urun_table.currentIndex()
-        if not idx.isValid() or idx.row() >= len(self._urunler): return
-        urun = self._urunler[idx.row()]
-        ad, ok = QInputDialog.getText(self, "Düzenle", "Yeni Ad:", text=urun.ad)
-        if ok and ad:
-            ok, msg = self.urun_servisi.guncelle(urun.id, ad=ad)
-            if not ok: QMessageBox.warning(self, "Hata", msg)
-            self._urunleri_yukle()
-
-    def _urun_aktiflik(self):
-        idx = self.urun_table.currentIndex()
-        if idx.isValid() and idx.row() < len(self._urunler):
-            self.urun_servisi.aktiflik_degistir(self._urunler[idx.row()].id)
-            self._urunleri_yukle()
-
-    def _urun_sil(self):
-        idx = self.urun_table.currentIndex()
-        if not idx.isValid() or idx.row() >= len(self._urunler): return
-        u = self._urunler[idx.row()]
-        if QMessageBox.question(self, "Sil", f"{u.kod} silinsin mi?") == QMessageBox.Yes:
-            self.urun_servisi.sil(u.id); self._urunleri_yukle()
+    def _urun_ekle(self): pass
+    def _urun_duzenle(self): pass
+    def _urun_aktiflik(self): pass
+    def _urun_sil(self): pass
 
     # ── ALAN İŞLEMLERİ ──
     def _alan_secildi(self):

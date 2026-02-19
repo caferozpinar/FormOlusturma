@@ -397,6 +397,170 @@ MIGRATIONS: list[tuple[int, str, str]] = [
         CREATE UNIQUE INDEX IF NOT EXISTS idx_proje_urun_unique
             ON proje_urunleri(proje_id, urun_id) WHERE silinme_tarihi IS NULL;
     """),
+
+    # ─── ENTERPRISE VERSİYONLU MALİYET SİSTEMİ ───
+
+    (25, "Parametre tip kataloğu ve ürün versiyonları", """
+        CREATE TABLE IF NOT EXISTS parametre_tipler (
+            id TEXT PRIMARY KEY,
+            kod TEXT NOT NULL UNIQUE,
+            python_tipi TEXT NOT NULL DEFAULT 'str',
+            ui_bilesen TEXT NOT NULL DEFAULT 'text',
+            json_schema TEXT NOT NULL DEFAULT '{}',
+            olusturma_tarihi TEXT NOT NULL DEFAULT (datetime('now'))
+        );
+        INSERT OR IGNORE INTO parametre_tipler (id, kod, python_tipi, ui_bilesen) VALUES
+            ('pt-int','int','int','spinbox'),
+            ('pt-float','float','float','doublespinbox'),
+            ('pt-str','string','str','text'),
+            ('pt-dropdown','dropdown','str','combobox'),
+            ('pt-para','para','float','doublespinbox'),
+            ('pt-olcu','olcu_birimi','float','doublespinbox'),
+            ('pt-bool','boolean','bool','checkbox'),
+            ('pt-tarih','tarih','str','dateedit'),
+            ('pt-yuzde','yuzde','float','doublespinbox');
+
+        CREATE TABLE IF NOT EXISTS urun_versiyonlar (
+            id TEXT PRIMARY KEY,
+            urun_id TEXT NOT NULL,
+            versiyon_no INTEGER NOT NULL DEFAULT 1,
+            aktif_mi INTEGER NOT NULL DEFAULT 1,
+            olusturma_tarihi TEXT NOT NULL DEFAULT (datetime('now')),
+            FOREIGN KEY (urun_id) REFERENCES urunler(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_urun_ver_urun ON urun_versiyonlar(urun_id);
+        CREATE INDEX IF NOT EXISTS idx_urun_ver_aktif ON urun_versiyonlar(urun_id, aktif_mi);
+    """),
+
+    (26, "Ürün parametreleri ve dropdown değerleri", """
+        CREATE TABLE IF NOT EXISTS urun_parametreler (
+            id TEXT PRIMARY KEY,
+            urun_versiyon_id TEXT NOT NULL,
+            ad TEXT NOT NULL,
+            tip_id TEXT NOT NULL,
+            zorunlu INTEGER NOT NULL DEFAULT 0,
+            varsayilan_deger TEXT NOT NULL DEFAULT '',
+            aktif_mi INTEGER NOT NULL DEFAULT 1,
+            sira INTEGER NOT NULL DEFAULT 0,
+            olusturma_tarihi TEXT NOT NULL DEFAULT (datetime('now')),
+            FOREIGN KEY (urun_versiyon_id) REFERENCES urun_versiyonlar(id),
+            FOREIGN KEY (tip_id) REFERENCES parametre_tipler(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_urun_param_ver ON urun_parametreler(urun_versiyon_id);
+
+        CREATE TABLE IF NOT EXISTS parametre_dropdown_degerler (
+            id TEXT PRIMARY KEY,
+            parametre_id TEXT NOT NULL,
+            deger TEXT NOT NULL,
+            sira INTEGER NOT NULL DEFAULT 0,
+            FOREIGN KEY (parametre_id) REFERENCES urun_parametreler(id)
+        );
+    """),
+
+    (27, "Alt kalem versiyonları ve parametreleri", """
+        CREATE TABLE IF NOT EXISTS alt_kalem_versiyonlar (
+            id TEXT PRIMARY KEY,
+            alt_kalem_id TEXT NOT NULL,
+            urun_versiyon_id TEXT NOT NULL,
+            versiyon_no INTEGER NOT NULL DEFAULT 1,
+            aktif_mi INTEGER NOT NULL DEFAULT 1,
+            olusturma_tarihi TEXT NOT NULL DEFAULT (datetime('now')),
+            FOREIGN KEY (alt_kalem_id) REFERENCES alt_kalemler(id),
+            FOREIGN KEY (urun_versiyon_id) REFERENCES urun_versiyonlar(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_akv_ak ON alt_kalem_versiyonlar(alt_kalem_id);
+        CREATE INDEX IF NOT EXISTS idx_akv_uv ON alt_kalem_versiyonlar(urun_versiyon_id);
+
+        CREATE TABLE IF NOT EXISTS alt_kalem_parametreler (
+            id TEXT PRIMARY KEY,
+            alt_kalem_versiyon_id TEXT NOT NULL,
+            ad TEXT NOT NULL,
+            tip_id TEXT NOT NULL,
+            zorunlu INTEGER NOT NULL DEFAULT 0,
+            varsayilan_deger TEXT NOT NULL DEFAULT '',
+            aktif_mi INTEGER NOT NULL DEFAULT 1,
+            urun_param_ref_id TEXT,
+            sira INTEGER NOT NULL DEFAULT 0,
+            FOREIGN KEY (alt_kalem_versiyon_id) REFERENCES alt_kalem_versiyonlar(id),
+            FOREIGN KEY (tip_id) REFERENCES parametre_tipler(id),
+            FOREIGN KEY (urun_param_ref_id) REFERENCES urun_parametreler(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_akp_ver ON alt_kalem_parametreler(alt_kalem_versiyon_id);
+    """),
+
+    (28, "Maliyet şablonları ve formül parametreleri", """
+        CREATE TABLE IF NOT EXISTS maliyet_sablonlar (
+            id TEXT PRIMARY KEY,
+            alt_kalem_versiyon_id TEXT NOT NULL,
+            formul_ifadesi TEXT NOT NULL DEFAULT '0',
+            varsayilan_formul_mu INTEGER NOT NULL DEFAULT 1,
+            aktif_mi INTEGER NOT NULL DEFAULT 1,
+            kar_orani REAL NOT NULL DEFAULT 0,
+            olusturma_tarihi TEXT NOT NULL DEFAULT (datetime('now')),
+            FOREIGN KEY (alt_kalem_versiyon_id) REFERENCES alt_kalem_versiyonlar(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_ms_akv ON maliyet_sablonlar(alt_kalem_versiyon_id);
+
+        CREATE TABLE IF NOT EXISTS maliyet_parametreler (
+            id TEXT PRIMARY KEY,
+            maliyet_sablon_id TEXT NOT NULL,
+            ad TEXT NOT NULL,
+            degisken_kodu TEXT NOT NULL,
+            varsayilan_deger REAL NOT NULL DEFAULT 0,
+            FOREIGN KEY (maliyet_sablon_id) REFERENCES maliyet_sablonlar(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_mp_sablon ON maliyet_parametreler(maliyet_sablon_id);
+    """),
+
+    (29, "Konum fiyat tablosu", """
+        CREATE TABLE IF NOT EXISTS konum_fiyatlar (
+            id TEXT PRIMARY KEY,
+            ulke TEXT NOT NULL,
+            sehir TEXT NOT NULL,
+            fiyat REAL NOT NULL DEFAULT 0,
+            olusturma_tarihi TEXT NOT NULL DEFAULT (datetime('now'))
+        );
+        CREATE INDEX IF NOT EXISTS idx_kf_sehir ON konum_fiyatlar(ulke, sehir);
+
+        INSERT OR IGNORE INTO konum_fiyatlar (id, ulke, sehir, fiyat) VALUES
+            ('kf-ist','Türkiye','İstanbul',1500),
+            ('kf-ank','Türkiye','Ankara',1200),
+            ('kf-izm','Türkiye','İzmir',1300),
+            ('kf-brs','Türkiye','Bursa',1100),
+            ('kf-ber','Almanya','Berlin',3500),
+            ('kf-mun','Almanya','Münih',3800),
+            ('kf-lon','İngiltere','Londra',4200);
+    """),
+
+    (30, "Proje maliyet snapshot tablosu", """
+        CREATE TABLE IF NOT EXISTS proje_maliyet_snapshot (
+            id TEXT PRIMARY KEY,
+            proje_id TEXT NOT NULL,
+            belge_id TEXT,
+            revizyon_no INTEGER NOT NULL DEFAULT 1,
+            urun_id TEXT NOT NULL,
+            urun_versiyon_id TEXT NOT NULL,
+            alt_kalem_id TEXT NOT NULL,
+            alt_kalem_versiyon_id TEXT NOT NULL,
+            parametre_degerleri TEXT NOT NULL DEFAULT '{}',
+            formul_ifadesi TEXT NOT NULL DEFAULT '0',
+            birim_fiyat REAL NOT NULL DEFAULT 0,
+            miktar INTEGER NOT NULL DEFAULT 1,
+            toplam_fiyat REAL NOT NULL DEFAULT 0,
+            kar_orani REAL NOT NULL DEFAULT 0,
+            konum_fiyat REAL NOT NULL DEFAULT 0,
+            opsiyon_mu INTEGER NOT NULL DEFAULT 0,
+            olusturma_yili INTEGER NOT NULL DEFAULT 2026,
+            olusturma_tarihi TEXT NOT NULL DEFAULT (datetime('now')),
+            FOREIGN KEY (proje_id) REFERENCES projeler(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_pms_proje ON proje_maliyet_snapshot(proje_id);
+        CREATE INDEX IF NOT EXISTS idx_pms_urun ON proje_maliyet_snapshot(urun_id);
+        CREATE INDEX IF NOT EXISTS idx_pms_ak ON proje_maliyet_snapshot(alt_kalem_id);
+        CREATE INDEX IF NOT EXISTS idx_pms_yil ON proje_maliyet_snapshot(olusturma_yili);
+        CREATE INDEX IF NOT EXISTS idx_pms_opsiyon ON proje_maliyet_snapshot(opsiyon_mu);
+        CREATE INDEX IF NOT EXISTS idx_pms_rev ON proje_maliyet_snapshot(proje_id, revizyon_no);
+    """),
 ]
 
 

@@ -30,6 +30,7 @@ from uygulama.altyapi.sync_repo import SyncRepository
 from uygulama.altyapi.konum_repo import KonumRepository
 from uygulama.altyapi.tesis_repo import TesisRepository
 from uygulama.altyapi.proje_urun_repo import ProjeUrunRepository
+from uygulama.altyapi.versiyon_repo import VersiyonRepository
 from uygulama.altyapi.log_repo import LogRepository
 from uygulama.servisler.kimlik_servisi import KimlikServisi
 from uygulama.servisler.proje_servisi import ProjeServisi
@@ -43,7 +44,9 @@ from uygulama.servisler.sync_servisi import SyncServisi
 from uygulama.servisler.yetki_servisi import YetkiServisi
 from uygulama.servisler.konum_servisi import KonumServisi
 from uygulama.servisler.tesis_servisi import TesisServisi
+from uygulama.servisler.enterprise_maliyet_servisi import EnterpriseMaliyetServisi
 from uygulama.altyapi.analitik_repo import AnalitikRepository
+from uygulama.altyapi.enterprise_maliyet_repo import EnterpriseMaliyetRepository
 from uygulama.servisler.analitik_servisi import AnalitikServisi
 from uygulama.ortak.app_state import app_state
 from uygulama.arayuz.stiller import STYLESHEET
@@ -78,6 +81,7 @@ def baslat():
     konum_repo = KonumRepository(db)
     tesis_repo = TesisRepository(db)
     proje_urun_repo = ProjeUrunRepository(db)
+    versiyon_repo = VersiyonRepository(db)
     log_repo = LogRepository(db)
 
     # ── 4. Servisler ──
@@ -90,7 +94,9 @@ def baslat():
     konum_servisi = KonumServisi(konum_repo)
     tesis_servisi = TesisServisi(tesis_repo)
     analitik_repo = AnalitikRepository(db)
+    enterprise_maliyet_repo = EnterpriseMaliyetRepository(db)
     analitik_servisi = AnalitikServisi(analitik_repo)
+    enterprise_maliyet_srv = EnterpriseMaliyetServisi(enterprise_maliyet_repo)
 
     # Maliyet Motoru V2 servisleri
     parametre_hash_srv = ParametreHashServisi(maliyet_repo)
@@ -112,7 +118,8 @@ def baslat():
 
     pencere = AnaPencere(kimlik_servisi, proje_servisi, belge_servisi,
                          urun_servisi, sync_servisi, yetki_servisi, log_repo,
-                         analitik_servisi, konum_servisi, tesis_servisi)
+                         analitik_servisi, konum_servisi, tesis_servisi,
+                         enterprise_maliyet_repo, enterprise_maliyet_srv)
     pencere.show()
 
     logger.info("Uygulama başlatıldı.")
