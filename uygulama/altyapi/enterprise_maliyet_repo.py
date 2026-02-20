@@ -87,6 +87,29 @@ class EnterpriseMaliyetRepository:
             conn.execute("UPDATE urun_parametreler SET aktif_mi=0 WHERE id=?", (param_id,))
 
     # ═══════════════════════════════════════
+    # DROPDOWN DEĞERLER
+    # ═══════════════════════════════════════
+
+    def dropdown_deger_ekle(self, parametre_id: str, deger: str, sira: int = 0) -> str:
+        did = _yeni_uuid()
+        with self.db.transaction() as conn:
+            conn.execute(
+                """INSERT INTO parametre_dropdown_degerler
+                   (id, parametre_id, deger, sira) VALUES (?,?,?,?)""",
+                (did, parametre_id, deger, sira))
+        return did
+
+    def dropdown_degerleri(self, parametre_id: str) -> list[dict]:
+        rows = self.db.getir_hepsi(
+            "SELECT * FROM parametre_dropdown_degerler WHERE parametre_id=? ORDER BY sira",
+            (parametre_id,))
+        return [dict(r) for r in rows]
+
+    def dropdown_deger_sil(self, deger_id: str) -> None:
+        with self.db.transaction() as conn:
+            conn.execute("DELETE FROM parametre_dropdown_degerler WHERE id=?", (deger_id,))
+
+    # ═══════════════════════════════════════
     # ALT KALEM VERSİYON
     # ═══════════════════════════════════════
 

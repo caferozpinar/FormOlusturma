@@ -45,8 +45,12 @@ from uygulama.servisler.yetki_servisi import YetkiServisi
 from uygulama.servisler.konum_servisi import KonumServisi
 from uygulama.servisler.tesis_servisi import TesisServisi
 from uygulama.servisler.enterprise_maliyet_servisi import EnterpriseMaliyetServisi
+from uygulama.servisler.placeholder_servisi import PlaceholderServisi
+from uygulama.servisler.teklif_servisi import TeklifServisi
 from uygulama.altyapi.analitik_repo import AnalitikRepository
 from uygulama.altyapi.enterprise_maliyet_repo import EnterpriseMaliyetRepository
+from uygulama.altyapi.placeholder_repo import PlaceholderRepository
+from uygulama.altyapi.teklif_repo import TeklifRepository
 from uygulama.servisler.analitik_servisi import AnalitikServisi
 from uygulama.ortak.app_state import app_state
 from uygulama.arayuz.stiller import STYLESHEET
@@ -95,8 +99,14 @@ def baslat():
     tesis_servisi = TesisServisi(tesis_repo)
     analitik_repo = AnalitikRepository(db)
     enterprise_maliyet_repo = EnterpriseMaliyetRepository(db)
+    placeholder_repo = PlaceholderRepository(db)
+    teklif_repo = TeklifRepository(db)
     analitik_servisi = AnalitikServisi(analitik_repo)
     enterprise_maliyet_srv = EnterpriseMaliyetServisi(enterprise_maliyet_repo)
+    placeholder_srv = PlaceholderServisi(placeholder_repo)
+    teklif_srv = TeklifServisi(
+        teklif_repo, enterprise_maliyet_repo, enterprise_maliyet_srv,
+        proje_servisi)
 
     # Maliyet Motoru V2 servisleri
     parametre_hash_srv = ParametreHashServisi(maliyet_repo)
@@ -119,7 +129,8 @@ def baslat():
     pencere = AnaPencere(kimlik_servisi, proje_servisi, belge_servisi,
                          urun_servisi, sync_servisi, yetki_servisi, log_repo,
                          analitik_servisi, konum_servisi, tesis_servisi,
-                         enterprise_maliyet_repo, enterprise_maliyet_srv)
+                         enterprise_maliyet_repo, enterprise_maliyet_srv,
+                         placeholder_srv, teklif_srv)
     pencere.show()
 
     logger.info("Uygulama başlatıldı.")

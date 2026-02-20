@@ -11,15 +11,234 @@ from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QTableWidget, QTableWidgetItem, QHeaderView, QAbstractItemView,
     QLineEdit, QComboBox, QCheckBox, QSpinBox, QDoubleSpinBox,
-    QFormLayout, QScrollArea, QFrame, QMessageBox,
+    QFormLayout, QScrollArea, QFrame, QMessageBox, QDialog,
     QStackedWidget, QGroupBox, QTextEdit, QInputDialog, QSplitter
 )
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, QSize
 from PyQt5.QtGui import QCursor
 
 from uygulama.ortak.yardimcilar import logger_olustur
 
 logger = logger_olustur("admin_urun_sayfa")
+
+
+def _tablo_ayarla(table: QTableWidget, satir_yuksekligi: int = 32):
+    """Tüm tablolara ortak ayar: satır yüksekliği, seçim davranışı."""
+    table.verticalHeader().setDefaultSectionSize(satir_yuksekligi)
+    table.verticalHeader().setVisible(False)
+    table.setSelectionBehavior(QAbstractItemView.SelectRows)
+
+
+def _tablo_butonu(text: str = "✕", genislik: int = 32) -> QPushButton:
+    """Tablo hücresine sığan küçük buton oluşturur."""
+    btn = QPushButton(text)
+    btn.setFixedSize(genislik, 24)
+    btn.setStyleSheet(
+        "QPushButton { font-size: 11px; padding: 0px; margin: 1px; }")
+    return btn
+
+
+# ═══════════════════════════════════════════
+# KULLANICI DOSTU PARAMETRE EKLEME DİALOG
+# ═══════════════════════════════════════════
+
+class ParametreEkleDialog(QDialog):
+    """
+    Kullanıcı dostu parametre ekleme penceresi.
+    Seçenek Listesi tipinde seçenekler de aynı anda tanımlanır.
+    """
+
+    def __init__(self, tipler: list[dict], parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Yeni Parametre Ekle")
+        self.setMinimumWidth(500)
+        self.setModal(True)
+        self._tipler = tipler
+        self._secenekler = []  # ["Çift Cidarlı", "Üç Cidarlı", ...]
+        self._build()
+
+    def _build(self):
+        layout = QVBoxLayout(self)
+        layout.setSpacing(14)
+        layout.setContentsMargins(24, 20, 24, 20)
+
+        baslik = QLabel("Bu parametre ile kullanıcıdan ne tür bir bilgi alacaksınız?")
+        baslik.setWordWrap(True)
+        baslik.setStyleSheet("font-size: 13px; color: #555; margin-bottom: 4px;")
+        layout.addWidget(baslik)
+
+        form = QFormLayout()
+        form.setSpacing(12)
+        form.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
+
+        # Parametre Adı
+        self.ad_edit = QLineEdit()
+        self.ad_edit.setPlaceholderText("Örn: Kapak Tipi, Boya Rengi, Tavan Yüksekliği...")
+        form.addRow("Parametre Adı *:", self.ad_edit)
+
+        # Veri Tipi
+        self.tip_combo = QComboBox()
+        self.tip_combo.setMinimumHeight(32)
+        for t in self._tipler:
+            gorunen = t.get("gorunen_ad") or t["kod"]
+            self.tip_combo.addItem(gorunen, t["id"])
+        self.tip_combo.currentIndexChanged.connect(self._tip_degisti)
+        form.addRow("Kullanıcı ne girecek? *:", self.tip_combo)
+
+        # Açıklama
+        self.aciklama_label = QLabel("")
+        self.aciklama_label.setWordWrap(True)
+        self.aciklama_label.setStyleSheet(
+            "color: #888; font-size: 11px; padding: 4px 8px; "
+            "background: #f8f8f8; border-radius: 4px;")
+        form.addRow("", self.aciklama_label)
+
+        # Zorunlu
+        self.zorunlu_cb = QCheckBox("Bu alan zorunlu olsun (kullanıcı boş bırakamasın)")
+        form.addRow("", self.zorunlu_cb)
+
+        # Varsayılan değer
+        self.varsayilan_edit = QLineEdit()
+        self.varsayilan_edit.setPlaceholderText("Boş bırakılabilir")
+        form.addRow("Başlangıç değeri:", self.varsayilan_edit)
+
+        layout.addLayout(form)
+
+        # ── SEÇENEK ALANI (sadece dropdown tipinde görünür) ──
+        self.secenek_group = QGroupBox("Seçenekler")
+        self.secenek_group.setStyleSheet(
+            "QGroupBox { font-weight: bold; margin-top: 8px; }")
+        sg_layout = QVBoxLayout(self.secenek_group)
+        sg_layout.setSpacing(8)
+
+        sg_layout.addWidget(QLabel(
+            "Kullanıcının seçebileceği değerleri tek tek ekleyin:"))
+
+        # Seçenek listesi
+        self.secenek_listesi = QTableWidget()
+        _tablo_ayarla(self.secenek_listesi)
+        self.secenek_listesi.setColumnCount(2)
+        self.secenek_listesi.setHorizontalHeaderLabels(["Seçenek", ""])
+        self.secenek_listesi.horizontalHeader().setSectionResizeMode(
+            0, QHeaderView.Stretch)
+        self.secenek_listesi.setColumnWidth(1, 40)
+        self.secenek_listesi.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.secenek_listesi.setMaximumHeight(140)
+        sg_layout.addWidget(self.secenek_listesi)
+
+        # Yeni seçenek ekleme satırı
+        ekle_row = QHBoxLayout()
+        self.secenek_input = QLineEdit()
+        self.secenek_input.setPlaceholderText("Yeni seçenek yazın...")
+        self.secenek_input.returnPressed.connect(self._secenek_ekle)
+        self.btn_secenek_ekle = QPushButton("+ Ekle")
+        self.btn_secenek_ekle.clicked.connect(self._secenek_ekle)
+        ekle_row.addWidget(self.secenek_input)
+        ekle_row.addWidget(self.btn_secenek_ekle)
+        sg_layout.addLayout(ekle_row)
+
+        self.secenek_group.hide()  # Başta gizli
+        layout.addWidget(self.secenek_group)
+
+        # Butonlar
+        br = QHBoxLayout()
+        btn_iptal = QPushButton("İptal")
+        btn_iptal.clicked.connect(self.reject)
+        self.btn_kaydet = QPushButton("Ekle")
+        self.btn_kaydet.setObjectName("primary")
+        self.btn_kaydet.setMinimumHeight(36)
+        self.btn_kaydet.clicked.connect(self._kaydet)
+        br.addWidget(btn_iptal)
+        br.addWidget(self.btn_kaydet)
+        layout.addLayout(br)
+
+        self._tip_degisti()
+        self.ad_edit.setFocus()
+
+    def _secili_tip_kodu(self) -> str:
+        idx = self.tip_combo.currentIndex()
+        if 0 <= idx < len(self._tipler):
+            return self._tipler[idx]["kod"]
+        return ""
+
+    def _tip_degisti(self):
+        idx = self.tip_combo.currentIndex()
+        if 0 <= idx < len(self._tipler):
+            t = self._tipler[idx]
+            aciklama = t.get("aciklama") or ""
+            birim = t.get("birim") or ""
+            text = aciklama
+            if birim:
+                text += f"\nVarsayılan birim: {birim}"
+            if not aciklama:
+                _ACIKLAMA = {
+                    "int": "Adet, kat sayısı gibi tam sayı değerler",
+                    "float": "Ölçüm sonuçları, katsayılar gibi noktalı sayılar",
+                    "string": "Serbest yazı alanı (açıklama, not, isim vb.)",
+                    "dropdown": "Önceden tanımlı seçeneklerden biri seçilir",
+                    "para": "Para tutarı girilir (TL, Euro, Dolar vb.)",
+                    "olcu_birimi": "Uzunluk, alan, hacim, ağırlık gibi ölçü değerleri",
+                    "boolean": "Açık/Kapalı, Var/Yok gibi iki seçenekli değer",
+                    "tarih": "Gün/Ay/Yıl formatında tarih seçimi",
+                    "yuzde": "Yüzde oranı (ör: %15 kar, %18 KDV)",
+                }
+                text = _ACIKLAMA.get(t["kod"], "")
+            self.aciklama_label.setText(text)
+
+        # Seçenek alanı: sadece dropdown tipinde göster
+        dropdown_mu = self._secili_tip_kodu() == "dropdown"
+        self.secenek_group.setVisible(dropdown_mu)
+        if dropdown_mu:
+            self.varsayilan_edit.setPlaceholderText(
+                "Seçeneklerden birinin adını yazın (opsiyonel)")
+        else:
+            self.varsayilan_edit.setPlaceholderText("Boş bırakılabilir")
+
+    def _secenek_ekle(self):
+        deger = self.secenek_input.text().strip()
+        if not deger:
+            return
+        if deger in self._secenekler:
+            QMessageBox.information(self, "Uyarı", "Bu seçenek zaten ekli.")
+            return
+        self._secenekler.append(deger)
+        self._secenek_tablosu_guncelle()
+        self.secenek_input.clear()
+        self.secenek_input.setFocus()
+
+    def _secenek_sil(self, idx: int):
+        if 0 <= idx < len(self._secenekler):
+            self._secenekler.pop(idx)
+            self._secenek_tablosu_guncelle()
+
+    def _secenek_tablosu_guncelle(self):
+        self.secenek_listesi.setRowCount(len(self._secenekler))
+        for i, s in enumerate(self._secenekler):
+            self.secenek_listesi.setItem(i, 0, QTableWidgetItem(s))
+            btn = _tablo_butonu("✕")
+            btn.clicked.connect(lambda _, idx=i: self._secenek_sil(idx))
+            self.secenek_listesi.setCellWidget(i, 1, btn)
+
+    def _kaydet(self):
+        ad = self.ad_edit.text().strip()
+        if not ad:
+            QMessageBox.warning(self, "Uyarı", "Parametre adı boş olamaz.")
+            return
+        if self._secili_tip_kodu() == "dropdown" and len(self._secenekler) < 2:
+            QMessageBox.warning(
+                self, "Uyarı",
+                "Seçenek Listesi tipi için en az 2 seçenek eklemelisiniz.")
+            return
+        self.accept()
+
+    def veri(self) -> dict:
+        return {
+            "ad": self.ad_edit.text().strip(),
+            "tip_id": self.tip_combo.currentData(),
+            "zorunlu": self.zorunlu_cb.isChecked(),
+            "varsayilan": self.varsayilan_edit.text().strip(),
+            "secenekler": list(self._secenekler),
+        }
 
 
 # ═══════════════════════════════════════════
@@ -92,6 +311,7 @@ class UrunListeWidget(QWidget):
         layout.addWidget(QLabel("Ürün Listesi"))
 
         self.table = QTableWidget()
+        _tablo_ayarla(self.table)
         self.table.setColumnCount(5)
         self.table.setHorizontalHeaderLabels(
             ["Kod", "Ad", "Aktif", "Aktif Versiyon", "Güncelleme"])
@@ -210,6 +430,7 @@ class UrunDetayWidget(QWidget):
         pl = QVBoxLayout(param_grp); pl.setSpacing(8)
 
         self.param_table = QTableWidget()
+        _tablo_ayarla(self.param_table)
         self.param_table.setColumnCount(5)
         self.param_table.setHorizontalHeaderLabels(
             ["Ad", "Tip", "Zorunlu", "Varsayılan", ""])
@@ -230,6 +451,7 @@ class UrunDetayWidget(QWidget):
         al = QVBoxLayout(ak_grp); al.setSpacing(8)
 
         self.ak_table = QTableWidget()
+        _tablo_ayarla(self.ak_table)
         self.ak_table.setColumnCount(4)
         self.ak_table.setHorizontalHeaderLabels(
             ["Ad", "Aktif", "Versiyon", ""])
@@ -297,12 +519,28 @@ class UrunDetayWidget(QWidget):
         self.param_table.setRowCount(len(self._params))
         for i, p in enumerate(self._params):
             self.param_table.setItem(i, 0, QTableWidgetItem(p["ad"]))
-            self.param_table.setItem(i, 1, QTableWidgetItem(p.get("tip_kodu", "")))
+            # Kullanıcı dostu tip adı göster
+            tip_gorunen = self._tip_gorunen_ad(p.get("tip_kodu", ""))
+            self.param_table.setItem(i, 1, QTableWidgetItem(tip_gorunen))
             self.param_table.setItem(i, 2, QTableWidgetItem("✓" if p["zorunlu"] else "—"))
             self.param_table.setItem(i, 3, QTableWidgetItem(p["varsayilan_deger"]))
-            btn = QPushButton("✕"); btn.setFixedWidth(36)
+            btn = _tablo_butonu("✕")
             btn.clicked.connect(lambda _, pid=p["id"]: self._parametre_sil(pid))
             self.param_table.setCellWidget(i, 4, btn)
+
+    def _tip_gorunen_ad(self, tip_kodu: str) -> str:
+        """Teknik tip kodunu kullanıcı dostu isme çevirir."""
+        for t in self._tipler:
+            if t["kod"] == tip_kodu:
+                return t.get("gorunen_ad") or tip_kodu
+        # Fallback — gorunen_ad yoksa (eski DB) elle eşle
+        _FALLBACK = {
+            "int": "Tam Sayı (Adet)", "float": "Ondalıklı Sayı",
+            "string": "Metin", "dropdown": "Seçenek Listesi",
+            "para": "Para (₺/€/$)", "olcu_birimi": "Ölçü (m, m², m³, kg)",
+            "boolean": "Evet / Hayır", "tarih": "Tarih", "yuzde": "Yüzde (%)",
+        }
+        return _FALLBACK.get(tip_kodu, tip_kodu)
 
     def _alt_kalemleri_yukle(self):
         if not self._urun_ver_id or not self.em_repo: return
@@ -313,7 +551,7 @@ class UrunDetayWidget(QWidget):
             self.ak_table.setItem(i, 0, QTableWidgetItem(ak["alt_kalem_adi"]))
             self.ak_table.setItem(i, 1, QTableWidgetItem("✓" if ak["aktif_mi"] else "—"))
             self.ak_table.setItem(i, 2, QTableWidgetItem(f"v{ak['versiyon_no']}"))
-            btn = QPushButton("Aç"); btn.setFixedWidth(50)
+            btn = _tablo_butonu("Aç", 42)
             btn.clicked.connect(
                 lambda _, akid=ak["alt_kalem_id"], vid=self._urun_ver_id:
                 self.alt_kalem_sec.emit(akid, vid))
@@ -321,23 +559,18 @@ class UrunDetayWidget(QWidget):
 
     def _parametre_ekle(self):
         if not self._urun_ver_id or not self.em_repo: return
-        ad, ok = QInputDialog.getText(self, "Parametre Ekle", "Parametre Adı:")
-        if not ok or not ad: return
 
-        tip_isimleri = [t["kod"] for t in self._tipler]
-        tip, ok2 = QInputDialog.getItem(self, "Tip Seçimi", "Tip:", tip_isimleri, 0, False)
-        if not ok2: return
-
-        tip_obj = [t for t in self._tipler if t["kod"] == tip]
-        if not tip_obj: return
-
-        varsayilan, ok3 = QInputDialog.getText(self, "Varsayılan", "Varsayılan değer:")
-        if not ok3: varsayilan = ""
-
-        self.em_repo.urun_parametre_ekle(
-            self._urun_ver_id, ad, tip_obj[0]["id"], 0, varsayilan,
-            len(self._params) + 1)
-        self._parametreleri_yukle()
+        dialog = ParametreEkleDialog(self._tipler, self)
+        if dialog.exec_():
+            veri = dialog.veri()
+            param_id = self.em_repo.urun_parametre_ekle(
+                self._urun_ver_id, veri["ad"], veri["tip_id"],
+                1 if veri["zorunlu"] else 0, veri["varsayilan"],
+                len(self._params) + 1)
+            # Dropdown seçeneklerini kaydet
+            for i, sec in enumerate(veri.get("secenekler", [])):
+                self.em_repo.dropdown_deger_ekle(param_id, sec, i + 1)
+            self._parametreleri_yukle()
 
     def _parametre_sil(self, param_id):
         self.em_repo.urun_parametre_sil(param_id)
@@ -387,6 +620,7 @@ class VersiyonYoneticiComponent(QGroupBox):
     def _build(self):
         layout = QVBoxLayout(self); layout.setSpacing(6)
         self.table = QTableWidget()
+        _tablo_ayarla(self.table)
         self.table.setColumnCount(4)
         self.table.setHorizontalHeaderLabels(
             ["Versiyon", "Durum", "Tarih", ""])
@@ -408,7 +642,7 @@ class VersiyonYoneticiComponent(QGroupBox):
             tarih = v.get("olusturma_tarihi", "")[:16]
             self.table.setItem(i, 2, QTableWidgetItem(tarih))
             if not v.get("aktif_mi"):
-                btn = QPushButton("Gör"); btn.setFixedWidth(40)
+                btn = _tablo_butonu("Gör", 38)
                 btn.clicked.connect(
                     lambda _, vid=v["id"]: self.versiyon_sec.emit(vid))
                 self.table.setCellWidget(i, 3, btn)
@@ -447,6 +681,7 @@ class MaliyetFormulEditor(QGroupBox):
 
         layout.addWidget(QLabel("Değişken Eşleşmeleri:"))
         self.degisken_table = QTableWidget()
+        _tablo_ayarla(self.degisken_table)
         self.degisken_table.setColumnCount(3)
         self.degisken_table.setHorizontalHeaderLabels(
             ["Değişken", "Parametre Adı", "Varsayılan"])
@@ -568,6 +803,7 @@ class AltKalemDetayWidget(QWidget):
         param_grp = QGroupBox("Alt Kalem Parametreleri")
         pl = QVBoxLayout(param_grp)
         self.param_table = QTableWidget()
+        _tablo_ayarla(self.param_table)
         self.param_table.setColumnCount(6)
         self.param_table.setHorizontalHeaderLabels(
             ["Ad", "Tip", "Zorunlu", "Varsayılan", "Ürün Ref", ""])
@@ -624,28 +860,40 @@ class AltKalemDetayWidget(QWidget):
         self.param_table.setRowCount(len(self._params))
         for i, p in enumerate(self._params):
             self.param_table.setItem(i, 0, QTableWidgetItem(p["ad"]))
-            self.param_table.setItem(i, 1, QTableWidgetItem(p.get("tip_kodu", "")))
+            tip_gorunen = self._tip_gorunen_ad(p.get("tip_kodu", ""))
+            self.param_table.setItem(i, 1, QTableWidgetItem(tip_gorunen))
             self.param_table.setItem(i, 2, QTableWidgetItem("✓" if p["zorunlu"] else "—"))
             self.param_table.setItem(i, 3, QTableWidgetItem(p["varsayilan_deger"]))
             ref = p.get("urun_param_ref_id") or ""
             self.param_table.setItem(i, 4, QTableWidgetItem("Ref" if ref else "—"))
-            btn = QPushButton("✕"); btn.setFixedWidth(36)
+            btn = _tablo_butonu("✕")
             btn.clicked.connect(lambda _, pid=p["id"]: self._parametre_sil(pid))
             self.param_table.setCellWidget(i, 5, btn)
 
+    def _tip_gorunen_ad(self, tip_kodu: str) -> str:
+        for t in self._tipler:
+            if t["kod"] == tip_kodu:
+                return t.get("gorunen_ad") or tip_kodu
+        _FALLBACK = {
+            "int": "Tam Sayı (Adet)", "float": "Ondalıklı Sayı",
+            "string": "Metin", "dropdown": "Seçenek Listesi",
+            "para": "Para (₺/€/$)", "olcu_birimi": "Ölçü (m, m², m³, kg)",
+            "boolean": "Evet / Hayır", "tarih": "Tarih", "yuzde": "Yüzde (%)",
+        }
+        return _FALLBACK.get(tip_kodu, tip_kodu)
+
     def _parametre_ekle(self):
         if not self._akv_id or not self.em_repo: return
-        ad, ok = QInputDialog.getText(self, "Parametre", "Parametre Adı:")
-        if not ok or not ad: return
-        tip_isimleri = [t["kod"] for t in self._tipler]
-        tip, ok2 = QInputDialog.getItem(self, "Tip", "Tip:", tip_isimleri, 0, False)
-        if not ok2: return
-        tip_obj = [t for t in self._tipler if t["kod"] == tip]
-        if not tip_obj: return
-        self.em_repo.alt_kalem_parametre_ekle(
-            self._akv_id, ad, tip_obj[0]["id"], 0, "",
-            sira=len(self._params) + 1)
-        self._parametreleri_yukle()
+        dialog = ParametreEkleDialog(self._tipler, self)
+        if dialog.exec_():
+            veri = dialog.veri()
+            param_id = self.em_repo.alt_kalem_parametre_ekle(
+                self._akv_id, veri["ad"], veri["tip_id"],
+                1 if veri["zorunlu"] else 0, veri["varsayilan"],
+                sira=len(self._params) + 1)
+            for i, sec in enumerate(veri.get("secenekler", [])):
+                self.em_repo.dropdown_deger_ekle(param_id, sec, i + 1)
+            self._parametreleri_yukle()
 
     def _parametre_sil(self, pid):
         with self.em_repo.db.transaction() as conn:

@@ -561,6 +561,141 @@ MIGRATIONS: list[tuple[int, str, str]] = [
         CREATE INDEX IF NOT EXISTS idx_pms_opsiyon ON proje_maliyet_snapshot(opsiyon_mu);
         CREATE INDEX IF NOT EXISTS idx_pms_rev ON proje_maliyet_snapshot(proje_id, revizyon_no);
     """),
+
+    (31, "Parametre tipleri kullanıcı dostu güncelleme", """
+        ALTER TABLE parametre_tipler ADD COLUMN gorunen_ad TEXT NOT NULL DEFAULT '';
+        ALTER TABLE parametre_tipler ADD COLUMN aciklama TEXT NOT NULL DEFAULT '';
+        ALTER TABLE parametre_tipler ADD COLUMN birim TEXT NOT NULL DEFAULT '';
+
+        UPDATE parametre_tipler SET gorunen_ad='Tam Sayı (Adet)',
+            aciklama='Adet, kat sayısı gibi tam sayı değerler', birim='adet'
+            WHERE kod='int';
+        UPDATE parametre_tipler SET gorunen_ad='Ondalıklı Sayı',
+            aciklama='Ölçüm sonuçları, katsayılar gibi noktalı sayılar', birim=''
+            WHERE kod='float';
+        UPDATE parametre_tipler SET gorunen_ad='Metin',
+            aciklama='Serbest yazı alanı (açıklama, not, isim vb.)', birim=''
+            WHERE kod='string';
+        UPDATE parametre_tipler SET gorunen_ad='Seçenek Listesi',
+            aciklama='Önceden tanımlı seçeneklerden biri seçilir', birim=''
+            WHERE kod='dropdown';
+        UPDATE parametre_tipler SET gorunen_ad='Para (₺/€/$)',
+            aciklama='Para tutarı girilir (TL, Euro, Dolar vb.)', birim='₺'
+            WHERE kod='para';
+        UPDATE parametre_tipler SET gorunen_ad='Ölçü (m, m², m³, kg)',
+            aciklama='Uzunluk, alan, hacim, ağırlık gibi ölçü değerleri', birim='m²'
+            WHERE kod='olcu_birimi';
+        UPDATE parametre_tipler SET gorunen_ad='Evet / Hayır',
+            aciklama='Açık/Kapalı, Var/Yok gibi iki seçenekli değer', birim=''
+            WHERE kod='boolean';
+        UPDATE parametre_tipler SET gorunen_ad='Tarih',
+            aciklama='Gün/Ay/Yıl formatında tarih seçimi', birim=''
+            WHERE kod='tarih';
+        UPDATE parametre_tipler SET gorunen_ad='Yüzde (%)',
+            aciklama='Yüzde oranı (ör: %15 kar, %18 KDV)', birim='%'
+            WHERE kod='yuzde';
+    """),
+
+    (32, "Dropdown değerler tablosu FK düzeltme (alt kalem desteği)", """
+        CREATE TABLE IF NOT EXISTS parametre_dropdown_degerler_yeni (
+            id TEXT PRIMARY KEY,
+            parametre_id TEXT NOT NULL,
+            deger TEXT NOT NULL,
+            sira INTEGER NOT NULL DEFAULT 0
+        );
+        INSERT OR IGNORE INTO parametre_dropdown_degerler_yeni
+            SELECT id, parametre_id, deger, sira FROM parametre_dropdown_degerler;
+        DROP TABLE IF EXISTS parametre_dropdown_degerler;
+        ALTER TABLE parametre_dropdown_degerler_yeni RENAME TO parametre_dropdown_degerler;
+        CREATE INDEX IF NOT EXISTS idx_pdd_param ON parametre_dropdown_degerler(parametre_id);
+    """),
+
+    # ─── PLACEHOLDER SİSTEMİ ───
+
+    (33, "Placeholder ana tablo", """
+        CREATE TABLE IF NOT EXISTS placeholders (
+            id TEXT PRIMARY KEY,
+            kod TEXT NOT NULL UNIQUE,
+            ad TEXT NOT NULL DEFAULT '',
+            aciklama TEXT NOT NULL DEFAULT '',
+            aktif_mi INTEGER NOT NULL DEFAULT 1,
+            olusturma_tarihi TEXT NOT NULL DEFAULT (datetime('now'))
+        );
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_ph_kod ON placeholders(kod);
+    """),
+
+    (34, "Placeholder kural tablosu", """
+        CREATE TABLE IF NOT EXISTS placeholder_kurallar (
+            id TEXT PRIMARY KEY,
+            placeholder_id TEXT NOT NULL,
+            sira INTEGER NOT NULL DEFAULT 1,
+            kural_tipi TEXT NOT NULL DEFAULT 'dogrudan',
+            parametre_kaynak TEXT NOT NULL DEFAULT 'urun_param',
+            parametre_ref_id TEXT,
+            parametre_adi TEXT NOT NULL DEFAULT '',
+            operator TEXT NOT NULL DEFAULT '=',
+            kosul_degeri TEXT NOT NULL DEFAULT '',
+            sonuc_metni TEXT NOT NULL DEFAULT '',
+            varsayilan_mi INTEGER NOT NULL DEFAULT 0,
+            aktif_mi INTEGER NOT NULL DEFAULT 1,
+            olusturma_tarihi TEXT NOT NULL DEFAULT (datetime('now')),
+            FOREIGN KEY (placeholder_id) REFERENCES placeholders(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_phk_ph ON placeholder_kurallar(placeholder_id);
+        CREATE INDEX IF NOT EXISTS idx_phk_sira ON placeholder_kurallar(placeholder_id, sira);
+    """),
+
+    # ─── TEKLİF SİSTEMİ ───
+
+    (35, "Teklifler ana tablo", """
+        CREATE TABLE IF NOT EXISTS teklifler (
+            id TEXT PRIMARY KEY,
+            proje_id TEXT NOT NULL,
+            tur TEXT NOT NULL DEFAULT 'TEKLİF',
+            baslik TEXT NOT NULL DEFAULT '',
+            para_birimi TEXT NOT NULL DEFAULT 'TRY',
+            durum TEXT NOT NULL DEFAULT 'TASLAK',
+            revizyon_no INTEGER NOT NULL DEFAULT 1,
+            notlar TEXT NOT NULL DEFAULT '',
+            toplam_fiyat REAL NOT NULL DEFAULT 0,
+            olusturan TEXT NOT NULL DEFAULT '',
+            olusturma_tarihi TEXT NOT NULL DEFAULT (datetime('now')),
+            guncelleme_tarihi TEXT NOT NULL DEFAULT (datetime('now')),
+            FOREIGN KEY (proje_id) REFERENCES projeler(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_teklif_proje ON teklifler(proje_id);
+        CREATE INDEX IF NOT EXISTS idx_teklif_durum ON teklifler(durum);
+    """),
+
+    (36, "Teklif kalem ve parametre tabloları", """
+        CREATE TABLE IF NOT EXISTS teklif_kalemleri (
+            id TEXT PRIMARY KEY,
+            teklif_id TEXT NOT NULL,
+            urun_id TEXT NOT NULL,
+            urun_versiyon_id TEXT NOT NULL,
+            alt_kalem_id TEXT,
+            alt_kalem_versiyon_id TEXT,
+            secili_mi INTEGER NOT NULL DEFAULT 1,
+            miktar INTEGER NOT NULL DEFAULT 1,
+            birim_fiyat REAL NOT NULL DEFAULT 0,
+            toplam_fiyat REAL NOT NULL DEFAULT 0,
+            sira INTEGER NOT NULL DEFAULT 0,
+            olusturma_tarihi TEXT NOT NULL DEFAULT (datetime('now')),
+            FOREIGN KEY (teklif_id) REFERENCES teklifler(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_tk_teklif ON teklif_kalemleri(teklif_id);
+
+        CREATE TABLE IF NOT EXISTS teklif_parametre_degerleri (
+            id TEXT PRIMARY KEY,
+            teklif_kalem_id TEXT NOT NULL,
+            parametre_id TEXT NOT NULL,
+            parametre_adi TEXT NOT NULL DEFAULT '',
+            deger TEXT NOT NULL DEFAULT '',
+            olusturma_tarihi TEXT NOT NULL DEFAULT (datetime('now')),
+            FOREIGN KEY (teklif_kalem_id) REFERENCES teklif_kalemleri(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_tpd_kalem ON teklif_parametre_degerleri(teklif_kalem_id);
+    """),
 ]
 
 

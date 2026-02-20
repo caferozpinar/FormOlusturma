@@ -10,7 +10,6 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt, pyqtSignal
 from uygulama.arayuz.ui_yardimcilar import SimpleTableModel, setup_table
-from uygulama.domain.modeller import AlanTipi
 
 
 class AdminPanelPage(QWidget):
@@ -19,7 +18,8 @@ class AdminPanelPage(QWidget):
     def __init__(self, urun_servisi=None, kimlik_servisi=None,
                  log_repo=None, yetki_servisi=None,
                  konum_servisi=None, tesis_servisi=None,
-                 em_repo=None, em_srv=None, parent=None):
+                 em_repo=None, em_srv=None,
+                 placeholder_srv=None, parent=None):
         super().__init__(parent)
         self.urun_servisi = urun_servisi
         self.kimlik_servisi = kimlik_servisi
@@ -29,12 +29,8 @@ class AdminPanelPage(QWidget):
         self.tesis_servisi = tesis_servisi
         self.em_repo = em_repo
         self.em_srv = em_srv
-        self._urunler = []
-        self._alanlar = []
-        self._alt_kalemler = []
+        self.placeholder_srv = placeholder_srv
         self._kullanicilar = []
-        self._secili_urun_id = None
-        self._secili_alan_id = None
         self._build()
 
     def _build(self):
@@ -49,13 +45,15 @@ class AdminPanelPage(QWidget):
         layout.addLayout(header)
 
         self.tabs = QTabWidget()
-        # Enterprise Ürün Yönetimi (Stacked Layout)
         from uygulama.arayuz.admin_urun_sayfa import AdminUrunSayfasi
         self.admin_urun = AdminUrunSayfasi(
             self.urun_servisi, self.em_repo, self.em_srv)
         self.tabs.addTab(self.admin_urun, "Ürün Yönetimi")
-        self.tabs.addTab(self._build_alanlar_tab(), "Ürün Alanları")
-        self.tabs.addTab(self._build_alt_kalemler_tab(), "Alt Kalemler")
+        # Placeholder tab
+        from uygulama.arayuz.placeholder_sayfa import PlaceholderYonetimWidget
+        self.placeholder_widget = PlaceholderYonetimWidget(
+            self.placeholder_srv, self.em_repo, self.urun_servisi)
+        self.tabs.addTab(self.placeholder_widget, "Placeholder")
         self.tabs.addTab(self._build_kullanicilar_tab(), "Kullanıcılar")
         self.tabs.addTab(self._build_konum_tab(), "Konum")
         self.tabs.addTab(self._build_tesis_tab(), "Tesis Türleri")
@@ -64,53 +62,6 @@ class AdminPanelPage(QWidget):
         layout.addWidget(self.tabs)
 
     # ── TAB BUILDERS ──
-
-    def _build_alanlar_tab(self):
-        w = QWidget(); l = QVBoxLayout(w); l.setContentsMargins(16, 16, 16, 16)
-        # Ürün seçim dropdown
-        uh = QHBoxLayout()
-        uh.addWidget(QLabel("Ürün:"))
-        self.alan_urun_combo = QComboBox(); self.alan_urun_combo.setMinimumWidth(250)
-        self.alan_urun_combo.currentIndexChanged.connect(self._alan_urun_secildi)
-        uh.addWidget(self.alan_urun_combo); uh.addStretch()
-        l.addLayout(uh)
-        self.alan_urun_label = QLabel("")
-        self.alan_urun_label.setObjectName("subtitle"); l.addWidget(self.alan_urun_label)
-        self.alan_table = QTableView(); setup_table(self.alan_table)
-        self.alan_model = SimpleTableModel(["Etiket", "Anahtar", "Tip", "Zorunlu", "Sıra", "Min", "Max"])
-        self.alan_table.setModel(self.alan_model)
-        self.alan_table.clicked.connect(self._alan_secildi)
-        l.addWidget(self.alan_table)
-        br = QHBoxLayout()
-        for txt, slot, obj in [("+ Alan Ekle", self._alan_ekle, "primary"),
-                                ("Düzenle", self._alan_duzenle, None),
-                                ("Sil", self._alan_sil, "danger")]:
-            b = QPushButton(txt); b.clicked.connect(slot)
-            if obj: b.setObjectName(obj)
-            br.addWidget(b)
-        br.addStretch()
-        b4 = QPushButton("+ Seçenek Ekle"); b4.clicked.connect(self._secenek_ekle); br.addWidget(b4)
-        b5 = QPushButton("Seçenekleri Gör"); b5.clicked.connect(self._secenekleri_goster); br.addWidget(b5)
-        l.addLayout(br)
-        return w
-
-    def _build_alt_kalemler_tab(self):
-        w = QWidget(); l = QVBoxLayout(w); l.setContentsMargins(16, 16, 16, 16)
-        self.ak_table = QTableView(); setup_table(self.ak_table)
-        self.ak_model = SimpleTableModel(["Ad", "Aktif"])
-        self.ak_table.setModel(self.ak_model); l.addWidget(self.ak_table)
-        br = QHBoxLayout()
-        b = QPushButton("+ Alt Kalem Ekle"); b.setObjectName("primary")
-        b.clicked.connect(self._alt_kalem_ekle); br.addWidget(b); br.addStretch()
-        self.ak_urun_label = QLabel("Seçili Ürün: —"); br.addWidget(self.ak_urun_label)
-        b2 = QPushButton("Ürüne Bağla"); b2.clicked.connect(self._urun_alt_kalem_bagla); br.addWidget(b2)
-        l.addLayout(br)
-        l.addWidget(QLabel("Seçili Ürünün Alt Kalemleri:"))
-        self.uak_table = QTableView(); setup_table(self.uak_table)
-        self.uak_model = SimpleTableModel(["Alt Kalem", "Varsayılan Fiyat"])
-        self.uak_table.setModel(self.uak_model); self.uak_table.setMaximumHeight(160)
-        l.addWidget(self.uak_table)
-        return w
 
     def _build_kullanicilar_tab(self):
         w = QWidget(); l = QVBoxLayout(w); l.setContentsMargins(16, 16, 16, 16)
@@ -130,140 +81,16 @@ class AdminPanelPage(QWidget):
     # ── VERİ YÜKLEME ──
     def sayfa_gosterildi(self):
         self.admin_urun.yukle()
-        self._urunleri_yukle(); self._alt_kalemleri_yukle()
+        if hasattr(self, 'placeholder_widget'):
+            self.placeholder_widget.yukle()
         self._kullanicilari_yukle(); self._konumlari_yukle()
         self._tesisleri_yukle(); self._loglari_yukle()
         self._yetkileri_yukle()
-
-    def _urunleri_yukle(self):
-        if not self.urun_servisi: return
-        self._urunler = self.urun_servisi.listele(sadece_aktif=False)
-        self.alan_urun_combo.blockSignals(True)
-        self.alan_urun_combo.clear()
-        self.alan_urun_combo.addItem("— Ürün seçin —", "")
-        for u in self._urunler:
-            self.alan_urun_combo.addItem(f"{u.kod} — {u.ad}", u.id)
-        self.alan_urun_combo.blockSignals(False)
-
-    def _alan_urun_secildi(self):
-        urun_id = self.alan_urun_combo.currentData()
-        if urun_id:
-            self._secili_urun_id = urun_id
-            self._alanlari_yukle(); self._urun_alt_kalemlerini_yukle()
-        else:
-            self._secili_urun_id = None
-            self.alan_model.veri_guncelle([])
-
-    def _alanlari_yukle(self):
-        if not self.urun_servisi or not self._secili_urun_id:
-            self.alan_model.veri_guncelle([]); return
-        urun = self.urun_servisi.getir(self._secili_urun_id)
-        if urun: self.alan_urun_label.setText(f"Ürün: {urun.kod} — {urun.ad}")
-        self._alanlar = self.urun_servisi.alanlari_getir(self._secili_urun_id)
-        veri = [[a["etiket"], a["alan_anahtari"], a["tip"],
-                 "✓" if a["zorunlu"] else "—", str(a["sira"]),
-                 str(a["min_deger"]) if a["min_deger"] is not None else "—",
-                 str(a["max_deger"]) if a["max_deger"] is not None else "—"]
-                for a in self._alanlar]
-        self.alan_model.veri_guncelle(veri)
-
-    def _urun_alt_kalemlerini_yukle(self):
-        if not self.urun_servisi or not self._secili_urun_id:
-            self.uak_model.veri_guncelle([]); return
-        urun = self.urun_servisi.getir(self._secili_urun_id)
-        self.ak_urun_label.setText(f"Seçili Ürün: {urun.kod}" if urun else "Seçili Ürün: —")
-        uaks = self.urun_servisi.urun_alt_kalemleri(self._secili_urun_id)
-        self.uak_model.veri_guncelle([[u["alt_kalem_adi"], f"₺{u['varsayilan_birim_fiyat']:,.2f}"] for u in uaks])
-
-    def _alt_kalemleri_yukle(self):
-        if not self.urun_servisi: return
-        self._alt_kalemler = self.urun_servisi.alt_kalem_listele()
-        self.ak_model.veri_guncelle([[a["ad"], "✓" if a["aktif"] else "✗"] for a in self._alt_kalemler])
 
     def _kullanicilari_yukle(self):
         if not self.kimlik_servisi: return
         self._kullanicilar = self.kimlik_servisi.kullanici_listele()
         self.user_model.veri_guncelle([[u.kullanici_adi, u.rol.value, "✓" if u.aktif else "✗"] for u in self._kullanicilar])
-
-    # ── ESKİ ÜRÜN İŞLEMLERİ (AdminUrunSayfasi'na taşındı) ──
-    def _urun_secildi(self):
-        pass  # Artık alan_urun_combo ile çalışıyor
-
-    def _urun_ekle(self): pass
-    def _urun_duzenle(self): pass
-    def _urun_aktiflik(self): pass
-    def _urun_sil(self): pass
-
-    # ── ALAN İŞLEMLERİ ──
-    def _alan_secildi(self):
-        idx = self.alan_table.currentIndex()
-        if idx.isValid() and idx.row() < len(self._alanlar):
-            self._secili_alan_id = self._alanlar[idx.row()]["id"]
-
-    def _alan_ekle(self):
-        if not self._secili_urun_id:
-            QMessageBox.information(self, "Uyarı", "Önce bir ürün seçin."); return
-        dialog = AlanEkleDialog(self)
-        if dialog.exec_():
-            d = dialog.veri()
-            ok, msg, _ = self.urun_servisi.alan_ekle(self._secili_urun_id, d["etiket"],
-                d["anahtar"], d["tip"], d["zorunlu"], d["sira"], d.get("min"), d.get("max"), d.get("hassasiyet"))
-            if not ok: QMessageBox.warning(self, "Hata", msg)
-            self._alanlari_yukle()
-
-    def _alan_duzenle(self):
-        idx = self.alan_table.currentIndex()
-        if not idx.isValid() or idx.row() >= len(self._alanlar): return
-        alan = self._alanlar[idx.row()]
-        dialog = AlanEkleDialog(self, alan)
-        if dialog.exec_():
-            d = dialog.veri()
-            self.urun_servisi.alan_guncelle(alan["id"], etiket=d["etiket"], tip=d["tip"],
-                zorunlu=d["zorunlu"], sira=d["sira"], min_deger=d.get("min"),
-                max_deger=d.get("max"), hassasiyet=d.get("hassasiyet"))
-            self._alanlari_yukle()
-
-    def _alan_sil(self):
-        idx = self.alan_table.currentIndex()
-        if not idx.isValid() or idx.row() >= len(self._alanlar): return
-        a = self._alanlar[idx.row()]
-        if QMessageBox.question(self, "Sil", f"'{a['etiket']}' silinsin mi?") == QMessageBox.Yes:
-            self.urun_servisi.alan_sil(a["id"]); self._alanlari_yukle()
-
-    def _secenek_ekle(self):
-        if not self._secili_alan_id:
-            QMessageBox.information(self, "Uyarı", "Önce bir alan seçin."); return
-        deger, ok = QInputDialog.getText(self, "Seçenek", "Seçenek Değeri:")
-        if ok and deger:
-            ok, msg, _ = self.urun_servisi.secenek_ekle(self._secili_alan_id, deger)
-            if not ok: QMessageBox.warning(self, "Hata", msg)
-
-    def _secenekleri_goster(self):
-        if not self._secili_alan_id:
-            QMessageBox.information(self, "Uyarı", "Önce bir alan seçin."); return
-        secs = self.urun_servisi.secenekleri_getir(self._secili_alan_id)
-        if not secs: QMessageBox.information(self, "Seçenekler", "Seçenek yok."); return
-        QMessageBox.information(self, "Seçenekler", "\n".join(f"  • {s['deger']}" for s in secs))
-
-    # ── ALT KALEM İŞLEMLERİ ──
-    def _alt_kalem_ekle(self):
-        ad, ok = QInputDialog.getText(self, "Alt Kalem", "Alt Kalem Adı:")
-        if ok and ad:
-            ok, msg, _ = self.urun_servisi.alt_kalem_olustur(ad)
-            if not ok: QMessageBox.warning(self, "Hata", msg)
-            self._alt_kalemleri_yukle()
-
-    def _urun_alt_kalem_bagla(self):
-        if not self._secili_urun_id:
-            QMessageBox.information(self, "Uyarı", "Ürünler tab'ından ürün seçin."); return
-        idx = self.ak_table.currentIndex()
-        if not idx.isValid() or idx.row() >= len(self._alt_kalemler):
-            QMessageBox.information(self, "Uyarı", "Alt kalem seçin."); return
-        ak = self._alt_kalemler[idx.row()]
-        fiyat, ok = QInputDialog.getDouble(self, "Fiyat", "Varsayılan Birim Fiyat:", 0, 0, 999999, 2)
-        if ok:
-            self.urun_servisi.urun_alt_kalem_bagla(self._secili_urun_id, ak["id"], fiyat)
-            self._urun_alt_kalemlerini_yukle()
 
     # ── KULLANICI İŞLEMLERİ ──
     def _kullanici_ekle(self):
@@ -492,42 +319,4 @@ class AdminPanelPage(QWidget):
             QMessageBox.warning(self, "Hata", str(e))
 
 
-class AlanEkleDialog(QDialog):
-    def __init__(self, parent=None, mevcut: dict = None):
-        super().__init__(parent)
-        self.setWindowTitle("Alan Düzenle" if mevcut else "Yeni Alan")
-        self.setFixedWidth(420); self.setModal(True)
-        layout = QVBoxLayout(self); layout.setSpacing(12); layout.setContentsMargins(24, 24, 24, 24)
-        form = QFormLayout(); form.setSpacing(10)
-        self.etiket = QLineEdit(); self.etiket.setPlaceholderText("Örn: Alan (m²)"); form.addRow("Etiket *:", self.etiket)
-        self.anahtar = QLineEdit(); self.anahtar.setPlaceholderText("Örn: alan_m2")
-        self.anahtar.setEnabled(mevcut is None); form.addRow("Anahtar *:", self.anahtar)
-        self.tip = QComboBox(); self.tip.addItems([t.value for t in AlanTipi]); form.addRow("Tip:", self.tip)
-        self.zorunlu = QCheckBox("Zorunlu alan"); form.addRow("", self.zorunlu)
-        self.sira = QSpinBox(); self.sira.setRange(0, 999); form.addRow("Sıra:", self.sira)
-        self.min_val = QDoubleSpinBox(); self.min_val.setRange(-999999, 999999)
-        self.min_val.setSpecialValueText("—"); self.min_val.setValue(self.min_val.minimum()); form.addRow("Min:", self.min_val)
-        self.max_val = QDoubleSpinBox(); self.max_val.setRange(-999999, 999999)
-        self.max_val.setSpecialValueText("—"); self.max_val.setValue(self.max_val.minimum()); form.addRow("Max:", self.max_val)
-        self.hassasiyet = QSpinBox(); self.hassasiyet.setRange(0, 10); self.hassasiyet.setValue(2); form.addRow("Hassasiyet:", self.hassasiyet)
-        layout.addLayout(form)
-        if mevcut:
-            self.etiket.setText(mevcut.get("etiket", "")); self.anahtar.setText(mevcut.get("alan_anahtari", ""))
-            tipler = [t.value for t in AlanTipi]
-            if mevcut.get("tip") in tipler: self.tip.setCurrentText(mevcut["tip"])
-            self.zorunlu.setChecked(bool(mevcut.get("zorunlu"))); self.sira.setValue(mevcut.get("sira", 0))
-            if mevcut.get("min_deger") is not None: self.min_val.setValue(mevcut["min_deger"])
-            if mevcut.get("max_deger") is not None: self.max_val.setValue(mevcut["max_deger"])
-            if mevcut.get("hassasiyet") is not None: self.hassasiyet.setValue(mevcut["hassasiyet"])
-        br = QHBoxLayout()
-        ok = QPushButton("Kaydet"); ok.setObjectName("primary"); ok.clicked.connect(self.accept)
-        cancel = QPushButton("İptal"); cancel.clicked.connect(self.reject)
-        br.addWidget(cancel); br.addWidget(ok); layout.addLayout(br)
 
-    def veri(self) -> dict:
-        d = {"etiket": self.etiket.text().strip(), "anahtar": self.anahtar.text().strip(),
-             "tip": self.tip.currentText(), "zorunlu": self.zorunlu.isChecked(), "sira": self.sira.value()}
-        if self.min_val.value() != self.min_val.minimum(): d["min"] = self.min_val.value()
-        if self.max_val.value() != self.max_val.minimum(): d["max"] = self.max_val.value()
-        if self.tip.currentText() == "decimal": d["hassasiyet"] = self.hassasiyet.value()
-        return d
