@@ -16,7 +16,7 @@ PARA_BIRIMLERI = [
     ("GBP", "£", "İngiliz Sterlini"),
 ]
 
-TEKLIF_DURUMLARI = ["TASLAK", "GONDERILDI", "ONAYLANDI", "REDDEDILDI"]
+TEKLIF_DURUMLARI = ["TASLAK", "GONDERILDI", "ONAYLANDI", "REDDEDILDI", "KAPANDI"]
 
 
 class TeklifRepository:

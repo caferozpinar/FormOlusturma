@@ -102,6 +102,24 @@ class ParametreEkleDialog(QDialog):
         self.varsayilan_edit.setPlaceholderText("Boş bırakılabilir")
         form.addRow("Başlangıç değeri:", self.varsayilan_edit)
 
+        # Birim seçimi
+        self.birim_combo = QComboBox()
+        self.birim_combo.setMinimumHeight(28)
+        self.birim_combo.addItem("— Birim yok —", "")
+        self._birim_listesi = [
+            ("adet", "Adet"), ("m", "Metre (m)"), ("cm", "Santimetre (cm)"),
+            ("mm", "Milimetre (mm)"), ("m²", "Metrekare (m²)"),
+            ("m³", "Metreküp (m³)"), ("kg", "Kilogram (kg)"),
+            ("g", "Gram (g)"), ("ton", "Ton"), ("lt", "Litre (lt)"),
+            ("₺", "Türk Lirası (₺)"), ("€", "Euro (€)"),
+            ("$", "Dolar ($)"), ("£", "Sterlin (£)"),
+            ("%", "Yüzde (%)"), ("kW", "Kilowatt (kW)"),
+            ("HP", "Beygir Gücü (HP)"), ("BTU", "BTU"),
+        ]
+        for kod, ad in self._birim_listesi:
+            self.birim_combo.addItem(ad, kod)
+        form.addRow("Birim:", self.birim_combo)
+
         layout.addLayout(form)
 
         # ── SEÇENEK ALANI (sadece dropdown tipinde görünür) ──
@@ -238,6 +256,7 @@ class ParametreEkleDialog(QDialog):
             "zorunlu": self.zorunlu_cb.isChecked(),
             "varsayilan": self.varsayilan_edit.text().strip(),
             "secenekler": list(self._secenekler),
+            "birim": self.birim_combo.currentData() or "",
         }
 
 
@@ -431,11 +450,12 @@ class UrunDetayWidget(QWidget):
 
         self.param_table = QTableWidget()
         _tablo_ayarla(self.param_table)
-        self.param_table.setColumnCount(5)
+        self.param_table.setColumnCount(6)
         self.param_table.setHorizontalHeaderLabels(
-            ["Ad", "Tip", "Zorunlu", "Varsayılan", ""])
+            ["Ad", "Tip", "Birim", "Zorunlu", "Varsayılan", ""])
         self.param_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
-        self.param_table.setColumnWidth(4, 50)
+        self.param_table.setColumnWidth(2, 60)
+        self.param_table.setColumnWidth(5, 50)
         self.param_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         pl.addWidget(self.param_table)
 
@@ -519,14 +539,14 @@ class UrunDetayWidget(QWidget):
         self.param_table.setRowCount(len(self._params))
         for i, p in enumerate(self._params):
             self.param_table.setItem(i, 0, QTableWidgetItem(p["ad"]))
-            # Kullanıcı dostu tip adı göster
             tip_gorunen = self._tip_gorunen_ad(p.get("tip_kodu", ""))
             self.param_table.setItem(i, 1, QTableWidgetItem(tip_gorunen))
-            self.param_table.setItem(i, 2, QTableWidgetItem("✓" if p["zorunlu"] else "—"))
-            self.param_table.setItem(i, 3, QTableWidgetItem(p["varsayilan_deger"]))
+            self.param_table.setItem(i, 2, QTableWidgetItem(p.get("birim", "") or "—"))
+            self.param_table.setItem(i, 3, QTableWidgetItem("✓" if p["zorunlu"] else "—"))
+            self.param_table.setItem(i, 4, QTableWidgetItem(p["varsayilan_deger"]))
             btn = _tablo_butonu("✕")
             btn.clicked.connect(lambda _, pid=p["id"]: self._parametre_sil(pid))
-            self.param_table.setCellWidget(i, 4, btn)
+            self.param_table.setCellWidget(i, 5, btn)
 
     def _tip_gorunen_ad(self, tip_kodu: str) -> str:
         """Teknik tip kodunu kullanıcı dostu isme çevirir."""
@@ -566,7 +586,7 @@ class UrunDetayWidget(QWidget):
             param_id = self.em_repo.urun_parametre_ekle(
                 self._urun_ver_id, veri["ad"], veri["tip_id"],
                 1 if veri["zorunlu"] else 0, veri["varsayilan"],
-                len(self._params) + 1)
+                len(self._params) + 1, birim=veri.get("birim", ""))
             # Dropdown seçeneklerini kaydet
             for i, sec in enumerate(veri.get("secenekler", [])):
                 self.em_repo.dropdown_deger_ekle(param_id, sec, i + 1)
@@ -804,11 +824,12 @@ class AltKalemDetayWidget(QWidget):
         pl = QVBoxLayout(param_grp)
         self.param_table = QTableWidget()
         _tablo_ayarla(self.param_table)
-        self.param_table.setColumnCount(6)
+        self.param_table.setColumnCount(7)
         self.param_table.setHorizontalHeaderLabels(
-            ["Ad", "Tip", "Zorunlu", "Varsayılan", "Ürün Ref", ""])
+            ["Ad", "Tip", "Birim", "Zorunlu", "Varsayılan", "Ürün Ref", ""])
         self.param_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
-        self.param_table.setColumnWidth(5, 40)
+        self.param_table.setColumnWidth(2, 55)
+        self.param_table.setColumnWidth(6, 40)
         self.param_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.param_table.setMaximumHeight(180)
         pl.addWidget(self.param_table)
@@ -862,13 +883,14 @@ class AltKalemDetayWidget(QWidget):
             self.param_table.setItem(i, 0, QTableWidgetItem(p["ad"]))
             tip_gorunen = self._tip_gorunen_ad(p.get("tip_kodu", ""))
             self.param_table.setItem(i, 1, QTableWidgetItem(tip_gorunen))
-            self.param_table.setItem(i, 2, QTableWidgetItem("✓" if p["zorunlu"] else "—"))
-            self.param_table.setItem(i, 3, QTableWidgetItem(p["varsayilan_deger"]))
+            self.param_table.setItem(i, 2, QTableWidgetItem(p.get("birim", "") or "—"))
+            self.param_table.setItem(i, 3, QTableWidgetItem("✓" if p["zorunlu"] else "—"))
+            self.param_table.setItem(i, 4, QTableWidgetItem(p["varsayilan_deger"]))
             ref = p.get("urun_param_ref_id") or ""
-            self.param_table.setItem(i, 4, QTableWidgetItem("Ref" if ref else "—"))
+            self.param_table.setItem(i, 5, QTableWidgetItem("Ref" if ref else "—"))
             btn = _tablo_butonu("✕")
             btn.clicked.connect(lambda _, pid=p["id"]: self._parametre_sil(pid))
-            self.param_table.setCellWidget(i, 5, btn)
+            self.param_table.setCellWidget(i, 6, btn)
 
     def _tip_gorunen_ad(self, tip_kodu: str) -> str:
         for t in self._tipler:
@@ -890,7 +912,8 @@ class AltKalemDetayWidget(QWidget):
             param_id = self.em_repo.alt_kalem_parametre_ekle(
                 self._akv_id, veri["ad"], veri["tip_id"],
                 1 if veri["zorunlu"] else 0, veri["varsayilan"],
-                sira=len(self._params) + 1)
+                sira=len(self._params) + 1,
+                birim=veri.get("birim", ""))
             for i, sec in enumerate(veri.get("secenekler", [])):
                 self.em_repo.dropdown_deger_ekle(param_id, sec, i + 1)
             self._parametreleri_yukle()

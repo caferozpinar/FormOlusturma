@@ -23,6 +23,14 @@ class EnterpriseMaliyetRepository:
         rows = self.db.getir_hepsi("SELECT * FROM parametre_tipler ORDER BY kod")
         return [dict(r) for r in rows]
 
+    def birimler(self, kategori: str = None) -> list[dict]:
+        if kategori:
+            rows = self.db.getir_hepsi(
+                "SELECT * FROM birimler WHERE kategori=? ORDER BY ad", (kategori,))
+        else:
+            rows = self.db.getir_hepsi("SELECT * FROM birimler ORDER BY kategori, ad")
+        return [dict(r) for r in rows]
+
     def parametre_tipi_getir(self, tip_id: str) -> dict | None:
         row = self.db.getir_tek("SELECT * FROM parametre_tipler WHERE id=?", (tip_id,))
         return dict(row) if row else None
@@ -63,14 +71,14 @@ class EnterpriseMaliyetRepository:
 
     def urun_parametre_ekle(self, urun_versiyon_id: str, ad: str, tip_id: str,
                              zorunlu: int = 0, varsayilan: str = "",
-                             sira: int = 0) -> str:
+                             sira: int = 0, birim: str = "") -> str:
         pid = _yeni_uuid()
         with self.db.transaction() as conn:
             conn.execute(
                 """INSERT INTO urun_parametreler
-                   (id, urun_versiyon_id, ad, tip_id, zorunlu, varsayilan_deger, sira)
-                   VALUES (?,?,?,?,?,?,?)""",
-                (pid, urun_versiyon_id, ad, tip_id, zorunlu, varsayilan, sira))
+                   (id, urun_versiyon_id, ad, tip_id, zorunlu, varsayilan_deger, sira, birim)
+                   VALUES (?,?,?,?,?,?,?,?)""",
+                (pid, urun_versiyon_id, ad, tip_id, zorunlu, varsayilan, sira, birim))
         return pid
 
     def urun_parametreleri(self, urun_versiyon_id: str) -> list[dict]:
@@ -80,7 +88,14 @@ class EnterpriseMaliyetRepository:
                JOIN parametre_tipler t ON t.id = p.tip_id
                WHERE p.urun_versiyon_id=? AND p.aktif_mi=1 ORDER BY p.sira""",
             (urun_versiyon_id,))
-        return [dict(r) for r in rows]
+        result = []
+        for r in rows:
+            d = dict(r)
+            # birim kolonu yoksa boş
+            if "birim" not in d:
+                d["birim"] = ""
+            result.append(d)
+        return result
 
     def urun_parametre_sil(self, param_id: str) -> None:
         with self.db.transaction() as conn:
@@ -151,15 +166,16 @@ class EnterpriseMaliyetRepository:
 
     def alt_kalem_parametre_ekle(self, akv_id: str, ad: str, tip_id: str,
                                   zorunlu: int = 0, varsayilan: str = "",
-                                  urun_param_ref: str = None, sira: int = 0) -> str:
+                                  urun_param_ref: str = None, sira: int = 0,
+                                  birim: str = "") -> str:
         pid = _yeni_uuid()
         with self.db.transaction() as conn:
             conn.execute(
                 """INSERT INTO alt_kalem_parametreler
                    (id, alt_kalem_versiyon_id, ad, tip_id, zorunlu,
-                    varsayilan_deger, urun_param_ref_id, sira)
-                   VALUES (?,?,?,?,?,?,?,?)""",
-                (pid, akv_id, ad, tip_id, zorunlu, varsayilan, urun_param_ref, sira))
+                    varsayilan_deger, urun_param_ref_id, sira, birim)
+                   VALUES (?,?,?,?,?,?,?,?,?)""",
+                (pid, akv_id, ad, tip_id, zorunlu, varsayilan, urun_param_ref, sira, birim))
         return pid
 
     def alt_kalem_parametreleri(self, akv_id: str) -> list[dict]:

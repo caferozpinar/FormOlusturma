@@ -696,6 +696,38 @@ MIGRATIONS: list[tuple[int, str, str]] = [
         );
         CREATE INDEX IF NOT EXISTS idx_tpd_kalem ON teklif_parametre_degerleri(teklif_kalem_id);
     """),
+
+    (37, "Birim kolonu ve birim kataloğu", """
+        CREATE TABLE IF NOT EXISTS birimler (
+            id TEXT PRIMARY KEY,
+            kod TEXT NOT NULL UNIQUE,
+            sembol TEXT NOT NULL DEFAULT '',
+            ad TEXT NOT NULL DEFAULT '',
+            kategori TEXT NOT NULL DEFAULT 'genel'
+        );
+        INSERT OR IGNORE INTO birimler (id, kod, sembol, ad, kategori) VALUES
+            ('br-adet','adet','adet','Adet','genel'),
+            ('br-m','m','m','Metre','uzunluk'),
+            ('br-cm','cm','cm','Santimetre','uzunluk'),
+            ('br-mm','mm','mm','Milimetre','uzunluk'),
+            ('br-m2','m2','m²','Metrekare','alan'),
+            ('br-m3','m3','m³','Metreküp','hacim'),
+            ('br-kg','kg','kg','Kilogram','agirlik'),
+            ('br-g','g','g','Gram','agirlik'),
+            ('br-ton','ton','ton','Ton','agirlik'),
+            ('br-lt','lt','lt','Litre','hacim'),
+            ('br-try','TRY','₺','Türk Lirası','para'),
+            ('br-eur','EUR','€','Euro','para'),
+            ('br-usd','USD','$','Amerikan Doları','para'),
+            ('br-gbp','GBP','£','İngiliz Sterlini','para'),
+            ('br-pct','pct','%','Yüzde','oran'),
+            ('br-kw','kW','kW','Kilowatt','enerji'),
+            ('br-hp','HP','HP','Beygir Gücü','enerji'),
+            ('br-btu','BTU','BTU','BTU','enerji');
+
+        ALTER TABLE urun_parametreler ADD COLUMN birim TEXT NOT NULL DEFAULT '';
+        ALTER TABLE alt_kalem_parametreler ADD COLUMN birim TEXT NOT NULL DEFAULT '';
+    """),
 ]
 
 

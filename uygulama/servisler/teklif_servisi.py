@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Teklif Servisi — Teklif/Keşif oluşturma, proje ürünlerini otomatik yükleme,
-parametre girişi ve fiyat hesaplama.
+Teklif Servisi — Teklif/Keşif oluşturma, revizyon kopyalama,
+parametre girişi, fiyat hesaplama, özel parametre kaydı.
 """
 
 from typing import Optional, Tuple
@@ -13,6 +13,11 @@ from uygulama.ortak.yardimcilar import logger_olustur
 from uygulama.ortak.app_state import app_state
 
 logger = logger_olustur("teklif_srv")
+
+# Özel parametre isimleri (placeholder erişimi için)
+OZEL_PARAM_ADET = "__ADET__"
+OZEL_PARAM_BIRIM_FIYAT = "__BIRIM_FIYAT__"
+OZEL_PARAM_TOPLAM_FIYAT = "__TOPLAM_FIYAT__"
 
 
 class TeklifServisi:
@@ -31,60 +36,100 @@ class TeklifServisi:
 
     def teklif_olustur(self, proje_id: str, tur: str = "TEKLİF",
                         para_birimi: str = "TRY") -> Tuple[bool, str, Optional[str]]:
-        """
-        Yeni teklif oluşturur ve proje ürünlerini + alt kalemlerini otomatik yükler.
-        Returns: (ok, mesaj, teklif_id)
-        """
         state = app_state()
         olusturan = state.aktif_kullanici.kullanici_adi if state.aktif_kullanici else ""
-
         teklif_id = self.repo.olustur(proje_id, tur, "", para_birimi, olusturan)
 
-        # Proje ürünlerini otomatik ekle
+        # Proje ürünlerini + alt kalemleri otomatik yükle
         if self.proje_srv:
-            proje_urunler = self.proje_srv.proje_urunleri(proje_id)
-            sira = 0
-            for pu in proje_urunler:
-                urun_id = pu["urun_id"]
-                # Aktif ürün versiyonu
-                ver = self.em_repo.aktif_urun_versiyon(urun_id)
-                if not ver:
-                    continue
-                urun_ver_id = ver["id"]
-
-                # Ürün parametreleri için kalem (ana ürün satırı)
-                urun_kalem_id = self.repo.kalem_ekle(
-                    teklif_id, urun_id, urun_ver_id, sira=sira)
-                sira += 1
-
-                # Ürün parametrelerinin varsayılan değerlerini kaydet
-                urun_params = self.em_repo.urun_parametreleri(urun_ver_id)
-                for p in urun_params:
-                    self.repo.parametre_kaydet(
-                        urun_kalem_id, p["id"], p["ad"],
-                        p["varsayilan_deger"])
-
-                # Alt kalemler
-                alt_kalemler = self.em_repo.urun_versiyonuna_bagli_alt_kalemler(urun_ver_id)
-                for ak in alt_kalemler:
-                    akv = self.em_repo.aktif_alt_kalem_versiyon(ak["alt_kalem_id"])
-                    if not akv:
-                        continue
-                    ak_kalem_id = self.repo.kalem_ekle(
-                        teklif_id, urun_id, urun_ver_id,
-                        ak["alt_kalem_id"], akv["id"], sira=sira)
-                    sira += 1
-
-                    # Alt kalem parametreleri varsayılan
-                    ak_params = self.em_repo.alt_kalem_parametreleri(akv["id"])
-                    for p in ak_params:
-                        self.repo.parametre_kaydet(
-                            ak_kalem_id, p["id"], p["ad"],
-                            p["varsayilan_deger"])
+            self._urunleri_yukle(teklif_id, proje_id)
 
         teklif = self.repo.getir(teklif_id)
         logger.info(f"Teklif oluşturuldu: {teklif['baslik']}")
         return True, f"Teklif oluşturuldu: {teklif['baslik']}", teklif_id
+
+    def _urunleri_yukle(self, teklif_id: str, proje_id: str):
+        """Proje ürünlerini ve alt kalemlerini teklife varsayılan değerleriyle yükler."""
+        proje_urunler = self.proje_srv.proje_urunleri(proje_id)
+        sira = 0
+        for pu in proje_urunler:
+            urun_id = pu["urun_id"]
+            ver = self.em_repo.aktif_urun_versiyon(urun_id)
+            if not ver:
+                continue
+            urun_ver_id = ver["id"]
+
+            # Ana ürün kalemi
+            urun_kalem_id = self.repo.kalem_ekle(
+                teklif_id, urun_id, urun_ver_id, sira=sira)
+            sira += 1
+
+            # Ürün parametreleri varsayılan
+            for p in self.em_repo.urun_parametreleri(urun_ver_id):
+                self.repo.parametre_kaydet(
+                    urun_kalem_id, p["id"], p["ad"], p["varsayilan_deger"])
+
+            # Alt kalemler
+            for akv in self.em_repo.urun_versiyonuna_bagli_alt_kalemler(urun_ver_id):
+                ak_kalem_id = self.repo.kalem_ekle(
+                    teklif_id, urun_id, urun_ver_id,
+                    akv["alt_kalem_id"], akv["id"], sira=sira)
+                sira += 1
+
+                # Alt kalem parametreleri varsayılan
+                for p in self.em_repo.alt_kalem_parametreleri(akv["id"]):
+                    self.repo.parametre_kaydet(
+                        ak_kalem_id, p["id"], p["ad"], p["varsayilan_deger"])
+
+    # ═══════════════════════════════════════
+    # REVİZYON KOPYALAMA
+    # ═══════════════════════════════════════
+
+    def revizyon_olustur(self, eski_teklif_id: str) -> Tuple[bool, str, Optional[str]]:
+        """
+        Mevcut teklifi kopyalayarak yeni revizyon oluşturur.
+        Eski teklif → KAPANDI, yeni teklif → TASLAK (tüm parametreler kopyalanır).
+        """
+        eski = self.repo.getir(eski_teklif_id)
+        if not eski:
+            return False, "Kaynak teklif bulunamadı.", None
+
+        # Eski teklifi kapat
+        self.repo.guncelle(eski_teklif_id, durum="KAPANDI")
+
+        # Yeni teklif oluştur
+        state = app_state()
+        olusturan = state.aktif_kullanici.kullanici_adi if state.aktif_kullanici else ""
+        yeni_id = self.repo.olustur(
+            eski["proje_id"], eski["tur"], "",
+            eski["para_birimi"], olusturan)
+
+        # Kalemleri kopyala
+        eski_kalemler = self.repo.kalemler(eski_teklif_id)
+        for k in eski_kalemler:
+            yeni_kalem_id = self.repo.kalem_ekle(
+                yeni_id, k["urun_id"], k["urun_versiyon_id"],
+                k.get("alt_kalem_id"), k.get("alt_kalem_versiyon_id"),
+                k["sira"])
+            self.repo.kalem_guncelle(
+                yeni_kalem_id,
+                secili_mi=k["secili_mi"],
+                miktar=k["miktar"],
+                birim_fiyat=k["birim_fiyat"],
+                toplam_fiyat=k["toplam_fiyat"])
+
+            # Parametreleri kopyala
+            for p in self.repo.parametre_degerleri(k["id"]):
+                self.repo.parametre_kaydet(
+                    yeni_kalem_id, p["parametre_id"],
+                    p["parametre_adi"], p["deger"])
+
+        # Toplam kopyala
+        self.repo.guncelle(yeni_id, toplam_fiyat=eski["toplam_fiyat"])
+
+        yeni = self.repo.getir(yeni_id)
+        logger.info(f"Revizyon: {eski['baslik']} → {yeni['baslik']}")
+        return True, f"Yeni revizyon: {yeni['baslik']}", yeni_id
 
     # ═══════════════════════════════════════
     # TEKLİF CRUD
@@ -135,35 +180,27 @@ class TeklifServisi:
 
     def kalem_fiyat_hesapla(self, kalem_id: str,
                               konum_fiyat: float = 0) -> Tuple[bool, str, dict]:
-        """
-        Tek bir kalem için fiyat hesaplar.
-        Alt kalem versiyonu yoksa (ana ürün satırı) fiyat 0 döner.
-        """
         kalem = None
         for k in self.repo.db.getir_hepsi(
                 "SELECT * FROM teklif_kalemleri WHERE id=?", (kalem_id,)):
             kalem = dict(k)
-
         if not kalem:
             return False, "Kalem bulunamadı.", {}
 
         akv_id = kalem.get("alt_kalem_versiyon_id")
         if not akv_id:
-            # Ana ürün satırı — fiyat yok
             return True, "Ana ürün satırı.", {"birim_fiyat": 0, "toplam_fiyat": 0}
 
-        # Parametre değerlerini topla
-        param_degerler = self.repo.parametre_degerleri(kalem_id)
-        # Formül değişken kodları ile eşleştir
         sablon = self.em_repo.aktif_sablon(akv_id)
         if not sablon:
             return False, "Formül şablonu bulunamadı.", {}
 
+        # Parametre değerlerini topla
+        param_degerler = self.repo.parametre_degerleri(kalem_id)
         sablon_params = self.em_repo.sablon_parametreleri(sablon["id"])
         degiskenler = {}
         for sp in sablon_params:
             kod = sp["degisken_kodu"]
-            # Eşleşen parametre değerini bul
             param_adi = sp["ad"]
             deger = sp["varsayilan_deger"]
             for pd in param_degerler:
@@ -183,18 +220,23 @@ class TeklifServisi:
                 kalem_id,
                 birim_fiyat=sonuc["birim_fiyat"],
                 toplam_fiyat=sonuc["toplam_fiyat"])
+            # Özel parametreleri kaydet (placeholder erişimi)
+            self.repo.parametre_kaydet(
+                kalem_id, f"_ozel_adet_{kalem_id[:8]}",
+                OZEL_PARAM_ADET, str(kalem["miktar"]))
+            self.repo.parametre_kaydet(
+                kalem_id, f"_ozel_birim_{kalem_id[:8]}",
+                OZEL_PARAM_BIRIM_FIYAT, str(sonuc["birim_fiyat"]))
+            self.repo.parametre_kaydet(
+                kalem_id, f"_ozel_toplam_{kalem_id[:8]}",
+                OZEL_PARAM_TOPLAM_FIYAT, str(sonuc["toplam_fiyat"]))
 
         return ok, msg, sonuc
 
     def teklif_hesapla(self, teklif_id: str,
                         konum_fiyat: float = 0) -> Tuple[bool, str, float]:
-        """
-        Teklifteki tüm seçili kalemlerin fiyatlarını hesaplar.
-        Returns: (ok, mesaj, genel_toplam)
-        """
         kalemler = self.repo.kalemler(teklif_id)
         hatalar = []
-
         for k in kalemler:
             if not k["secili_mi"] or not k.get("alt_kalem_versiyon_id"):
                 continue
@@ -203,11 +245,30 @@ class TeklifServisi:
                 hatalar.append(f"{k['id'][:8]}: {msg}")
 
         toplam = self.repo.teklif_toplamini_hesapla(teklif_id)
-
         if hatalar:
             return False, f"{len(hatalar)} kalemde hata. Toplam: {toplam}", toplam
+        return True, "Hesaplandı.", toplam
 
-        return True, f"Hesaplandı.", toplam
+    # ═══════════════════════════════════════
+    # ARAMA & FİLTRE
+    # ═══════════════════════════════════════
+
+    def proje_teklifleri_filtreli(self, proje_id: str,
+                                    arama: str = "",
+                                    durum: str = "") -> list[dict]:
+        tum = self.repo.proje_teklifleri(proje_id)
+        sonuc = []
+        for t in tum:
+            if durum and t["durum"] != durum:
+                continue
+            if arama:
+                a = arama.lower()
+                if (a not in t["baslik"].lower() and
+                    a not in t["tur"].lower() and
+                    a not in str(t["revizyon_no"])):
+                    continue
+            sonuc.append(t)
+        return sonuc
 
     # ═══════════════════════════════════════
     # YARDIMCI
@@ -224,21 +285,14 @@ class TeklifServisi:
         return kod
 
     def zenginlestirilmis_kalemler(self, teklif_id: str) -> list[dict]:
-        """
-        Kalemleri ürün/alt kalem adlarıyla zenginleştirerek döndürür.
-        UI için kullanılır.
-        """
         kalemler = self.repo.kalemler(teklif_id)
         sonuc = []
         for k in kalemler:
             z = dict(k)
-            # Ürün adı
             urun = self.em_repo.db.getir_tek(
                 "SELECT kod, ad FROM urunler WHERE id=?", (k["urun_id"],))
             z["urun_kod"] = urun["kod"] if urun else "?"
             z["urun_ad"] = urun["ad"] if urun else "?"
-
-            # Alt kalem adı
             if k.get("alt_kalem_id"):
                 ak = self.em_repo.db.getir_tek(
                     "SELECT ad FROM alt_kalemler WHERE id=?", (k["alt_kalem_id"],))
