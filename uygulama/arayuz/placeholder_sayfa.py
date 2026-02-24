@@ -19,6 +19,17 @@ from uygulama.arayuz.admin_urun_sayfa import _tablo_ayarla, _tablo_butonu
 
 logger = logger_olustur("placeholder_sayfa")
 
+# Türkçe → ASCII normalize (placeholder adları için)
+_TR_MAP = str.maketrans("çğıöşüÇĞİÖŞÜ", "cgiosuCGIOSU")
+
+def _norm(s: str) -> str:
+    """'havalandırma motoru' → 'HAVALANDIRMA_MOTORU'"""
+    import re
+    s = s.translate(_TR_MAP)
+    s = re.sub(r'[^A-Za-z0-9]+', '_', s)
+    s = s.strip('_').upper()
+    return s
+
 
 class PlaceholderYonetimWidget(QWidget):
     """Admin Placeholder yönetim ekranı."""
@@ -188,7 +199,10 @@ class PlaceholderYonetimWidget(QWidget):
         self._kurallari_yukle()
 
     def _parametre_listesi_hazirla(self) -> list[tuple[str, str, str]]:
-        """[(kaynak, parametre_adi, gorunen_ad), ...]"""
+        """[(kaynak, parametre_adi, gorunen_ad), ...]
+        parametre_adi: Placeholder'da kullanılacak normalize ad (LK_KAPAK_MALIYET)
+        gorunen_ad: UI'da gösterilecek okunabilir ad
+        """
         params = []
         # Proje bilgileri
         from uygulama.altyapi.placeholder_repo import PROJE_BILGI_ALANLARI
@@ -197,19 +211,20 @@ class PlaceholderYonetimWidget(QWidget):
 
         # Teklif seviyesi özel parametreler
         _TEKLIF_PARAMS = [
-            ("__TEKLIF_TOPLAM__", "💰 Teklif Ara Toplam"),
-            ("__TEKLIF_KDV__", "💰 Teklif KDV Tutarı"),
-            ("__TEKLIF_GENEL_TOPLAM__", "💰 Teklif Genel Toplam (KDV dahil)"),
+            ("TEKLIF_TOPLAM", "💰 Teklif Ara Toplam"),
+            ("TEKLIF_KDV", "💰 Teklif KDV Tutarı"),
+            ("TEKLIF_GENEL_TOPLAM", "💰 Teklif Genel Toplam (KDV dahil)"),
         ]
         for kod, gorunen in _TEKLIF_PARAMS:
             params.append(("teklif_param", kod, gorunen))
 
         # Ürün → alt kalem spesifik parametreler
-        _AK_OZEL = ["__ALT_KALEM_NO__", "__ADET__", "__BIRIM_FIYAT__", "__TOPLAM_FIYAT__"]
-        _AK_EMOJI = {"__ALT_KALEM_NO__": "🔢 No",
-                     "__ADET__": "🔢 Adet",
-                     "__BIRIM_FIYAT__": "💰 Birim Fiyat",
-                     "__TOPLAM_FIYAT__": "💰 Toplam Fiyat"}
+        _AK_OZEL_SUFFIX = {
+            "__ALT_KALEM_NO__": ("NO", "🔢 No"),
+            "__ADET__": ("ADET", "🔢 Adet"),
+            "__BIRIM_FIYAT__": ("BIRIM_FIYAT", "💰 Birim Fiyat"),
+            "__TOPLAM_FIYAT__": ("TOPLAM_FIYAT", "💰 Toplam Fiyat"),
+        }
 
         if self.em_repo and self.urun_servisi:
             urunler = self.urun_servisi.listele(sadece_aktif=True)
@@ -217,27 +232,34 @@ class PlaceholderYonetimWidget(QWidget):
                 ver = self.em_repo.aktif_urun_versiyon(u.id)
                 if not ver:
                     continue
+                u_norm = _norm(u.kod)
 
                 # Ürün parametreleri
                 for p in self.em_repo.urun_parametreleri(ver["id"]):
-                    params.append(("urun_param", p["ad"],
+                    p_norm = f"{u_norm}_{_norm(p['ad'])}"
+                    params.append(("urun_param", p_norm,
                                    f"📦 {u.kod} → {p['ad']}"))
 
                 # Alt kalemler
                 for ak in self.em_repo.urun_versiyonuna_bagli_alt_kalemler(ver["id"]):
                     ak_adi = ak["alt_kalem_adi"]
+                    ak_norm = _norm(ak_adi)
+                    prefix = f"{u_norm}_{ak_norm}"
 
                     # Alt kalem normal parametreleri
                     for akp in self.em_repo.alt_kalem_parametreleri(ak["id"]):
-                        params.append(("alt_kalem_param", akp["ad"],
+                        p_norm = f"{prefix}_{_norm(akp['ad'])}"
+                        params.append(("alt_kalem_param", p_norm,
                                        f"🔧 {u.kod} → {ak_adi} → {akp['ad']}"))
 
                     # Alt kalem teklif parametreleri (spesifik)
-                    for ozel in _AK_OZEL:
-                        sp_adi = f"{u.kod}::{ak_adi}::{ozel}"
-                        gorunen = f"📊 {u.kod} → {ak_adi} → {_AK_EMOJI[ozel]}"
-                        params.append(("teklif_param", sp_adi, gorunen))
+                    for ozel, (suffix, emoji) in _AK_OZEL_SUFFIX.items():
+                        p_norm = f"{prefix}_{suffix}"
+                        gorunen = f"📊 {u.kod} → {ak_adi} → {emoji}"
+                        params.append(("teklif_param", p_norm, gorunen))
 
+        # Ayırıcı
+        params.append(("", "—", "— (Şablon/Birleştirme için boş)"))
         return params
 
 
@@ -316,9 +338,10 @@ class KuralEkleDialog(QDialog):
         self.param_combo = QComboBox()
         self.param_combo.setMinimumWidth(300)
         for kaynak, adi, gorunen in self._param_listesi:
-            self.param_combo.addItem(gorunen, (kaynak, adi))
-        # Boş (birleştirme/şablon için)
-        self.param_combo.addItem("— (Şablon/Birleştirme için boş)", ("urun_param", ""))
+            if adi == "—":
+                self.param_combo.addItem(gorunen, (kaynak, adi))
+            else:
+                self.param_combo.addItem(f"{adi}  —  {gorunen}", (kaynak, adi))
         form.addRow("Parametre:", self.param_combo)
 
         # Operatör

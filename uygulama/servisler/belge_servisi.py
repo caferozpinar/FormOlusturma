@@ -225,12 +225,14 @@ class BelgeServisi:
         return {f"PROJE_{k.upper()}": g(k) for k in ["ad", "kod", "konum", "ulke", "sehir", "tesis_turu"]}
 
     def _teklif_param_baglam(self, teklif_id: str) -> dict:
+        """Tüm teklif kalemlerinin özel parametrelerini toplar."""
         if not self.teklif_srv: return {}
         p = {}
         for k in self.teklif_srv.zenginlestirilmis_kalemler(teklif_id):
             for v in self.teklif_srv.parametre_degerleri(k["id"]):
                 n = v["parametre_adi"]
-                if n.startswith("__") or "::" in n:
+                # Özel/spesifik parametreleri al (__ prefix veya tamamen UPPER)
+                if n.startswith("__") or n == n.upper():
                     p[n] = v["deger"]
         return p
 
@@ -254,7 +256,7 @@ class BelgeServisi:
         if self.teklif_srv:
             for v in self.teklif_srv.parametre_degerleri(kalem_id):
                 n = v["parametre_adi"]
-                if n.startswith("__") or "::" in n:
+                if n.startswith("__") or n == n.upper():
                     bg["teklif_param"][n] = v["deger"]
                 elif not n.startswith("_"):
                     bg["alt_kalem_param"][n] = v["deger"]

@@ -14,14 +14,22 @@ from uygulama.ortak.app_state import app_state
 
 logger = logger_olustur("teklif_srv")
 
+# Türkçe → ASCII normalize
+import re as _re
+_TR_MAP = str.maketrans("çğıöşüÇĞİÖŞÜ", "cgiosuCGIOSU")
+def _norm(s: str) -> str:
+    s = s.translate(_TR_MAP)
+    s = _re.sub(r'[^A-Za-z0-9]+', '_', s)
+    return s.strip('_').upper()
+
 # Özel parametre isimleri (placeholder erişimi için)
 OZEL_PARAM_ADET = "__ADET__"
 OZEL_PARAM_BIRIM_FIYAT = "__BIRIM_FIYAT__"
 OZEL_PARAM_TOPLAM_FIYAT = "__TOPLAM_FIYAT__"
 OZEL_PARAM_ALT_KALEM_NO = "__ALT_KALEM_NO__"
-OZEL_PARAM_TEKLIF_TOPLAM = "__TEKLIF_TOPLAM__"
-OZEL_PARAM_TEKLIF_KDV = "__TEKLIF_KDV__"
-OZEL_PARAM_TEKLIF_GENEL_TOPLAM = "__TEKLIF_GENEL_TOPLAM__"
+OZEL_PARAM_TEKLIF_TOPLAM = "TEKLIF_TOPLAM"
+OZEL_PARAM_TEKLIF_KDV = "TEKLIF_KDV"
+OZEL_PARAM_TEKLIF_GENEL_TOPLAM = "TEKLIF_GENEL_TOPLAM"
 
 
 class TeklifServisi:
@@ -241,7 +249,7 @@ class TeklifServisi:
                 (kalem.get("alt_kalem_id"),)) if kalem.get("alt_kalem_id") else None
             u_kod = urun["kod"] if urun else "?"
             ak_ad = ak["ad"] if ak else "?"
-            prefix = f"{u_kod}::{ak_ad}"
+            prefix_norm = _norm(u_kod) + "_" + _norm(ak_ad)
 
             # Genel parametreler (geriye uyumlu)
             self.repo.parametre_kaydet(
@@ -254,16 +262,16 @@ class TeklifServisi:
                 kalem_id, f"_ozel_toplam_{kalem_id[:8]}",
                 OZEL_PARAM_TOPLAM_FIYAT, str(sonuc["toplam_fiyat"]))
 
-            # Spesifik parametreler: LK::havalandırma motoru::__BIRIM_FIYAT__
+            # Spesifik parametreler: LK_HAVALANDIRMA_MOTORU_ADET
             self.repo.parametre_kaydet(
                 kalem_id, f"_sp_adet_{kalem_id[:8]}",
-                f"{prefix}::__ADET__", str(kalem["miktar"]))
+                f"{prefix_norm}_ADET", str(kalem["miktar"]))
             self.repo.parametre_kaydet(
                 kalem_id, f"_sp_birim_{kalem_id[:8]}",
-                f"{prefix}::__BIRIM_FIYAT__", str(sonuc["birim_fiyat"]))
+                f"{prefix_norm}_BIRIM_FIYAT", str(sonuc["birim_fiyat"]))
             self.repo.parametre_kaydet(
                 kalem_id, f"_sp_toplam_{kalem_id[:8]}",
-                f"{prefix}::__TOPLAM_FIYAT__", str(sonuc["toplam_fiyat"]))
+                f"{prefix_norm}_TOPLAM_FIYAT", str(sonuc["toplam_fiyat"]))
 
         return ok, msg, sonuc
 
@@ -326,17 +334,17 @@ class TeklifServisi:
                 k["id"], f"_ozel_no_{k['id'][:8]}",
                 OZEL_PARAM_ALT_KALEM_NO, numara)
 
-            # Spesifik: LK::havalandırma motoru::__ALT_KALEM_NO__
+            # Spesifik: LK_HAVALANDIRMA_MOTORU_NO
             urun = self.em_repo.db.getir_tek(
                 "SELECT kod FROM urunler WHERE id=?", (k["urun_id"],))
             ak = self.em_repo.db.getir_tek(
                 "SELECT ad FROM alt_kalemler WHERE id=?",
                 (k.get("alt_kalem_id"),)) if k.get("alt_kalem_id") else None
             if urun and ak:
-                prefix = f"{urun['kod']}::{ak['ad']}"
+                prefix_norm = _norm(urun['kod']) + "_" + _norm(ak['ad'])
                 self.repo.parametre_kaydet(
                     k["id"], f"_sp_no_{k['id'][:8]}",
-                    f"{prefix}::__ALT_KALEM_NO__", numara)
+                    f"{prefix_norm}_NO", numara)
 
     # ═══════════════════════════════════════
     # ARAMA & FİLTRE

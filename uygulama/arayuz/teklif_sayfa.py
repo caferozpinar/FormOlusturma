@@ -460,8 +460,11 @@ class _DetayW(QWidget):
             self.lbl_p.setText(f"Parametreler — {kalem['alt_kalem_ad']}")
         if not self.srv: return
         vals = self.srv.parametre_degerleri(kalem["id"])
-        # Özel parametreleri filtrele (__ ile başlayanlar gizle)
-        vals = [v for v in vals if not v["parametre_adi"].startswith("__")]
+        # Özel/spesifik parametreleri filtrele (sistem parametreleri gizle)
+        vals = [v for v in vals
+                if not v["parametre_adi"].startswith("__")
+                and not v["parametre_adi"].startswith("_")
+                and v["parametre_adi"] != v["parametre_adi"].upper()]
         if not vals:
             l=QLabel("Bu kalemde parametre tanımlı değil.")
             l.setStyleSheet("color:#999;font-style:italic;padding:8px;")
