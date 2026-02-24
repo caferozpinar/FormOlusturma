@@ -808,6 +808,49 @@ MIGRATIONS: list[tuple[int, str, str]] = [
     """),
 ]
 
+# ═══════════════════════════════════════
+# TEMEL PLACEHOLDER SEED
+# ═══════════════════════════════════════
+
+PLACEHOLDER_SEED = [
+    # (kod, ad, kaynak, parametre_adi)
+    # Proje bilgileri
+    ("PROJE_ADI", "Proje Adı", "proje_bilgi", "PROJE_ADI"),
+    ("PROJE_KODU", "Proje Kodu", "proje_bilgi", "PROJE_KODU"),
+    ("PROJE_KONUM", "Proje Konumu", "proje_bilgi", "PROJE_KONUM"),
+    ("PROJE_ULKE", "Proje Ülkesi", "proje_bilgi", "PROJE_ULKE"),
+    ("PROJE_SEHIR", "Proje Şehri", "proje_bilgi", "PROJE_SEHIR"),
+    ("PROJE_TESIS_TURU", "Tesis Türü", "proje_bilgi", "PROJE_TESIS_TURU"),
+    ("PROJE_TARIHI", "Proje Tarihi", "proje_bilgi", "PROJE_TARIHI"),
+    # Teklif toplamları
+    ("TEKLIF_TOPLAM", "Teklif Ara Toplam", "teklif_param", "TEKLIF_TOPLAM"),
+    ("TEKLIF_KDV", "Teklif KDV Tutarı", "teklif_param", "TEKLIF_KDV"),
+    ("TEKLIF_GENEL_TOPLAM", "Teklif Genel Toplam", "teklif_param", "TEKLIF_GENEL_TOPLAM"),
+]
+
+
+def _placeholder_seed_uygula(db):
+    """Temel placeholder'ları oluşturur (yoksa)."""
+    import uuid
+    from uygulama.ortak.yardimcilar import simdi_iso
+    for kod, ad, kaynak, param in PLACEHOLDER_SEED:
+        ph_kod = "{/" + kod + "/}"
+        mevcut = db.getir_tek("SELECT id FROM placeholders WHERE kod=?", (ph_kod,))
+        if mevcut:
+            continue
+        pid = str(uuid.uuid4())
+        with db.transaction() as c:
+            c.execute(
+                "INSERT INTO placeholders (id,kod,ad,olusturma_tarihi) VALUES (?,?,?,?)",
+                (pid, ph_kod, ad, simdi_iso()))
+            rid = str(uuid.uuid4())
+            c.execute(
+                """INSERT INTO placeholder_kurallar
+                   (id,placeholder_id,kural_tipi,parametre_kaynak,parametre_adi,
+                    operator,kosul_degeri,sonuc_metni,varsayilan_mi,sira,olusturma_tarihi)
+                   VALUES (?,?,'dogrudan',?,?,'=','','',1,1,?)""",
+                (rid, pid, kaynak, param, simdi_iso()))
+
 
 # ─────────────────────────────────────────────
 # MİGRATION MOTORU
@@ -866,5 +909,11 @@ class MigrationMotoru:
         else:
             logger.info(f"Toplam {uygulanan} migration uygulandı. "
                         f"Mevcut sürüm: v{self.mevcut_surum()}")
+
+        # Temel placeholder'ları oluştur
+        try:
+            _placeholder_seed_uygula(self.db)
+        except Exception as e:
+            logger.warning(f"Placeholder seed hatası (göz ardı): {e}")
 
         return uygulanan

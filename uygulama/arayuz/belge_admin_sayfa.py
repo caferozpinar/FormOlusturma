@@ -70,10 +70,14 @@ class BelgeAdminSayfasi(QWidget):
         b_yukle = QPushButton("+ Yükle")
         b_yukle.setFixedHeight(26)
         b_yukle.clicked.connect(self._sablon_yukle)
+        b_ac = QPushButton("📂 Aç")
+        b_ac.setFixedHeight(26)
+        b_ac.clicked.connect(self._sablon_ac)
         b_sil = QPushButton("Sil")
         b_sil.setFixedHeight(26)
         b_sil.clicked.connect(self._sablon_sil)
         sb.addWidget(b_yukle)
+        sb.addWidget(b_ac)
         sb.addWidget(b_sil)
         sb.addStretch()
         g1l.addLayout(sb)
@@ -347,6 +351,23 @@ class BelgeAdminSayfasi(QWidget):
                 self._sablonlari_yukle()
             else:
                 QMessageBox.warning(self, "Hata", msg)
+
+    def _sablon_ac(self):
+        r = self.tbl_sablon.currentRow()
+        if r < 0 or r >= len(self._sablonlar):
+            QMessageBox.information(self, "Bilgi", "Açılacak şablonu seçin.")
+            return
+        import os, subprocess, sys
+        yol = self._sablonlar[r]["dosya_yolu"]
+        if not os.path.exists(yol):
+            QMessageBox.warning(self, "Hata", f"Dosya bulunamadı:\n{yol}")
+            return
+        if sys.platform == 'win32':
+            os.startfile(yol)
+        elif sys.platform == 'darwin':
+            subprocess.Popen(['open', yol])
+        else:
+            subprocess.Popen(['xdg-open', yol])
 
     def _sablon_sil(self):
         r = self.tbl_sablon.currentRow()
