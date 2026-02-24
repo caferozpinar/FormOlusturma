@@ -1,0 +1,64 @@
+name: Windows EXE Build
+
+on:
+  push:
+    tags:
+      - 'v*'  # v1.0, v1.1 gibi tag push'larında çalışır
+  workflow_dispatch:  # Manuel tetikleme
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Python Kur
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Bağımlılıkları Kur
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+
+    - name: Klasörleri Oluştur
+      run: |
+        mkdir -p veri
+        mkdir -p loglar
+        mkdir -p sablonlar
+      shell: bash
+
+    - name: PyInstaller ile Build
+      run: |
+        pyinstaller build.spec
+
+    - name: Build Kontrol
+      run: |
+        dir dist\FormOlusturma\
+        dir dist\FormOlusturma\FormOlusturma.exe
+      shell: cmd
+
+    - name: ZIP Oluştur
+      run: |
+        cd dist
+        Compress-Archive -Path FormOlusturma -DestinationPath FormOlusturma_Windows.zip
+      shell: powershell
+
+    - name: Artifact Yükle
+      uses: actions/upload-artifact@v4
+      with:
+        name: FormOlusturma-Windows
+        path: dist/FormOlusturma_Windows.zip
+        retention-days: 30
+
+    # Tag push ise Release oluştur
+    - name: Release Oluştur
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v2
+      with:
+        files: dist/FormOlusturma_Windows.zip
+        generate_release_notes: true

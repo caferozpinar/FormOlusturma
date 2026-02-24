@@ -1,8 +1,39 @@
-credentials.json
-token.pickle
-token.json
-veri/
-loglar/
+# Python cache
 __pycache__/
 *.pyc
-sablonlar/
+*.pyo
+*.pyd
+
+# Veritabanı
+veri/*.db
+veri/*.db-journal
+veri/*.db-wal
+
+# Loglar
+loglar/*.log
+
+# Build çıktıları
+build/
+dist/
+*.spec.bak
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# PyInstaller
+*.manifest
+*.spec.tmp
