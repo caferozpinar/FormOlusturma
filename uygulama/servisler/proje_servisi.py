@@ -5,6 +5,7 @@ Proje Servisi — Proje iş kuralları.
 Hash üretimi, durum yönetimi, CRUD operasyonları.
 """
 
+import sqlite3
 from typing import Optional, Tuple
 
 from uygulama.domain.modeller import (
@@ -54,8 +55,8 @@ class ProjeServisi:
         tesis = tesis.strip()
         urun_seti = urun_seti.strip() if urun_seti else ""
 
-        # Benzersiz hash üret
-        hash_kodu = self._benzersiz_hash_uret(firma, konum, tesis)
+        # Deterministik hash üret (urun_seti dahil)
+        hash_kodu = self._benzersiz_hash_uret(firma, konum, tesis, urun_seti)
 
         proje = Proje(
             firma=firma,
@@ -67,7 +68,16 @@ class ProjeServisi:
             olusturan_id=state.aktif_kullanici.id,
         )
 
-        self.proje_repo.olustur(proje)
+        try:
+            self.proje_repo.olustur(proje)
+        except sqlite3.IntegrityError as e:
+            if "UNIQUE" in str(e) and "hash_kodu" in str(e):
+                return False, "⚠️ Bu proje zaten var! (Firma-Konum-Tesis-Ürün Seti aynı)", None
+            logger.error(f"Veritabanı hatası: {e}")
+            return False, f"Veritabanı hatası: {e}", None
+        except Exception as e:
+            logger.error(f"Proje oluşturma hatası: {e}")
+            return False, f"Hata: {e}", None
 
         self._log_kaydet(
             IslemTipi.PROJE_OLUSTUR, "projeler", proje.id,
@@ -228,15 +238,10 @@ class ProjeServisi:
     # YARDIMCI
     # ─────────────────────────────────────────
 
-    def _benzersiz_hash_uret(self, firma: str, konum: str, tesis: str) -> str:
-        """Benzersiz olana kadar hash üretir."""
-        for _ in range(10):
-            hash_kodu = proje_hash_uret(firma, konum, tesis)
-            if not self.proje_repo.hash_mevcut_mu(hash_kodu):
-                return hash_kodu
-        # Fallback — çok düşük ihtimal
-        import uuid
-        return uuid.uuid4().hex[:6]
+    def _benzersiz_hash_uret(self, firma: str, konum: str, tesis: str, urun_seti: str = "") -> str:
+        """Deterministik hash üretir (aynı veriler → aynı hash)."""
+        # urun_seti'sini de dahil ederek hash hesapla
+        return proje_hash_uret(firma, konum, tesis, urun_seti)
 
     def _log_kaydet(self, islem: IslemTipi, hedef_tablo: str,
                     hedef_id: str, detay: str) -> None:

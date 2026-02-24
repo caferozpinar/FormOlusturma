@@ -124,6 +124,7 @@ class _ListeW(QWidget):
 
         # ── Tablo ──
         self.tbl = QTableWidget(); _setup_tbl(self.tbl, 32)
+        self.tbl.setAlternatingRowColors(False)
         self.tbl.setColumnCount(6)
         self.tbl.setHorizontalHeaderLabels(["Tür","Başlık","Rev.","Para","Toplam","Durum"])
         self.tbl.setColumnWidth(0,60)
@@ -159,20 +160,29 @@ class _ListeW(QWidget):
 
     def _tabloyu_doldur(self):
         renk = {"TASLAK":"#757575","GONDERILDI":"#1565C0",
-                "ONAYLANDI":"#2E7D32","REDDEDILDI":"#C62828","KAPANDI":"#795548"}
+                "ONAYLANDI":"#23691F","REDDEDILDI":"#C62828","KAPANDI":"#795548"}
         self.tbl.setRowCount(len(self._data))
-        for i,t in enumerate(self._data):
+        for i, t in enumerate(self._data):
+            durum = str(t.get("durum", "")).strip()
+            durum_norm = durum.upper()
             s = self.srv.para_birimi_sembol(t["para_birimi"])
-            self.tbl.setItem(i,0,QTableWidgetItem(t["tur"]))
-            self.tbl.setItem(i,1,QTableWidgetItem(t["baslik"]))
-            self.tbl.setItem(i,2,QTableWidgetItem(str(t["revizyon_no"])))
-            self.tbl.setItem(i,3,QTableWidgetItem(s))
+            tur_it = QTableWidgetItem(t["tur"])
+            baslik_it = QTableWidgetItem(t["baslik"])
+            rev_it = QTableWidgetItem(str(t["revizyon_no"]))
+            para_it = QTableWidgetItem(s)
             it = QTableWidgetItem(f"{s}{t['toplam_fiyat']:,.2f}")
             it.setTextAlignment(Qt.AlignRight|Qt.AlignVCenter)
-            self.tbl.setItem(i,4,it)
-            d = QTableWidgetItem(t["durum"])
-            d.setForeground(QColor(renk.get(t["durum"],"#333")))
-            self.tbl.setItem(i,5,d)
+            d = QTableWidgetItem(durum)
+            d.setForeground(QColor(renk.get(durum_norm, "#333")))
+
+            self.tbl.setItem(i, 0, tur_it)
+            self.tbl.setItem(i, 1, baslik_it)
+            self.tbl.setItem(i, 2, rev_it)
+            self.tbl.setItem(i, 3, para_it)
+            self.tbl.setItem(i, 4, it)
+            self.tbl.setItem(i, 5, d)
+            for col in range(6):
+                self.tbl.item(i, col).setForeground(QColor(renk[durum_norm]))
 
     def _sel(self):
         r = self.tbl.currentRow()

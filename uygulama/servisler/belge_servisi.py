@@ -132,7 +132,7 @@ class BelgeServisi:
         self._sutun_genislikleri(ws_out, bolumler, c1, c2)
 
         # Dosya/klasör adları
-        p_ad = self._p(proje, "ad")
+        p_ad = self._p(proje, "firma")
         p_konum = self._p(proje, "konum")
         p_id = self._p(proje, "id")
         ph = _phash(p_id)
@@ -222,7 +222,7 @@ class BelgeServisi:
 
     def _proje_baglam(self, proje) -> dict:
         g = lambda k: getattr(proje, k, "") if not isinstance(proje, dict) else proje.get(k, "")
-        return {f"PROJE_{k.upper()}": g(k) for k in ["ad", "kod", "konum", "ulke", "sehir", "tesis_turu"]}
+        return {f"PROJE_{k.upper()}": g(k) for k in ["firma", "konum", "tesis", "urun_seti"]}
 
     def _teklif_param_baglam(self, teklif_id: str) -> dict:
         """Tüm teklif kalemlerinin özel parametrelerini toplar."""

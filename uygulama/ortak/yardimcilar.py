@@ -50,14 +50,19 @@ def logger_olustur(ad: str, log_dizini: str = "loglar") -> logging.Logger:
 # HASH ÜRETİMİ
 # ─────────────────────────────────────────────
 
-def proje_hash_uret(firma: str, konum: str, tesis: str) -> str:
+def proje_hash_uret(firma: str, konum: str, tesis: str, urun_seti: str = "") -> str:
     """
-    Proje için 6 karakterlik benzersiz hash üretir.
-    firma + konum + tesis + timestamp birleşiminden.
+    Proje için 6 karakterlik deterministik hash üretir.
+    firma + konum + tesis + urun_seti birleşiminden.
+    Aynı veriler → HER ZAMAN aynı hash (timestamp yok).
+    Yalnızca büyük harfler ve rakamlardan oluşur.
     """
-    kaynak = f"{firma}|{konum}|{tesis}|{datetime.now().isoformat()}"
+    kaynak = f"{firma}|{konum}|{tesis}|{urun_seti}"
     tam_hash = hashlib.sha256(kaynak.encode("utf-8")).hexdigest()
-    return tam_hash[:6]
+    # Sadece büyük harfler (A-Z) ve rakamlar (0-9) kullanılır; özel karakterler ve küçük harfler hariç tutulur,
+    # böylece hash kolay okunur ve dosya/dizin adlarında güvenle kullanılabilir.
+    hash_temiz = "".join(c for c in tam_hash.upper() if c.isalnum())
+    return hash_temiz[:6]
 
 
 # ─────────────────────────────────────────────
