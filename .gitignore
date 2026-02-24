@@ -8,6 +8,7 @@ __pycache__/
 veri/*.db
 veri/*.db-journal
 veri/*.db-wal
+veri/sync
 
 # Loglar
 loglar/*.log
@@ -16,7 +17,6 @@ loglar/*.log
 build/
 dist/
 *.spec.bak
-*.egg-info/
 
 # IDE
 .vscode/
@@ -34,6 +34,5 @@ venv/
 .venv/
 env/
 
-# PyInstaller
-*.manifest
-*.spec.tmp
+# Şablonlar
+sablonlar/*.xlsx
