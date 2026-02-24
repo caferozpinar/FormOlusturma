@@ -15,7 +15,7 @@ KURAL_TIPLERI = ("esitlik", "karsilastirma", "dogrudan", "birlestirme", "sablon"
 # Geçerli operatörler
 OPERATORLER = ("=", "!=", ">", "<", ">=", "<=", "icerir", "baslar", "biter")
 # Parametre kaynakları
-PARAMETRE_KAYNAKLARI = ("urun_param", "alt_kalem_param", "proje_bilgi")
+PARAMETRE_KAYNAKLARI = ("urun_param", "alt_kalem_param", "proje_bilgi", "teklif_param")
 
 # Proje bilgi alanları (parametre_adi olarak kullanılır)
 PROJE_BILGI_ALANLARI = [

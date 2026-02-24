@@ -195,21 +195,49 @@ class PlaceholderYonetimWidget(QWidget):
         for p in PROJE_BILGI_ALANLARI:
             params.append(("proje_bilgi", p, f"📋 {p}"))
 
-        # Ürün parametreleri (tüm ürünlerden)
-        if self.em_repo:
-            if self.urun_servisi:
-                urunler = self.urun_servisi.listele(sadece_aktif=True)
-                for u in urunler:
-                    ver = self.em_repo.aktif_urun_versiyon(u.id)
-                    if ver:
-                        for p in self.em_repo.urun_parametreleri(ver["id"]):
-                            params.append(("urun_param", p["ad"],
-                                           f"📦 {u.kod} → {p['ad']}"))
-                        # Alt kalem parametreleri
-                        for ak in self.em_repo.urun_versiyonuna_bagli_alt_kalemler(ver["id"]):
-                            for akp in self.em_repo.alt_kalem_parametreleri(ak["id"]):
-                                params.append(("alt_kalem_param", akp["ad"],
-                                               f"🔧 {ak['alt_kalem_adi']} → {akp['ad']}"))
+        # Teklif seviyesi özel parametreler
+        _TEKLIF_PARAMS = [
+            ("__TEKLIF_TOPLAM__", "💰 Teklif Ara Toplam"),
+            ("__TEKLIF_KDV__", "💰 Teklif KDV Tutarı"),
+            ("__TEKLIF_GENEL_TOPLAM__", "💰 Teklif Genel Toplam (KDV dahil)"),
+        ]
+        for kod, gorunen in _TEKLIF_PARAMS:
+            params.append(("teklif_param", kod, gorunen))
+
+        # Ürün → alt kalem spesifik parametreler
+        _AK_OZEL = ["__ALT_KALEM_NO__", "__ADET__", "__BIRIM_FIYAT__", "__TOPLAM_FIYAT__"]
+        _AK_EMOJI = {"__ALT_KALEM_NO__": "🔢 No",
+                     "__ADET__": "🔢 Adet",
+                     "__BIRIM_FIYAT__": "💰 Birim Fiyat",
+                     "__TOPLAM_FIYAT__": "💰 Toplam Fiyat"}
+
+        if self.em_repo and self.urun_servisi:
+            urunler = self.urun_servisi.listele(sadece_aktif=True)
+            for u in urunler:
+                ver = self.em_repo.aktif_urun_versiyon(u.id)
+                if not ver:
+                    continue
+
+                # Ürün parametreleri
+                for p in self.em_repo.urun_parametreleri(ver["id"]):
+                    params.append(("urun_param", p["ad"],
+                                   f"📦 {u.kod} → {p['ad']}"))
+
+                # Alt kalemler
+                for ak in self.em_repo.urun_versiyonuna_bagli_alt_kalemler(ver["id"]):
+                    ak_adi = ak["alt_kalem_adi"]
+
+                    # Alt kalem normal parametreleri
+                    for akp in self.em_repo.alt_kalem_parametreleri(ak["id"]):
+                        params.append(("alt_kalem_param", akp["ad"],
+                                       f"🔧 {u.kod} → {ak_adi} → {akp['ad']}"))
+
+                    # Alt kalem teklif parametreleri (spesifik)
+                    for ozel in _AK_OZEL:
+                        sp_adi = f"{u.kod}::{ak_adi}::{ozel}"
+                        gorunen = f"📊 {u.kod} → {ak_adi} → {_AK_EMOJI[ozel]}"
+                        params.append(("teklif_param", sp_adi, gorunen))
+
         return params
 
 

@@ -21,7 +21,7 @@ from uygulama.ortak.yardimcilar import logger_olustur
 logger = logger_olustur("teklif_sayfa")
 
 
-def _setup_tbl(t, rh=34):
+def _setup_tbl(t, rh=28):
     t.verticalHeader().setDefaultSectionSize(rh)
     t.verticalHeader().setVisible(False)
     t.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -29,8 +29,10 @@ def _setup_tbl(t, rh=34):
     t.setAlternatingRowColors(True)
     t.setStyleSheet(
         "QTableWidget { gridline-color:#E0E0E0; border:1px solid #ddd; }"
-        "QTableWidget::item { padding:4px; }"
-        "QTableWidget::item:selected { background:#BBDEFB; color:#000; }")
+        "QTableWidget::item { padding:0px 2px; }"
+        "QTableWidget::item:selected { background:#BBDEFB; color:#000; }"
+        "QComboBox { font-size:10px; padding:0px 2px; }"
+        "QSpinBox { font-size:10px; padding:0px; }")
 
 
 # ═══════════════════════════════════════
@@ -40,15 +42,16 @@ def _setup_tbl(t, rh=34):
 class TeklifSayfasi(QWidget):
     go_back = pyqtSignal()
 
-    def __init__(self, teklif_srv=None, em_repo=None, parent=None):
+    def __init__(self, teklif_srv=None, em_repo=None, belge_srv=None, parent=None):
         super().__init__(parent)
         self.srv = teklif_srv
         self.em_repo = em_repo
+        self.belge_srv = belge_srv
         self._pid = None
         lo = QVBoxLayout(self); lo.setContentsMargins(0,0,0,0)
         self.stack = QStackedWidget()
         self.liste = _ListeW(self.srv)
-        self.detay = _DetayW(self.srv, self.em_repo)
+        self.detay = _DetayW(self.srv, self.em_repo, belge_srv=self.belge_srv)
         self.stack.addWidget(self.liste)
         self.stack.addWidget(self.detay)
         lo.addWidget(self.stack)
@@ -230,9 +233,9 @@ class _ListeW(QWidget):
 class _DetayW(QWidget):
     geri = pyqtSignal()
 
-    def __init__(self, srv=None, em_repo=None, parent=None):
+    def __init__(self, srv=None, em_repo=None, belge_srv=None, parent=None):
         super().__init__(parent)
-        self.srv = srv; self.em_repo = em_repo
+        self.srv = srv; self.em_repo = em_repo; self.belge_srv = belge_srv
         self._tid = None; self._teklif = None; self._kalemler = []
         self._build()
 
@@ -247,11 +250,35 @@ class _DetayW(QWidget):
         hdr.addWidget(self.lbl_baslik)
         self.lbl_durum = QLabel(); self.lbl_durum.setStyleSheet(
             "font-size:11px;padding:2px 8px;border-radius:3px;background:#E3F2FD;color:#1565C0;")
-        hdr.addWidget(self.lbl_durum); hdr.addStretch()
-        self.lbl_toplam = QLabel(); self.lbl_toplam.setStyleSheet(
-            "font-size:15px;font-weight:bold;color:#2E7D32;"
-            "padding:4px 14px;background:#E8F5E9;border-radius:4px;")
-        hdr.addWidget(self.lbl_toplam)
+        hdr.addWidget(self.lbl_durum)
+        hdr.addStretch()
+
+        # KDV oranı girişi
+        hdr.addWidget(QLabel("KDV:"))
+        self.kdv_spin = QDoubleSpinBox()
+        self.kdv_spin.setRange(0, 100); self.kdv_spin.setDecimals(1)
+        self.kdv_spin.setValue(20); self.kdv_spin.setSuffix(" %")
+        self.kdv_spin.setFixedSize(70, 24)
+        self.kdv_spin.valueChanged.connect(self._kdv_degisti)
+        hdr.addWidget(self.kdv_spin)
+        hdr.addSpacing(8)
+
+        # Toplam paneli: Ara toplam / KDV / Genel toplam
+        tp = QVBoxLayout(); tp.setSpacing(1)
+        self.lbl_ara = QLabel("Ara Toplam: —")
+        self.lbl_ara.setStyleSheet("font-size:11px;color:#555;")
+        self.lbl_ara.setAlignment(Qt.AlignRight)
+        self.lbl_kdv = QLabel("KDV: —")
+        self.lbl_kdv.setStyleSheet("font-size:11px;color:#555;")
+        self.lbl_kdv.setAlignment(Qt.AlignRight)
+        self.lbl_toplam = QLabel("Genel Toplam: —")
+        self.lbl_toplam.setStyleSheet(
+            "font-size:13px;font-weight:bold;color:#2E7D32;")
+        self.lbl_toplam.setAlignment(Qt.AlignRight)
+        tp.addWidget(self.lbl_ara)
+        tp.addWidget(self.lbl_kdv)
+        tp.addWidget(self.lbl_toplam)
+        hdr.addLayout(tp)
         root.addLayout(hdr); root.addSpacing(6)
 
         sp = QSplitter(Qt.Vertical); sp.setHandleWidth(5)
@@ -261,18 +288,28 @@ class _DetayW(QWidget):
         ub = QHBoxLayout()
         ub.addWidget(QLabel("Ürün ve Alt Kalemler"))
         ub.addStretch()
+        b_belge = QPushButton("📄 Belge Oluştur")
+        b_belge.setFixedSize(120, 28)
+        b_belge.clicked.connect(self._belge_olustur)
+        ub.addWidget(b_belge)
+        b_bac = QPushButton("📂 Belgeyi Aç")
+        b_bac.setFixedSize(100, 28)
+        b_bac.clicked.connect(self._belge_ac)
+        ub.addWidget(b_bac)
         bh = QPushButton("Fiyatları Hesapla"); bh.setObjectName("primary")
         bh.setFixedSize(130,28); bh.clicked.connect(self._hesapla)
         ub.addWidget(bh)
         ul.addLayout(ub)
 
-        self.ktbl = QTableWidget(); _setup_tbl(self.ktbl, 30)
-        self.ktbl.setColumnCount(5)
-        self.ktbl.setHorizontalHeaderLabels(["Seç","Ürün / Alt Kalem","Adet","Birim Fiyat","Toplam Fiyat"])
-        self.ktbl.setColumnWidth(0,36)
+        self.ktbl = QTableWidget(); _setup_tbl(self.ktbl, 28)
+        self.ktbl.setColumnCount(6)
+        self.ktbl.setHorizontalHeaderLabels(
+            ["No","Ürün / Alt Kalem","Durum","Adet","Birim Fiyat","Toplam Fiyat"])
+        self.ktbl.setColumnWidth(0,30)
         self.ktbl.horizontalHeader().setSectionResizeMode(1,QHeaderView.Stretch)
-        self.ktbl.setColumnWidth(2,55)
-        self.ktbl.setColumnWidth(3,100); self.ktbl.setColumnWidth(4,100)
+        self.ktbl.setColumnWidth(2,70)
+        self.ktbl.setColumnWidth(3,46)
+        self.ktbl.setColumnWidth(4,90); self.ktbl.setColumnWidth(5,90)
         self.ktbl.clicked.connect(self._kalem_tikla)
         ul.addWidget(self.ktbl)
         sp.addWidget(ust)
@@ -310,53 +347,104 @@ class _DetayW(QWidget):
     def _toplam_goster(self):
         if not self._teklif: return
         s = self.srv.para_birimi_sembol(self._teklif["para_birimi"])
-        self.lbl_toplam.setText(f"Toplam: {s}{self._teklif['toplam_fiyat']:,.2f}")
+        ara = self._teklif.get("toplam_fiyat", 0)
+        kdv_o = self._teklif.get("kdv_orani", 20)
+        kdv_t = self._teklif.get("kdv_tutari", 0)
+        gtop = self._teklif.get("kdv_dahil_toplam", 0)
+        self.lbl_ara.setText(f"Ara Toplam: {s}{ara:,.2f}")
+        self.lbl_kdv.setText(f"KDV (%{kdv_o:g}): {s}{kdv_t:,.2f}")
+        self.lbl_toplam.setText(f"Genel Toplam: {s}{gtop:,.2f}")
+        self.kdv_spin.blockSignals(True)
+        self.kdv_spin.setValue(kdv_o)
+        self.kdv_spin.blockSignals(False)
 
     def _kalem_yukle(self):
         if not self.srv: return
         self._kalemler = self.srv.zenginlestirilmis_kalemler(self._tid)
         s = self.srv.para_birimi_sembol(self._teklif["para_birimi"]) if self._teklif else "₺"
+
+        # Alt kalem numaralama: DAHIL → 1,2,3 / OPSIYON → ## / HARIC → —
+        ak_no = 1
+        ak_nums = {}
+        for k in self._kalemler:
+            if k["tip"] != "urun" and k.get("alt_kalem_id"):
+                durum = k.get("dahil_durumu", "DAHIL")
+                if durum == "DAHIL":
+                    ak_nums[k["id"]] = str(ak_no); ak_no += 1
+                elif durum == "OPSIYON":
+                    ak_nums[k["id"]] = "##"
+                else:
+                    ak_nums[k["id"]] = "—"
+
         self.ktbl.setRowCount(len(self._kalemler))
-        for i,k in enumerate(self._kalemler):
-            is_u = k["tip"]=="urun"
-            # Checkbox
-            cw = QWidget(); cl = QHBoxLayout(cw); cl.setContentsMargins(0,0,0,0)
-            cl.setAlignment(Qt.AlignCenter)
-            cb = QCheckBox(); cb.setChecked(bool(k["secili_mi"]))
-            if is_u: cb.setEnabled(False)
-            else: cb.stateChanged.connect(lambda st,kid=k["id"]:self._secim(kid,st))
-            cl.addWidget(cb); self.ktbl.setCellWidget(i,0,cw)
-            # İsim
+        for i, k in enumerate(self._kalemler):
+            is_u = k["tip"] == "urun"
+            durum = k.get("dahil_durumu", "DAHIL")
+
+            # Kolon 0: No
+            no_txt = ak_nums.get(k["id"], "") if not is_u else ""
+            no_it = QTableWidgetItem(no_txt)
+            no_it.setTextAlignment(Qt.AlignCenter)
+            if no_txt == "##":
+                no_it.setForeground(QColor("#FF8F00"))
+            self.ktbl.setItem(i, 0, no_it)
+
+            # Kolon 1: İsim
             if is_u:
-                it=QTableWidgetItem(f"  {k['urun_kod']} — {k['urun_ad']}")
-                f=it.font();f.setBold(True);it.setFont(f)
-                it.setBackground(QColor(235,242,250))
+                it = QTableWidgetItem(f"  {k['urun_kod']} — {k['urun_ad']}")
+                f = it.font(); f.setBold(True); it.setFont(f)
+                it.setBackground(QColor(235, 242, 250))
             else:
-                it=QTableWidgetItem(f"      {k['alt_kalem_ad']}")
-            it.setFlags(it.flags()&~Qt.ItemIsEditable)
-            self.ktbl.setItem(i,1,it)
-            # Adet — küçük SpinBox
+                it = QTableWidgetItem(f"      {k['alt_kalem_ad']}")
+                if durum == "HARIC":
+                    it.setForeground(QColor("#BDBDBD"))
+                elif durum == "OPSIYON":
+                    it.setForeground(QColor("#FF8F00"))
+            it.setFlags(it.flags() & ~Qt.ItemIsEditable)
+            self.ktbl.setItem(i, 1, it)
+
+            # Kolon 2: Durum ComboBox (alt kalem) veya boş (ürün)
             if not is_u:
-                sp=QSpinBox(); sp.setRange(1,9999); sp.setValue(k["miktar"])
-                sp.setFixedSize(50,22); sp.setAlignment(Qt.AlignCenter)
+                dcmb = QComboBox()
+                dcmb.setFixedHeight(22)
+                dcmb.setMaximumWidth(66)
+                dcmb.setStyleSheet("QComboBox{font-size:9px;padding:0px 1px;}")
+                for d in ["DAHIL", "OPSIYON", "HARIC"]:
+                    dcmb.addItem(d)
+                idx = ["DAHIL", "OPSIYON", "HARIC"].index(durum) if durum in ["DAHIL", "OPSIYON", "HARIC"] else 0
+                dcmb.setCurrentIndex(idx)
+                dcmb.currentTextChanged.connect(
+                    lambda d, kid=k["id"]: self._durum_degis(kid, d))
+                self.ktbl.setCellWidget(i, 2, dcmb)
+            else:
+                self.ktbl.setItem(i, 2, QTableWidgetItem(""))
+
+            # Kolon 3: Adet
+            if not is_u and durum != "HARIC":
+                sp = QSpinBox(); sp.setRange(1, 9999); sp.setValue(k["miktar"])
+                sp.setFixedHeight(22); sp.setMaximumWidth(42)
+                sp.setAlignment(Qt.AlignCenter)
                 sp.setButtonSymbols(QSpinBox.NoButtons)
-                sp.valueChanged.connect(lambda v,kid=k["id"]:self._miktar(kid,v))
-                self.ktbl.setCellWidget(i,2,sp)
+                sp.setStyleSheet("QSpinBox{font-size:10px;padding:0px;}")
+                sp.valueChanged.connect(lambda v, kid=k["id"]: self._miktar(kid, v))
+                self.ktbl.setCellWidget(i, 3, sp)
             else:
-                self.ktbl.setItem(i,2,QTableWidgetItem(""))
-            # Fiyatlar
-            if not is_u and k["birim_fiyat"]:
-                for c,v in [(3,k["birim_fiyat"]),(4,k["toplam_fiyat"])]:
-                    fi=QTableWidgetItem(f"{s}{v:,.2f}")
-                    fi.setTextAlignment(Qt.AlignRight|Qt.AlignVCenter)
-                    if c==4 and not k["secili_mi"]: fi.setForeground(QColor("#BDBDBD"))
-                    self.ktbl.setItem(i,c,fi)
+                self.ktbl.setItem(i, 3, QTableWidgetItem(""))
+
+            # Kolon 4-5: Fiyatlar
+            if not is_u and durum != "HARIC" and k["birim_fiyat"]:
+                for c, v in [(4, k["birim_fiyat"]), (5, k["toplam_fiyat"])]:
+                    fi = QTableWidgetItem(f"{s}{v:,.2f}")
+                    fi.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+                    if durum == "OPSIYON":
+                        fi.setForeground(QColor("#FF8F00"))
+                    self.ktbl.setItem(i, c, fi)
             else:
-                for c in (3,4):
-                    ei=QTableWidgetItem("—" if not is_u else "")
+                for c in (4, 5):
+                    ei = QTableWidgetItem("—" if not is_u else "")
                     ei.setTextAlignment(Qt.AlignCenter)
                     if not is_u: ei.setForeground(QColor("#BDBDBD"))
-                    self.ktbl.setItem(i,c,ei)
+                    self.ktbl.setItem(i, c, ei)
 
     # ── Parametreler ──
 
@@ -462,6 +550,17 @@ class _DetayW(QWidget):
     def _secim(self, kid, st):
         if self.srv: self.srv.kalem_secim_degistir(kid, st==2)
 
+    def _durum_degis(self, kid, durum):
+        if self.srv:
+            self.srv.kalem_dahil_durumu_degistir(kid, durum)
+            self._kalem_yukle()
+
+    def _kdv_degisti(self, val):
+        if self.srv and self._tid:
+            self.srv.kdv_orani_degistir(self._tid, val)
+            self._teklif = self.srv.getir(self._tid)
+            self._toplam_goster()
+
     def _miktar(self, kid, v):
         if self.srv: self.srv.kalem_miktar_degistir(kid, v)
 
@@ -472,13 +571,82 @@ class _DetayW(QWidget):
             p = self.srv.proje_srv.getir(self._teklif["proje_id"])
             if p: kf = self.srv.em_srv.konum_fiyat(
                 getattr(p,'ulke','') or '', getattr(p,'konum','') or '')
-        ok,msg,toplam = self.srv.teklif_hesapla(self._tid, kf)
+        ok, msg, sonuc = self.srv.teklif_hesapla(self._tid, kf)
         self._teklif = self.srv.getir(self._tid)
         self._toplam_goster(); self._kalem_yukle()
-        if not ok: QMessageBox.warning(self,"Hesaplama",msg)
+        if not ok: QMessageBox.warning(self, "Hesaplama", msg)
 
     def _param_temizle(self):
         while self.pg.count():
             it=self.pg.takeAt(0)
             if it.widget(): it.widget().deleteLater()
         self.lbl_p.setText("Bir kalem seçerek parametrelerini görüntüleyin")
+
+    # ── Belge İşlemleri ──
+
+    def _belge_olustur(self):
+        if not self._tid or not self.belge_srv:
+            QMessageBox.information(self, "Bilgi", "Belge servisi yapılandırılmamış.")
+            return
+        # Belge türü seçimi
+        turleri = self.belge_srv.repo.belge_turleri()
+        if not turleri:
+            QMessageBox.warning(self, "Hata", "Belge türü tanımlı değil.\nAdmin → Belge Şablonları'ndan tanımlayın.")
+            return
+        from PyQt5.QtWidgets import QInputDialog
+        secenekler = [f"{t['kod']} — {t['ad']}" for t in turleri]
+        secim, ok = QInputDialog.getItem(self, "Belge Türü", "Oluşturulacak belge türünü seçin:", secenekler, 0, False)
+        if not ok:
+            return
+        idx = secenekler.index(secim)
+        tur_kodu = turleri[idx]["kod"]
+
+        # Hedef klasör seç
+        from PyQt5.QtWidgets import QFileDialog
+        hedef = QFileDialog.getExistingDirectory(self, "Kayıt Klasörü Seçin")
+        if not hedef:
+            return
+
+        ok, msg, dosya_yolu = self.belge_srv.belge_olustur(self._tid, tur_kodu, hedef)
+        if ok:
+            QMessageBox.information(self, "Başarılı", msg)
+            # Dosyayı aç
+            import os, subprocess, sys
+            if sys.platform == 'win32':
+                os.startfile(dosya_yolu)
+            elif sys.platform == 'darwin':
+                subprocess.Popen(['open', dosya_yolu])
+            else:
+                subprocess.Popen(['xdg-open', dosya_yolu])
+        else:
+            QMessageBox.warning(self, "Hata", msg)
+
+    def _belge_ac(self):
+        if not self._tid or not self.belge_srv:
+            return
+        kayitlar = self.belge_srv.repo.uretim_kayitlari(self._tid)
+        if not kayitlar:
+            QMessageBox.information(self, "Bilgi", "Bu teklif için henüz belge oluşturulmamış.")
+            return
+        import os
+        if len(kayitlar) == 1:
+            yol = kayitlar[0]["dosya_yolu"]
+        else:
+            from PyQt5.QtWidgets import QInputDialog
+            secenekler = [f"{k['dosya_adi']}  ({k['olusturma_tarihi'][:16]})" for k in kayitlar]
+            secim, ok = QInputDialog.getItem(self, "Belge Seç", "Açılacak belgeyi seçin:", secenekler, 0, False)
+            if not ok:
+                return
+            idx = secenekler.index(secim)
+            yol = kayitlar[idx]["dosya_yolu"]
+
+        if not os.path.exists(yol):
+            QMessageBox.warning(self, "Hata", f"Dosya bulunamadı:\n{yol}")
+            return
+        import subprocess, sys
+        if sys.platform == 'win32':
+            os.startfile(yol)
+        elif sys.platform == 'darwin':
+            subprocess.Popen(['open', yol])
+        else:
+            subprocess.Popen(['xdg-open', yol])

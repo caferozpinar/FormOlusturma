@@ -3,3 +3,6 @@ token.pickle
 token.json
 veri/
 loglar/
+__pycache__/
+*.pyc
+sablonlar/

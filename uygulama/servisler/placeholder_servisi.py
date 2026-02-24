@@ -78,6 +78,10 @@ class PlaceholderServisi:
             "urun_param":      {"KANAT MALZEMESİ": "XXX", "MOTOR MALZEMESİ": "YYY"},
             "alt_kalem_param": {"İŞÇİLİK": 500},
             "proje_bilgi":     {"PROJE_ADI": "Acme", "PROJE_KONUM": "İstanbul", ...},
+            "teklif_param":    {"__ADET__": "5", "__BIRIM_FIYAT__": "1200.50",
+                                "__TOPLAM_FIYAT__": "6002.50", "__ALT_KALEM_NO__": "3",
+                                "__TEKLIF_TOPLAM__": "45000", "__TEKLIF_KDV__": "9000",
+                                "__TEKLIF_GENEL_TOPLAM__": "54000"},
         }
         """
         ph = self.repo.kod_ile_getir(placeholder_kod)

@@ -728,6 +728,84 @@ MIGRATIONS: list[tuple[int, str, str]] = [
         ALTER TABLE urun_parametreler ADD COLUMN birim TEXT NOT NULL DEFAULT '';
         ALTER TABLE alt_kalem_parametreler ADD COLUMN birim TEXT NOT NULL DEFAULT '';
     """),
+
+    (38, "Alt kalem dahil durumu kolonu", """
+        ALTER TABLE teklif_kalemleri ADD COLUMN dahil_durumu TEXT NOT NULL DEFAULT 'DAHIL';
+    """),
+
+    (39, "KDV oranı ve KDV dahil toplam kolonları", """
+        ALTER TABLE teklifler ADD COLUMN kdv_orani REAL NOT NULL DEFAULT 20;
+        ALTER TABLE teklifler ADD COLUMN kdv_tutari REAL NOT NULL DEFAULT 0;
+        ALTER TABLE teklifler ADD COLUMN kdv_dahil_toplam REAL NOT NULL DEFAULT 0;
+    """),
+
+    (40, "Belge şablon dosyaları ve belge türleri", """
+        CREATE TABLE IF NOT EXISTS belge_sablon_dosyalar (
+            id TEXT PRIMARY KEY,
+            ad TEXT NOT NULL DEFAULT '',
+            dosya_yolu TEXT NOT NULL DEFAULT '',
+            sheet_adi TEXT NOT NULL DEFAULT 'Sheet1',
+            yuklenme_tarihi TEXT NOT NULL DEFAULT (datetime('now')),
+            aktif_mi INTEGER NOT NULL DEFAULT 1
+        );
+
+        CREATE TABLE IF NOT EXISTS belge_turleri (
+            id TEXT PRIMARY KEY,
+            kod TEXT NOT NULL UNIQUE,
+            ad TEXT NOT NULL DEFAULT '',
+            sutun_araligi TEXT NOT NULL DEFAULT 'A:I',
+            aktif_mi INTEGER NOT NULL DEFAULT 1
+        );
+
+        INSERT OR IGNORE INTO belge_turleri (id, kod, ad, sutun_araligi) VALUES
+            ('bt-teklif', 'TEKLIF', 'Teklif Belgesi', 'A:I'),
+            ('bt-tanim', 'TANIM', 'Tanım Belgesi', 'A:I'),
+            ('bt-kesif', 'KESIF', 'Keşif Belgesi', 'A:I');
+    """),
+
+    (41, "Belge bölümleri ve şablon atamaları", """
+        CREATE TABLE IF NOT EXISTS belge_bolumler (
+            id TEXT PRIMARY KEY,
+            belge_turu_id TEXT NOT NULL,
+            ad TEXT NOT NULL DEFAULT '',
+            tur TEXT NOT NULL DEFAULT 'sabit',
+            sira INTEGER NOT NULL DEFAULT 0,
+            aktif_mi INTEGER NOT NULL DEFAULT 1,
+            FOREIGN KEY (belge_turu_id) REFERENCES belge_turleri(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_bb_tur ON belge_bolumler(belge_turu_id);
+
+        CREATE TABLE IF NOT EXISTS belge_sablon_atamalari (
+            id TEXT PRIMARY KEY,
+            bolum_id TEXT NOT NULL,
+            sablon_dosya_id TEXT NOT NULL,
+            urun_id TEXT,
+            alt_kalem_id TEXT,
+            satir_baslangic INTEGER NOT NULL DEFAULT 1,
+            satir_bitis INTEGER NOT NULL DEFAULT 1,
+            sira INTEGER NOT NULL DEFAULT 0,
+            aktif_mi INTEGER NOT NULL DEFAULT 1,
+            FOREIGN KEY (bolum_id) REFERENCES belge_bolumler(id),
+            FOREIGN KEY (sablon_dosya_id) REFERENCES belge_sablon_dosyalar(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_bsa_bolum ON belge_sablon_atamalari(bolum_id);
+    """),
+
+    (42, "Belge üretim kayıtları", """
+        CREATE TABLE IF NOT EXISTS belge_uretim_kayitlari (
+            id TEXT PRIMARY KEY,
+            teklif_id TEXT NOT NULL,
+            belge_turu_id TEXT NOT NULL,
+            dosya_yolu TEXT NOT NULL DEFAULT '',
+            dosya_adi TEXT NOT NULL DEFAULT '',
+            klasor_yolu TEXT NOT NULL DEFAULT '',
+            olusturan TEXT NOT NULL DEFAULT '',
+            olusturma_tarihi TEXT NOT NULL DEFAULT (datetime('now')),
+            FOREIGN KEY (teklif_id) REFERENCES teklifler(id),
+            FOREIGN KEY (belge_turu_id) REFERENCES belge_turleri(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_buk_teklif ON belge_uretim_kayitlari(teklif_id);
+    """),
 ]
 
 

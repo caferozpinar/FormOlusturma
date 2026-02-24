@@ -19,7 +19,7 @@ class AdminPanelPage(QWidget):
                  log_repo=None, yetki_servisi=None,
                  konum_servisi=None, tesis_servisi=None,
                  em_repo=None, em_srv=None,
-                 placeholder_srv=None, parent=None):
+                 placeholder_srv=None, belge_srv=None, parent=None):
         super().__init__(parent)
         self.urun_servisi = urun_servisi
         self.kimlik_servisi = kimlik_servisi
@@ -30,6 +30,7 @@ class AdminPanelPage(QWidget):
         self.em_repo = em_repo
         self.em_srv = em_srv
         self.placeholder_srv = placeholder_srv
+        self.belge_srv = belge_srv
         self._kullanicilar = []
         self._build()
 
@@ -54,6 +55,11 @@ class AdminPanelPage(QWidget):
         self.placeholder_widget = PlaceholderYonetimWidget(
             self.placeholder_srv, self.em_repo, self.urun_servisi)
         self.tabs.addTab(self.placeholder_widget, "Placeholder")
+        # Belge Yönetimi tab
+        from uygulama.arayuz.belge_admin_sayfa import BelgeAdminSayfasi
+        self.belge_admin = BelgeAdminSayfasi(
+            self.belge_srv, self.urun_servisi, self.em_repo)
+        self.tabs.addTab(self.belge_admin, "Belge Şablonları")
         self.tabs.addTab(self._build_kullanicilar_tab(), "Kullanıcılar")
         self.tabs.addTab(self._build_konum_tab(), "Konum")
         self.tabs.addTab(self._build_tesis_tab(), "Tesis Türleri")
@@ -83,6 +89,8 @@ class AdminPanelPage(QWidget):
         self.admin_urun.yukle()
         if hasattr(self, 'placeholder_widget'):
             self.placeholder_widget.yukle()
+        if hasattr(self, 'belge_admin'):
+            self.belge_admin.yukle()
         self._kullanicilari_yukle(); self._konumlari_yukle()
         self._tesisleri_yukle(); self._loglari_yukle()
         self._yetkileri_yukle()

@@ -60,7 +60,8 @@ class TeklifRepository:
         return [dict(r) for r in rows]
 
     def guncelle(self, teklif_id: str, **kwargs) -> None:
-        allowed = {"baslik", "para_birimi", "durum", "notlar", "toplam_fiyat"}
+        allowed = {"baslik", "para_birimi", "durum", "notlar",
+                   "toplam_fiyat", "kdv_orani", "kdv_tutari", "kdv_dahil_toplam"}
         updates, params = ["guncelleme_tarihi=?"], [simdi_iso()]
         for k, v in kwargs.items():
             if k in allowed:
@@ -103,7 +104,7 @@ class TeklifRepository:
         return [dict(r) for r in rows]
 
     def kalem_guncelle(self, kalem_id: str, **kwargs) -> None:
-        allowed = {"secili_mi", "miktar", "birim_fiyat", "toplam_fiyat"}
+        allowed = {"secili_mi", "miktar", "birim_fiyat", "toplam_fiyat", "dahil_durumu"}
         updates, params = [], []
         for k, v in kwargs.items():
             if k in allowed:
@@ -163,12 +164,29 @@ class TeklifRepository:
     # TOPLAM HESAPLAMA
     # ═══════════════════════════════════════
 
-    def teklif_toplamini_hesapla(self, teklif_id: str) -> float:
-        """Seçili kalemlerin toplamını hesaplar ve teklife yazar."""
+    def teklif_toplamini_hesapla(self, teklif_id: str) -> dict:
+        """DAHIL durumundaki seçili kalemlerin toplamını hesaplar + KDV.
+        Returns: {toplam, kdv_orani, kdv_tutari, kdv_dahil_toplam}"""
         row = self.db.getir_tek(
             """SELECT COALESCE(SUM(toplam_fiyat), 0) as toplam
-               FROM teklif_kalemleri WHERE teklif_id=? AND secili_mi=1""",
+               FROM teklif_kalemleri
+               WHERE teklif_id=? AND secili_mi=1 AND dahil_durumu='DAHIL'""",
             (teklif_id,))
         toplam = row["toplam"] if row else 0
-        self.guncelle(teklif_id, toplam_fiyat=toplam)
-        return toplam
+
+        # KDV oranını oku
+        teklif = self.getir(teklif_id)
+        kdv_orani = teklif.get("kdv_orani", 20) if teklif else 20
+        kdv_tutari = round(toplam * kdv_orani / 100, 2)
+        kdv_dahil = round(toplam + kdv_tutari, 2)
+
+        self.guncelle(teklif_id,
+                       toplam_fiyat=toplam,
+                       kdv_tutari=kdv_tutari,
+                       kdv_dahil_toplam=kdv_dahil)
+        return {
+            "toplam": toplam,
+            "kdv_orani": kdv_orani,
+            "kdv_tutari": kdv_tutari,
+            "kdv_dahil_toplam": kdv_dahil,
+        }

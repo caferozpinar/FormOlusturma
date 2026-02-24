@@ -27,12 +27,14 @@ class ProjectDetailPage(QWidget):
     open_document = pyqtSignal(str)  # belge_id
 
     def __init__(self, proje_servisi, belge_servisi, log_repo,
-                 teklif_srv=None, em_repo=None, parent=None):
+                 teklif_srv=None, em_repo=None,
+                 belge_olusturma_srv=None, parent=None):
         super().__init__(parent)
         self.proje_servisi = proje_servisi
         self.belge_servisi = belge_servisi
         self.log_repo = log_repo
         self.teklif_srv = teklif_srv
+        self.belge_olusturma_srv = belge_olusturma_srv
         self.em_repo = em_repo
         self._proje_id = None
         self._proje = None
@@ -114,7 +116,9 @@ class ProjectDetailPage(QWidget):
 
         # TAB 1: Teklifler / Keşifler (ana çalışma alanı)
         from uygulama.arayuz.teklif_sayfa import TeklifSayfasi
-        self.teklif_sayfasi = TeklifSayfasi(self.teklif_srv, self.em_repo)
+        self.teklif_sayfasi = TeklifSayfasi(
+            self.teklif_srv, self.em_repo,
+            belge_srv=self.belge_olusturma_srv)
         self.tabs.addTab(self.teklif_sayfasi, "Teklifler / Keşifler")
 
         # TAB 2: Özet

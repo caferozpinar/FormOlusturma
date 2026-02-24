@@ -91,7 +91,7 @@ def baslat():
     # ── 4. Servisler ──
     kimlik_servisi = KimlikServisi(kullanici_repo, log_repo)
     proje_servisi = ProjeServisi(proje_repo, log_repo, proje_urun_repo)
-    belge_servisi = BelgeServisi(belge_repo, proje_repo, log_repo, maliyet_repo)
+    belge_servisi = BelgeServisi(belge_repo)  # eski uyum — doküman yönetimi için
     urun_servisi = UrunServisi(urun_repo, log_repo)
     sync_servisi = SyncServisi(sync_repo, log_repo)
     yetki_servisi = YetkiServisi(log_repo)
@@ -107,6 +107,11 @@ def baslat():
     teklif_srv = TeklifServisi(
         teklif_repo, enterprise_maliyet_repo, enterprise_maliyet_srv,
         proje_servisi)
+
+    # Belge Oluşturma Motoru
+    belge_olusturma_srv = BelgeServisi(
+        belge_repo, teklif_srv, placeholder_srv,
+        proje_servisi, enterprise_maliyet_repo)
 
     # Maliyet Motoru V2 servisleri
     parametre_hash_srv = ParametreHashServisi(maliyet_repo)
@@ -130,7 +135,8 @@ def baslat():
                          urun_servisi, sync_servisi, yetki_servisi, log_repo,
                          analitik_servisi, konum_servisi, tesis_servisi,
                          enterprise_maliyet_repo, enterprise_maliyet_srv,
-                         placeholder_srv, teklif_srv)
+                         placeholder_srv, teklif_srv,
+                         belge_olusturma_srv=belge_olusturma_srv)
     pencere.show()
 
     logger.info("Uygulama başlatıldı.")

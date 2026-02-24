@@ -18,6 +18,10 @@ logger = logger_olustur("teklif_srv")
 OZEL_PARAM_ADET = "__ADET__"
 OZEL_PARAM_BIRIM_FIYAT = "__BIRIM_FIYAT__"
 OZEL_PARAM_TOPLAM_FIYAT = "__TOPLAM_FIYAT__"
+OZEL_PARAM_ALT_KALEM_NO = "__ALT_KALEM_NO__"
+OZEL_PARAM_TEKLIF_TOPLAM = "__TEKLIF_TOPLAM__"
+OZEL_PARAM_TEKLIF_KDV = "__TEKLIF_KDV__"
+OZEL_PARAM_TEKLIF_GENEL_TOPLAM = "__TEKLIF_GENEL_TOPLAM__"
 
 
 class TeklifServisi:
@@ -116,7 +120,8 @@ class TeklifServisi:
                 secili_mi=k["secili_mi"],
                 miktar=k["miktar"],
                 birim_fiyat=k["birim_fiyat"],
-                toplam_fiyat=k["toplam_fiyat"])
+                toplam_fiyat=k["toplam_fiyat"],
+                dahil_durumu=k.get("dahil_durumu", "DAHIL"))
 
             # Parametreleri kopyala
             for p in self.repo.parametre_degerleri(k["id"]):
@@ -154,6 +159,9 @@ class TeklifServisi:
         self.repo.guncelle(teklif_id, durum=yeni_durum)
         return True, f"Durum güncellendi: {yeni_durum}"
 
+    def kdv_orani_degistir(self, teklif_id: str, oran: float) -> None:
+        self.repo.guncelle(teklif_id, kdv_orani=oran)
+
     # ═══════════════════════════════════════
     # KALEM & PARAMETRE YÖNETİMİ
     # ═══════════════════════════════════════
@@ -163,6 +171,10 @@ class TeklifServisi:
 
     def kalem_secim_degistir(self, kalem_id: str, secili: bool) -> None:
         self.repo.kalem_guncelle(kalem_id, secili_mi=1 if secili else 0)
+
+    def kalem_dahil_durumu_degistir(self, kalem_id: str, durum: str) -> None:
+        """DAHIL / OPSIYON / HARIC"""
+        self.repo.kalem_guncelle(kalem_id, dahil_durumu=durum)
 
     def kalem_miktar_degistir(self, kalem_id: str, miktar: int) -> None:
         self.repo.kalem_guncelle(kalem_id, miktar=miktar)
@@ -220,7 +232,18 @@ class TeklifServisi:
                 kalem_id,
                 birim_fiyat=sonuc["birim_fiyat"],
                 toplam_fiyat=sonuc["toplam_fiyat"])
-            # Özel parametreleri kaydet (placeholder erişimi)
+
+            # Ürün kodu ve alt kalem adını bul (spesifik parametre adı için)
+            urun = self.em_repo.db.getir_tek(
+                "SELECT kod FROM urunler WHERE id=?", (kalem["urun_id"],))
+            ak = self.em_repo.db.getir_tek(
+                "SELECT ad FROM alt_kalemler WHERE id=?",
+                (kalem.get("alt_kalem_id"),)) if kalem.get("alt_kalem_id") else None
+            u_kod = urun["kod"] if urun else "?"
+            ak_ad = ak["ad"] if ak else "?"
+            prefix = f"{u_kod}::{ak_ad}"
+
+            # Genel parametreler (geriye uyumlu)
             self.repo.parametre_kaydet(
                 kalem_id, f"_ozel_adet_{kalem_id[:8]}",
                 OZEL_PARAM_ADET, str(kalem["miktar"]))
@@ -231,23 +254,89 @@ class TeklifServisi:
                 kalem_id, f"_ozel_toplam_{kalem_id[:8]}",
                 OZEL_PARAM_TOPLAM_FIYAT, str(sonuc["toplam_fiyat"]))
 
+            # Spesifik parametreler: LK::havalandırma motoru::__BIRIM_FIYAT__
+            self.repo.parametre_kaydet(
+                kalem_id, f"_sp_adet_{kalem_id[:8]}",
+                f"{prefix}::__ADET__", str(kalem["miktar"]))
+            self.repo.parametre_kaydet(
+                kalem_id, f"_sp_birim_{kalem_id[:8]}",
+                f"{prefix}::__BIRIM_FIYAT__", str(sonuc["birim_fiyat"]))
+            self.repo.parametre_kaydet(
+                kalem_id, f"_sp_toplam_{kalem_id[:8]}",
+                f"{prefix}::__TOPLAM_FIYAT__", str(sonuc["toplam_fiyat"]))
+
         return ok, msg, sonuc
 
     def teklif_hesapla(self, teklif_id: str,
-                        konum_fiyat: float = 0) -> Tuple[bool, str, float]:
+                        konum_fiyat: float = 0) -> Tuple[bool, str, dict]:
         kalemler = self.repo.kalemler(teklif_id)
         hatalar = []
         for k in kalemler:
-            if not k["secili_mi"] or not k.get("alt_kalem_versiyon_id"):
+            durum = k.get("dahil_durumu", "DAHIL")
+            if durum == "HARIC":
+                continue
+            if not k.get("alt_kalem_versiyon_id"):
                 continue
             ok, msg, _ = self.kalem_fiyat_hesapla(k["id"], konum_fiyat)
             if not ok:
                 hatalar.append(f"{k['id'][:8]}: {msg}")
 
-        toplam = self.repo.teklif_toplamini_hesapla(teklif_id)
+        # Numaralama
+        self._numaralama_yap(teklif_id)
+
+        # Toplam + KDV
+        sonuc = self.repo.teklif_toplamini_hesapla(teklif_id)
+
+        # Teklif seviyesi özel parametreler — ilk kalemin ID'sini kullan
+        # (teklif parametreleri herhangi bir kaleme bağlanır, ilk kalem yeterli)
+        if kalemler:
+            ilk = kalemler[0]["id"]
+            self.repo.parametre_kaydet(
+                ilk, f"_ozel_teklif_toplam_{teklif_id[:8]}",
+                OZEL_PARAM_TEKLIF_TOPLAM, str(sonuc["toplam"]))
+            self.repo.parametre_kaydet(
+                ilk, f"_ozel_teklif_kdv_{teklif_id[:8]}",
+                OZEL_PARAM_TEKLIF_KDV, str(sonuc["kdv_tutari"]))
+            self.repo.parametre_kaydet(
+                ilk, f"_ozel_teklif_gtoplam_{teklif_id[:8]}",
+                OZEL_PARAM_TEKLIF_GENEL_TOPLAM, str(sonuc["kdv_dahil_toplam"]))
+
         if hatalar:
-            return False, f"{len(hatalar)} kalemde hata. Toplam: {toplam}", toplam
-        return True, "Hesaplandı.", toplam
+            return False, f"{len(hatalar)} kalemde hata.", sonuc
+        return True, "Hesaplandı.", sonuc
+
+    def _numaralama_yap(self, teklif_id: str):
+        """Alt kalemleri numaralar: DAHIL → 1,2,3... OPSIYON → ## HARIC → atla."""
+        kalemler = self.repo.kalemler(teklif_id)
+        no = 1
+        for k in kalemler:
+            if not k.get("alt_kalem_versiyon_id"):
+                continue  # Ana ürün satırı
+            durum = k.get("dahil_durumu", "DAHIL")
+            if durum == "HARIC":
+                numara = ""
+            elif durum == "OPSIYON":
+                numara = "##"
+            else:
+                numara = str(no)
+                no += 1
+
+            # Genel __ALT_KALEM_NO__
+            self.repo.parametre_kaydet(
+                k["id"], f"_ozel_no_{k['id'][:8]}",
+                OZEL_PARAM_ALT_KALEM_NO, numara)
+
+            # Spesifik: LK::havalandırma motoru::__ALT_KALEM_NO__
+            urun = self.em_repo.db.getir_tek(
+                "SELECT kod FROM urunler WHERE id=?", (k["urun_id"],))
+            ak = self.em_repo.db.getir_tek(
+                "SELECT ad FROM alt_kalemler WHERE id=?",
+                (k.get("alt_kalem_id"),)) if k.get("alt_kalem_id") else None
+            if urun and ak:
+                prefix = f"{urun['kod']}::{ak['ad']}"
+                self.repo.parametre_kaydet(
+                    k["id"], f"_sp_no_{k['id'][:8]}",
+                    f"{prefix}::__ALT_KALEM_NO__", numara)
 
     # ═══════════════════════════════════════
     # ARAMA & FİLTRE
