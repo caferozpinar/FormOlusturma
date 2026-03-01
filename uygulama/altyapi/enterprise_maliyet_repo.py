@@ -101,6 +101,16 @@ class EnterpriseMaliyetRepository:
         with self.db.transaction() as conn:
             conn.execute("UPDATE urun_parametreler SET aktif_mi=0 WHERE id=?", (param_id,))
 
+    def urun_parametre_guncelle(self, param_id: str, ad: str, tip_id: str,
+                                zorunlu: int = 0, varsayilan: str = "",
+                                birim: str = "") -> None:
+        with self.db.transaction() as conn:
+            conn.execute(
+                """UPDATE urun_parametreler
+                   SET ad=?, tip_id=?, zorunlu=?, varsayilan_deger=?, birim=?
+                   WHERE id=?""",
+                (ad, tip_id, zorunlu, varsayilan, birim, param_id))
+
     # ═══════════════════════════════════════
     # DROPDOWN DEĞERLER
     # ═══════════════════════════════════════
@@ -124,6 +134,12 @@ class EnterpriseMaliyetRepository:
         with self.db.transaction() as conn:
             conn.execute("DELETE FROM parametre_dropdown_degerler WHERE id=?", (deger_id,))
 
+    def dropdown_degerleri_temizle(self, parametre_id: str) -> None:
+        """Bir parametrenin tüm dropdown değerlerini sil."""
+        with self.db.transaction() as conn:
+            conn.execute("DELETE FROM parametre_dropdown_degerler WHERE parametre_id=?",
+                        (parametre_id,))
+
     # ═══════════════════════════════════════
     # ALT KALEM VERSİYON
     # ═══════════════════════════════════════
@@ -134,6 +150,13 @@ class EnterpriseMaliyetRepository:
             "SELECT COALESCE(MAX(versiyon_no),0) as m FROM alt_kalem_versiyonlar WHERE alt_kalem_id=?",
             (alt_kalem_id,))
         vno = (row["m"] if row else 0) + 1
+        
+        # Sıra numarası: aynı ürün versiyonundaki en son alt kalem sırası + 1
+        sira_row = self.db.getir_tek(
+            "SELECT COALESCE(MAX(sira), 0) as m FROM alt_kalem_versiyonlar WHERE urun_versiyon_id=?",
+            (urun_versiyon_id,))
+        sira = (sira_row["m"] if sira_row else 0) + 1
+        
         vid = _yeni_uuid()
         with self.db.transaction() as conn:
             conn.execute(
@@ -141,9 +164,9 @@ class EnterpriseMaliyetRepository:
                 (alt_kalem_id,))
             conn.execute(
                 """INSERT INTO alt_kalem_versiyonlar
-                   (id, alt_kalem_id, urun_versiyon_id, versiyon_no, olusturma_tarihi)
-                   VALUES (?,?,?,?,?)""",
-                (vid, alt_kalem_id, urun_versiyon_id, vno, simdi_iso()))
+                   (id, alt_kalem_id, urun_versiyon_id, versiyon_no, sira, olusturma_tarihi)
+                   VALUES (?,?,?,?,?,?)""",
+                (vid, alt_kalem_id, urun_versiyon_id, vno, sira, simdi_iso()))
         return vid, vno
 
     def aktif_alt_kalem_versiyon(self, alt_kalem_id: str) -> dict | None:
@@ -152,12 +175,26 @@ class EnterpriseMaliyetRepository:
             (alt_kalem_id,))
         return dict(row) if row else None
 
+    def alt_kalem_versiyon_sira_guncelle(self, akv_id: str, sira: int) -> None:
+        """Alt kalem versiyon sırasını güncelle."""
+        with self.db.transaction() as conn:
+            conn.execute(
+                "UPDATE alt_kalem_versiyonlar SET sira = ? WHERE id = ?",
+                (sira, akv_id))
+
+    def alt_kalem_versiyondan_kaldir(self, akv_id: str) -> None:
+        """Alt kalem versiyonunu ürün versiyonundan kaldır (aktif_mi=0)."""
+        with self.db.transaction() as conn:
+            conn.execute(
+                "UPDATE alt_kalem_versiyonlar SET aktif_mi=0 WHERE id=?",
+                (akv_id,))
+
     def urun_versiyonuna_bagli_alt_kalemler(self, urun_versiyon_id: str) -> list[dict]:
         rows = self.db.getir_hepsi(
             """SELECT akv.*, ak.ad as alt_kalem_adi FROM alt_kalem_versiyonlar akv
                JOIN alt_kalemler ak ON ak.id = akv.alt_kalem_id
                WHERE akv.urun_versiyon_id=? AND akv.aktif_mi=1
-               ORDER BY ak.ad""", (urun_versiyon_id,))
+               ORDER BY COALESCE(akv.sira, 999), ak.ad""", (urun_versiyon_id,))
         return [dict(r) for r in rows]
 
     # ═══════════════════════════════════════

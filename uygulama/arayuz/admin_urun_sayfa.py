@@ -44,17 +44,19 @@ def _tablo_butonu(text: str = "✕", genislik: int = 32) -> QPushButton:
 
 class ParametreEkleDialog(QDialog):
     """
-    Kullanıcı dostu parametre ekleme penceresi.
+    Kullanıcı dostu parametre ekleme/düzenleme penceresi.
     Seçenek Listesi tipinde seçenekler de aynı anda tanımlanır.
     """
 
-    def __init__(self, tipler: list[dict], parent=None):
+    def __init__(self, tipler: list[dict], parent=None, mevcut_parametre: dict = None):
         super().__init__(parent)
-        self.setWindowTitle("Yeni Parametre Ekle")
-        self.setMinimumWidth(500)
-        self.setModal(True)
         self._tipler = tipler
         self._secenekler = []  # ["Çift Cidarlı", "Üç Cidarlı", ...]
+        self._mevcut_param = mevcut_parametre
+        is_duzenle = mevcut_parametre is not None
+        self.setWindowTitle("Parametreyi Düzenle" if is_duzenle else "Yeni Parametre Ekle")
+        self.setMinimumWidth(500)
+        self.setModal(True)
         self._build()
 
     def _build(self):
@@ -162,7 +164,8 @@ class ParametreEkleDialog(QDialog):
         br = QHBoxLayout()
         btn_iptal = QPushButton("İptal")
         btn_iptal.clicked.connect(self.reject)
-        self.btn_kaydet = QPushButton("Ekle")
+        btn_text = "Güncelle" if self._mevcut_param else "Ekle"
+        self.btn_kaydet = QPushButton(btn_text)
         self.btn_kaydet.setObjectName("primary")
         self.btn_kaydet.setMinimumHeight(36)
         self.btn_kaydet.clicked.connect(self._kaydet)
@@ -171,6 +174,8 @@ class ParametreEkleDialog(QDialog):
         layout.addLayout(br)
 
         self._tip_degisti()
+        if self._mevcut_param:
+            self._doldur()
         self.ad_edit.setFocus()
 
     def _secili_tip_kodu(self) -> str:
@@ -258,6 +263,42 @@ class ParametreEkleDialog(QDialog):
             "secenekler": list(self._secenekler),
             "birim": self.birim_combo.currentData() or "",
         }
+
+    def _doldur(self):
+        """Mevcut parametre verilerini forma önceden doldur."""
+        if not self._mevcut_param:
+            return
+        p = self._mevcut_param
+        
+        # Adı
+        self.ad_edit.setText(p.get("ad", ""))
+        
+        # Tip
+        tip_id = p.get("tip_id")
+        if tip_id:
+            for i in range(self.tip_combo.count()):
+                if self.tip_combo.itemData(i) == tip_id:
+                    self.tip_combo.setCurrentIndex(i)
+                    break
+        
+        # Birim
+        birim = p.get("birim", "")
+        if birim:
+            for i in range(self.birim_combo.count()):
+                if self.birim_combo.itemData(i) == birim:
+                    self.birim_combo.setCurrentIndex(i)
+                    break
+        
+        # Zorunlu
+        self.zorunlu_cb.setChecked(bool(p.get("zorunlu")))
+        
+        # Varsayılan
+        self.varsayilan_edit.setText(p.get("varsayilan_deger", ""))
+        
+        # Seçenekler (dropdown ise)
+        if p.get("secenekler"):
+            self._secenekler = list(p["secenekler"])
+            self._secenek_tablosu_guncelle()
 
 
 # ═══════════════════════════════════════════
@@ -450,12 +491,13 @@ class UrunDetayWidget(QWidget):
 
         self.param_table = QTableWidget()
         _tablo_ayarla(self.param_table)
-        self.param_table.setColumnCount(6)
+        self.param_table.setColumnCount(7)
         self.param_table.setHorizontalHeaderLabels(
-            ["Ad", "Tip", "Birim", "Zorunlu", "Varsayılan", ""])
+            ["Ad", "Tip", "Birim", "Zorunlu", "Varsayılan", "", ""])
         self.param_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.param_table.setColumnWidth(2, 60)
-        self.param_table.setColumnWidth(5, 50)
+        self.param_table.setColumnWidth(5, 40)
+        self.param_table.setColumnWidth(6, 40)
         self.param_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         pl.addWidget(self.param_table)
 
@@ -472,11 +514,13 @@ class UrunDetayWidget(QWidget):
 
         self.ak_table = QTableWidget()
         _tablo_ayarla(self.ak_table)
-        self.ak_table.setColumnCount(4)
+        self.ak_table.setColumnCount(6)
         self.ak_table.setHorizontalHeaderLabels(
-            ["Ad", "Aktif", "Versiyon", ""])
+            ["Ad", "Aktif", "Versiyon", "Aç", "", ""])
         self.ak_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
-        self.ak_table.setColumnWidth(3, 70)
+        self.ak_table.setColumnWidth(3, 40)
+        self.ak_table.setColumnWidth(4, 40)
+        self.ak_table.setColumnWidth(5, 40)
         self.ak_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.ak_table.doubleClicked.connect(self._ak_cift_tikla)
         al.addWidget(self.ak_table)
@@ -484,10 +528,21 @@ class UrunDetayWidget(QWidget):
         ab = QHBoxLayout()
         self.btn_ak_ekle = QPushButton("+ Alt Kalem")
         self.btn_ak_ekle.clicked.connect(self._alt_kalem_ekle)
-        self.btn_ak_duzenle = QPushButton("Düzenle")
-        self.btn_ak_duzenle.clicked.connect(self._ak_duzenle)
-        ab.addWidget(self.btn_ak_ekle); ab.addWidget(self.btn_ak_duzenle)
+        ab.addWidget(self.btn_ak_ekle)
         ab.addStretch(); al.addLayout(ab)
+        
+        # Sıralama butonları
+        sira_row = QHBoxLayout()
+        self.btn_ak_yukari = QPushButton("↑")
+        self.btn_ak_yukari.setFixedWidth(36)
+        self.btn_ak_yukari.clicked.connect(self._ak_yukari_tasi)
+        self.btn_ak_asagi = QPushButton("↓")
+        self.btn_ak_asagi.setFixedWidth(36)
+        self.btn_ak_asagi.clicked.connect(self._ak_asagi_tasi)
+        sira_row.addWidget(self.btn_ak_yukari)
+        sira_row.addWidget(self.btn_ak_asagi)
+        sira_row.addStretch()
+        al.addLayout(sira_row)
         splitter.addWidget(ak_grp)
 
         splitter.setSizes([400, 400])
@@ -544,9 +599,12 @@ class UrunDetayWidget(QWidget):
             self.param_table.setItem(i, 2, QTableWidgetItem(p.get("birim", "") or "—"))
             self.param_table.setItem(i, 3, QTableWidgetItem("✓" if p["zorunlu"] else "—"))
             self.param_table.setItem(i, 4, QTableWidgetItem(p["varsayilan_deger"]))
-            btn = _tablo_butonu("✕")
-            btn.clicked.connect(lambda _, pid=p["id"]: self._parametre_sil(pid))
-            self.param_table.setCellWidget(i, 5, btn)
+            btn_duzenle = _tablo_butonu("✎", 32)
+            btn_duzenle.clicked.connect(lambda _, pid=p["id"]: self._parametre_duzenle(pid))
+            self.param_table.setCellWidget(i, 5, btn_duzenle)
+            btn_sil = _tablo_butonu("✕")
+            btn_sil.clicked.connect(lambda _, pid=p["id"]: self._parametre_sil(pid))
+            self.param_table.setCellWidget(i, 6, btn_sil)
 
     def _tip_gorunen_ad(self, tip_kodu: str) -> str:
         """Teknik tip kodunu kullanıcı dostu isme çevirir."""
@@ -571,11 +629,19 @@ class UrunDetayWidget(QWidget):
             self.ak_table.setItem(i, 0, QTableWidgetItem(ak["alt_kalem_adi"]))
             self.ak_table.setItem(i, 1, QTableWidgetItem("✓" if ak["aktif_mi"] else "—"))
             self.ak_table.setItem(i, 2, QTableWidgetItem(f"v{ak['versiyon_no']}"))
-            btn = _tablo_butonu("Aç", 42)
-            btn.clicked.connect(
+            btn_ac = _tablo_butonu("Aç", 36)
+            btn_ac.clicked.connect(
                 lambda _, akid=ak["alt_kalem_id"], vid=self._urun_ver_id:
                 self.alt_kalem_sec.emit(akid, vid))
-            self.ak_table.setCellWidget(i, 3, btn)
+            self.ak_table.setCellWidget(i, 3, btn_ac)
+            btn_duzenle = _tablo_butonu("✎", 32)
+            btn_duzenle.clicked.connect(
+                lambda _, akid=ak["alt_kalem_id"]: self._ak_ismi_duzenle(akid))
+            self.ak_table.setCellWidget(i, 4, btn_duzenle)
+            btn_sil = _tablo_butonu("✕")
+            btn_sil.clicked.connect(
+                lambda _, akv_id=ak["id"]: self._ak_sil(akv_id))
+            self.ak_table.setCellWidget(i, 5, btn_sil)
 
     def _parametre_ekle(self):
         if not self._urun_ver_id or not self.em_repo: return
@@ -592,6 +658,44 @@ class UrunDetayWidget(QWidget):
                 self.em_repo.dropdown_deger_ekle(param_id, sec, i + 1)
             self._parametreleri_yukle()
 
+    def _parametre_duzenle(self, param_id: str):
+        """Seçili parametreyi düzenle."""
+        if not self.em_repo:
+            return
+        
+        # Parametreyi bul
+        param = None
+        for p in self._params:
+            if p["id"] == param_id:
+                param = p
+                break
+        
+        if not param:
+            return
+        
+        # Dropdown seçeneklerini al
+        param["secenekler"] = []
+        if param.get("tip_kodu") == "dropdown":
+            param["secenekler"] = [d["deger"] for d in 
+                self.em_repo.dropdown_degerleri(param_id)]
+        
+        # Dialog'u düzenleme modunda aç
+        dialog = ParametreEkleDialog(self._tipler, self, mevcut_parametre=param)
+        if dialog.exec_():
+            veri = dialog.veri()
+            # Parametreyi güncelle
+            self.em_repo.urun_parametre_guncelle(
+                param_id, veri["ad"], veri["tip_id"],
+                1 if veri["zorunlu"] else 0, veri["varsayilan"],
+                birim=veri.get("birim", ""))
+            
+            # Dropdown seçeneklerini sil ve yeniden ekle
+            self.em_repo.dropdown_degerleri_temizle(param_id)
+            for i, sec in enumerate(veri.get("secenekler", [])):
+                self.em_repo.dropdown_deger_ekle(param_id, sec, i + 1)
+            
+            self._parametreleri_yukle()
+
     def _parametre_sil(self, param_id):
         self.em_repo.urun_parametre_sil(param_id)
         self._parametreleri_yukle()
@@ -604,17 +708,88 @@ class UrunDetayWidget(QWidget):
         self.em_repo.alt_kalem_versiyon_olustur(ak_id, self._urun_ver_id)
         self._alt_kalemleri_yukle()
 
+    def _ak_yukari_tasi(self):
+        """Seçili alt kalem satırını yukarı taşı."""
+        row = self.ak_table.currentRow()
+        if row > 0:
+            # Listede sırala
+            self._alt_kalemler[row], self._alt_kalemler[row - 1] = \
+                self._alt_kalemler[row - 1], self._alt_kalemler[row]
+            # Önce DB'ye kaydet (sonraki reload ezmemesi için)
+            self._ak_sira_kaydet()
+            # Tabloyu yeniden çiz
+            self._alt_kalemleri_yukle()
+            # Önceki satırı seç
+            self.ak_table.selectRow(row - 1)
+
+    def _ak_asagi_tasi(self):
+        """Seçili alt kalem satırını aşağı taşı."""
+        row = self.ak_table.currentRow()
+        if row < len(self._alt_kalemler) - 1:
+            # Listede sırala
+            self._alt_kalemler[row], self._alt_kalemler[row + 1] = \
+                self._alt_kalemler[row + 1], self._alt_kalemler[row]
+            # Önce DB'ye kaydet (sonraki reload ezmemesi için)
+            self._ak_sira_kaydet()
+            # Tabloyu yeniden çiz
+            self._alt_kalemleri_yukle()
+            # Sonraki satırı seç
+            self.ak_table.selectRow(row + 1)
+
+    def _ak_sira_kaydet(self):
+        """Alt kalem sıralamasını veritabanına kaydet."""
+        if not self.em_repo:
+            return
+        
+        for sira, ak in enumerate(self._alt_kalemler, start=1):
+            self.em_repo.alt_kalem_versiyon_sira_guncelle(
+                ak["id"], sira)
+
     def _ak_cift_tikla(self, idx):
+        """Double-click: alt kalem detay sayfasına git."""
         row = idx.row()
         if 0 <= row < len(self._alt_kalemler):
             ak = self._alt_kalemler[row]
+            # Detay sayfasına git
             self.alt_kalem_sec.emit(ak["alt_kalem_id"], self._urun_ver_id)
 
-    def _ak_duzenle(self):
-        row = self.ak_table.currentRow()
-        if 0 <= row < len(self._alt_kalemler):
-            ak = self._alt_kalemler[row]
-            self.alt_kalem_sec.emit(ak["alt_kalem_id"], self._urun_ver_id)
+    def _ak_ismi_duzenle(self, alt_kalem_id: str):
+        """Alt kalem adını düzenle."""
+        if not self.urun_servisi:
+            return
+        
+        # Mevcut adı al
+        ak_data = self.urun_servisi.urun_repo.alt_kalem_getir(alt_kalem_id)
+        if not ak_data:
+            return
+        
+        yeni_ad, ok = QInputDialog.getText(
+            self, "Alt Kalem Adını Düzenle", "Yeni Ad:", 
+            text=ak_data.get("ad", ""))
+        
+        if ok and yeni_ad.strip():
+            self.urun_servisi.urun_repo.alt_kalem_guncelle(alt_kalem_id, ad=yeni_ad.strip())
+            self._alt_kalemleri_yukle()
+
+    def _ak_sil(self, akv_id: str):
+        """Alt kalemi bu ürün versiyonundan kaldır."""
+        if not self.em_repo:
+            return
+
+        # İsmi bellekteki listeden al
+        ad = "Alt Kalem"
+        for ak in self._alt_kalemler:
+            if ak["id"] == akv_id:
+                ad = ak.get("alt_kalem_adi", "Alt Kalem")
+                break
+
+        ret = QMessageBox.question(
+            self, "Kaldır", f"'{ad}' bu ürün versiyonundan kaldırılsın mı?",
+            QMessageBox.Yes | QMessageBox.No)
+
+        if ret == QMessageBox.Yes:
+            self.em_repo.alt_kalem_versiyondan_kaldir(akv_id)
+            self._alt_kalemleri_yukle()
 
     def _yeni_versiyon(self):
         if not self._urun_id or not self.em_srv: return

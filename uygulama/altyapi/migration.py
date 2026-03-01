@@ -806,6 +806,10 @@ MIGRATIONS: list[tuple[int, str, str]] = [
         );
         CREATE INDEX IF NOT EXISTS idx_buk_teklif ON belge_uretim_kayitlari(teklif_id);
     """),
+
+    (43, "Alt kalem versiyonlarına sıra kolonu", """
+        ALTER TABLE alt_kalem_versiyonlar ADD COLUMN sira INTEGER NOT NULL DEFAULT 999;
+    """),
 ]
 
 # ═══════════════════════════════════════
