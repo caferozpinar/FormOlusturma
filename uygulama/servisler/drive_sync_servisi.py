@@ -12,9 +12,11 @@ Manuel tetikleme ile çift yönlü DB merge:
 import os
 import json
 import shutil
+import socket
 import sqlite3
 import tempfile
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Optional, Callable
 
 from uygulama.ortak.yardimcilar import logger_olustur, simdi_iso
@@ -84,6 +86,7 @@ class DriveSyncServisi:
         self._service = None
         self._token_yolu = os.path.join(
             os.path.dirname(db_yolu), "drive_token.json")
+        self._token_ile_baglan()
 
     # ═══════════════════════════════════════
     # GOOGLE AUTH
@@ -91,6 +94,34 @@ class DriveSyncServisi:
 
     def baglanti_durumu(self) -> bool:
         return self._service is not None
+
+    def _token_ile_baglan(self) -> None:
+        """
+        Kaydedilmiş token dosyası varsa sessizce bağlanmayı dener.
+        Kullanıcı etkileşimi gerektirmez; token süresi dolmuşsa yeniler.
+        """
+        if not os.path.exists(self._token_yolu):
+            return
+        try:
+            from google.oauth2.credentials import Credentials
+            from google.auth.transport.requests import Request
+            from googleapiclient.discovery import build
+
+            SCOPES = ['https://www.googleapis.com/auth/drive']
+            creds = Credentials.from_authorized_user_file(
+                self._token_yolu, SCOPES)
+
+            if creds and creds.expired and creds.refresh_token:
+                creds.refresh(Request())
+                with open(self._token_yolu, 'w') as f:
+                    f.write(creds.to_json())
+
+            if creds and creds.valid:
+                self._creds = creds
+                self._service = build('drive', 'v3', credentials=creds)
+                logger.info("Google Drive: kaydedilmiş token ile bağlantı kuruldu.")
+        except Exception as e:
+            logger.warning(f"Google Drive token yükleme başarısız: {e}")
 
     def baglan(self, credentials_yolu: str = None) -> tuple[bool, str]:
         """Google OAuth ile bağlan."""
@@ -500,6 +531,130 @@ class DriveSyncServisi:
 
         return True, "Dosya senkronizasyonu tamamlandı."
 
+    # ═══════════════════════════════════════
+    # LOG SYNC
+    # ═══════════════════════════════════════
+
+    @staticmethod
+    def _makine_adi() -> str:
+        """Geçerli makine adını döndürür (Drive klasör adı için temizlenmiş)."""
+        try:
+            ad = socket.gethostname()
+        except Exception:
+            ad = (os.environ.get("COMPUTERNAME") or
+                  os.environ.get("HOSTNAME") or "unknown")
+        # Drive klasör adında güvenli olmayan karakterleri kaldır
+        ad = "".join(c for c in ad if c.isalnum() or c in "-_.")[:50]
+        return ad or "unknown"
+
+    def log_sync(self, ilerleme_callback: Callable = None) -> tuple[bool, str]:
+        """
+        Lokal log dosyalarını Drive'a makineye özgü klasör altında yükler.
+
+        Drive yapısı: loglar/{makine_adi}/YYYY-MM-DD.log
+
+        Kurallar:
+        - Aynı isimli dosya Drive'da varsa: Drive'dakini sil, lokali yükle (lokal kazanır).
+        - Lokal'de 30 günden eski loglar silinir.
+        - Drive'dan hiçbir zaman silme yapılmaz.
+        - Bugün hâlâ yazılan aktif log da yüklenir (bir sonraki sync'te üstüne yazılır).
+        """
+        def _ilerleme(msg: str):
+            logger.info(msg)
+            if ilerleme_callback:
+                ilerleme_callback(msg)
+
+        makine = self._makine_adi()
+
+        # Lokal log dizini: db_yolu = .../veri/proje.db → loglar/ bir üst dizinde
+        log_lokal_dizin = Path(self.db_yolu).parent.parent / "loglar"
+        if not log_lokal_dizin.is_dir():
+            _ilerleme("Log dizini bulunamadı, log sync atlanıyor.")
+            return True, "Log dizini yok."
+
+        bugun = datetime.now().date()
+        sinir = bugun - timedelta(days=30)
+
+        lokal_loglar: list[Path] = []   # yüklenecek
+        eski_loglar:  list[Path] = []   # silinecek (30 günden eski)
+
+        for f in sorted(log_lokal_dizin.glob("*.log")):
+            try:
+                log_tarihi = datetime.strptime(f.stem, "%Y-%m-%d").date()
+                if log_tarihi < sinir:
+                    eski_loglar.append(f)
+                else:
+                    lokal_loglar.append(f)
+            except ValueError:
+                # Tarih formatına uymayan log dosyası → yükle, silme
+                lokal_loglar.append(f)
+
+        if not lokal_loglar and not eski_loglar:
+            return True, "Yüklenecek log yok."
+
+        # Drive'da loglar/{makine}/ klasörünü hazırla
+        _ilerleme(f"Drive log klasörü hazırlanıyor: loglar/{makine}/")
+        try:
+            loglar_klas = self._klasor_bul_veya_olustur("loglar")
+            makine_klas = self._klasor_bul_veya_olustur(makine, loglar_klas)
+        except Exception as e:
+            return False, f"Drive klasör oluşturulamadı: {e}"
+
+        # Drive'daki mevcut log dosyalarını listele
+        try:
+            q = (f"'{makine_klas}' in parents and trashed=false "
+                 f"and mimeType!='application/vnd.google-apps.folder'")
+            r = self._service.files().list(
+                q=q, fields="files(id,name)", spaces='drive'
+            ).execute()
+            # Ad → [id, ...] (teorik olarak aynı isimli birden fazla olabilir)
+            drive_dosyalar: dict[str, list[str]] = {}
+            for fi in r.get('files', []):
+                drive_dosyalar.setdefault(fi['name'], []).append(fi['id'])
+        except Exception as e:
+            return False, f"Drive dosya listesi alınamadı: {e}"
+
+        # Lokal logları yükle
+        yuklenen = 0
+        for log_f in lokal_loglar:
+            ad = log_f.name
+            _ilerleme(f"  ↑ {ad}")
+
+            # Drive'da varsa tümünü sil (üst üste yığılmayı önle)
+            for fid in drive_dosyalar.get(ad, []):
+                try:
+                    self._service.files().delete(fileId=fid).execute()
+                except Exception as e:
+                    logger.warning(f"Drive log silme hatası ({ad}): {e}")
+
+            # Yükle
+            try:
+                from googleapiclient.http import MediaFileUpload
+                media = MediaFileUpload(str(log_f), mimetype='text/plain',
+                                        resumable=False)
+                meta = {'name': ad, 'parents': [makine_klas]}
+                self._service.files().create(
+                    body=meta, media_body=media, fields='id'
+                ).execute()
+                yuklenen += 1
+            except Exception as e:
+                logger.warning(f"Log yükleme hatası ({ad}): {e}")
+
+        # Lokal'de 30 günden eski logları sil
+        silinen = 0
+        for f in eski_loglar:
+            try:
+                f.unlink()
+                silinen += 1
+                _ilerleme(f"  🗑 Eski log silindi (lokal): {f.name}")
+            except Exception as e:
+                logger.warning(f"Lokal log silme hatası ({f.name}): {e}")
+
+        ozet = (f"Log sync tamamlandı — Makine: {makine} | "
+                f"Yüklenen: {yuklenen} | Lokal'den silinen: {silinen}")
+        _ilerleme(ozet)
+        return True, ozet
+
     def _klasor_sync(self, lokal_klasor: str, drive_klasor_id: str,
                      ilerleme: Callable = None):
         """Klasör içindeki dosyaları çift yönlü sync et."""
@@ -593,6 +748,10 @@ class DriveSyncServisi:
 
             # 3. Dosya sync
             ok2, msg2 = self.dosya_sync(ilerleme_callback)
+
+            # 4. Log sync
+            _ilerleme("─── Log senkronizasyonu başlıyor ───")
+            ok3, msg3 = self.log_sync(ilerleme_callback)
 
             _ilerleme("Tamamlandı!")
             return True, msg

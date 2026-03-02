@@ -164,6 +164,21 @@ class SyncPage(QWidget):
         g2l.addWidget(self.btn_sync)
         outer.addWidget(g2)
 
+        # Log Sync bilgisi
+        g_log = QGroupBox("📁 Log Senkronizasyonu")
+        g_log_l = QVBoxLayout(g_log)
+        from uygulama.servisler.drive_sync_servisi import DriveSyncServisi
+        makine = DriveSyncServisi._makine_adi()
+        self.lbl_log_sync = QLabel(
+            f"Sync sırasında bu makinenin logları Drive'a yüklenir.\n"
+            f"Klasör: loglar/{makine}/\n"
+            f"• Lokal'de 30 günden eski loglar otomatik silinir\n"
+            f"• Drive'daki loglar hiçbir zaman silinmez"
+        )
+        self.lbl_log_sync.setStyleSheet("font-size:12px;color:#555;padding:4px;")
+        g_log_l.addWidget(self.lbl_log_sync)
+        outer.addWidget(g_log)
+
         # Log
         g3 = QGroupBox("📋 Sync Günlüğü")
         g3l = QVBoxLayout(g3)

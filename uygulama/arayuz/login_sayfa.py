@@ -11,6 +11,8 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QCursor
 
+from uygulama.ortak.oturum_yoneticisi import OturumYoneticisi
+
 
 class LoginPage(QWidget):
     """Giriş sayfası widget'ı."""
@@ -21,6 +23,7 @@ class LoginPage(QWidget):
         super().__init__(parent)
         self.kimlik_servisi = kimlik_servisi
         self._build()
+        self._kayitli_oturumu_yukle()
 
     def _build(self):
         outer = QVBoxLayout(self)
@@ -91,6 +94,11 @@ class LoginPage(QWidget):
         # İlk odak
         self.username.setFocus()
 
+    def _kayitli_oturumu_yukle(self):
+        """Kayıtlı oturum varsa checkbox'ı işaretli gösterir."""
+        if OturumYoneticisi.mevcut_mu():
+            self.remember.setChecked(True)
+
     def _giris_yap(self):
         """Giriş butonuna basıldığında çağrılır."""
         kullanici_adi = self.username.text().strip()
@@ -105,6 +113,10 @@ class LoginPage(QWidget):
             basarili, mesaj = self.kimlik_servisi.giris_yap(kullanici_adi, sifre)
 
             if basarili:
+                if self.remember.isChecked():
+                    OturumYoneticisi.kaydet(kullanici_adi, sifre)
+                else:
+                    OturumYoneticisi.sil()
                 self.error_label.hide()
                 self.password.clear()
                 self.login_basarili.emit()

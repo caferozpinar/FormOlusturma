@@ -14,6 +14,7 @@ from uygulama.arayuz.sync_sayfa import SyncPage
 from uygulama.arayuz.admin_sayfa import AdminPanelPage
 from uygulama.arayuz.analitik_sayfa import AnalitikPage
 from uygulama.ortak.app_state import app_state
+from uygulama.ortak.oturum_yoneticisi import OturumYoneticisi
 
 
 class AnaPencere(QMainWindow):
@@ -61,6 +62,7 @@ class AnaPencere(QMainWindow):
 
         self._sayfalari_olustur()
         self._sinyalleri_bagla()
+        self._otomatik_giris_dene()
 
     def _sayfalari_olustur(self):
         self.login_sayfa = LoginPage(self.kimlik_servisi)
@@ -136,7 +138,18 @@ class AnaPencere(QMainWindow):
         self._sayfaya_git(self.PROJE_LISTESI)
         self.proje_listesi_sayfa.sayfa_gosterildi()
 
+    def _otomatik_giris_dene(self):
+        """Kayıtlı oturum varsa otomatik giriş yapar."""
+        kaydedilmis = OturumYoneticisi.yukle()
+        if not kaydedilmis:
+            return
+        kullanici_adi, sifre = kaydedilmis
+        basarili, _ = self.kimlik_servisi.giris_yap(kullanici_adi, sifre)
+        if basarili:
+            self._giris_sonrasi()
+
     def _cikis_yap(self):
+        OturumYoneticisi.sil()
         self.kimlik_servisi.cikis_yap()
         self.login_sayfa.sifirla()
         self._sayfaya_git(self.LOGIN)
