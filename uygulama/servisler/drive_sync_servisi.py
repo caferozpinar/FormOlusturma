@@ -23,6 +23,19 @@ from uygulama.ortak.yardimcilar import logger_olustur, simdi_iso
 
 logger = logger_olustur("drive_sync")
 
+# ── Google API — modül seviyesinde import (PyInstaller statik analiz için şart) ──
+# Kurulu değilse Drive özellikleri sessizce devre dışı kalır.
+try:
+    from google.oauth2.credentials import Credentials as _GCredentials
+    from google_auth_oauthlib.flow import InstalledAppFlow as _GFlow
+    from google.auth.transport.requests import Request as _GRequest
+    from googleapiclient.discovery import build as _gbuild
+    from googleapiclient.http import MediaFileUpload as _GMediaUpload
+    from googleapiclient.http import MediaIoBaseDownload as _GMediaDownload
+    _GOOGLE_OK = True
+except ImportError:
+    _GOOGLE_OK = False
+
 # ═══════════════════════════════════════
 # MERGE TABLOSU TANIMLARI
 # ═══════════════════════════════════════
@@ -102,35 +115,28 @@ class DriveSyncServisi:
         """
         if not os.path.exists(self._token_yolu):
             return
+        if not _GOOGLE_OK:
+            return
         try:
-            from google.oauth2.credentials import Credentials
-            from google.auth.transport.requests import Request
-            from googleapiclient.discovery import build
-
             SCOPES = ['https://www.googleapis.com/auth/drive']
-            creds = Credentials.from_authorized_user_file(
+            creds = _GCredentials.from_authorized_user_file(
                 self._token_yolu, SCOPES)
 
             if creds and creds.expired and creds.refresh_token:
-                creds.refresh(Request())
+                creds.refresh(_GRequest())
                 with open(self._token_yolu, 'w') as f:
                     f.write(creds.to_json())
 
             if creds and creds.valid:
                 self._creds = creds
-                self._service = build('drive', 'v3', credentials=creds)
+                self._service = _gbuild('drive', 'v3', credentials=creds)
                 logger.info("Google Drive: kaydedilmiş token ile bağlantı kuruldu.")
         except Exception as e:
             logger.warning(f"Google Drive token yükleme başarısız: {e}")
 
     def baglan(self, credentials_yolu: str = None) -> tuple[bool, str]:
         """Google OAuth ile bağlan."""
-        try:
-            from google.oauth2.credentials import Credentials
-            from google_auth_oauthlib.flow import InstalledAppFlow
-            from google.auth.transport.requests import Request
-            from googleapiclient.discovery import build
-        except ImportError:
+        if not _GOOGLE_OK:
             return False, ("Google API kütüphaneleri yüklü değil.\n"
                            "pip install google-auth google-auth-oauthlib "
                            "google-api-python-client")
@@ -140,7 +146,7 @@ class DriveSyncServisi:
         creds = None
         if os.path.exists(self._token_yolu):
             try:
-                creds = Credentials.from_authorized_user_file(
+                creds = _GCredentials.from_authorized_user_file(
                     self._token_yolu, SCOPES)
             except Exception:
                 pass
@@ -148,7 +154,7 @@ class DriveSyncServisi:
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
                 try:
-                    creds.refresh(Request())
+                    creds.refresh(_GRequest())
                 except Exception:
                     creds = None
 
@@ -164,7 +170,7 @@ class DriveSyncServisi:
                     return False, ("credentials.json bulunamadı.\n"
                                    "Google Cloud Console'dan OAuth credential indirin.")
 
-                flow = InstalledAppFlow.from_client_secrets_file(
+                flow = _GFlow.from_client_secrets_file(
                     credentials_yolu, SCOPES)
                 creds = flow.run_local_server(port=0)
 
@@ -172,7 +178,7 @@ class DriveSyncServisi:
                 f.write(creds.to_json())
 
         self._creds = creds
-        self._service = build('drive', 'v3', credentials=creds)
+        self._service = _gbuild('drive', 'v3', credentials=creds)
         logger.info("Google Drive bağlantısı kuruldu.")
         return True, "Bağlantı başarılı."
 
@@ -206,21 +212,19 @@ class DriveSyncServisi:
 
     def _dosya_indir(self, file_id: str, hedef_yol: str):
         """Drive'dan dosya indir."""
-        from googleapiclient.http import MediaIoBaseDownload
         import io
         request = self._service.files().get_media(fileId=file_id)
         with open(hedef_yol, 'wb') as f:
-            downloader = MediaIoBaseDownload(f, request)
+            downloader = _GMediaDownload(f, request)
             done = False
             while not done:
                 _, done = downloader.next_chunk()
 
     def _dosya_yukle(self, lokal_yol: str, ad: str, klasor_id: str = None) -> str:
         """Dosyayı Drive'a yükle (varsa güncelle)."""
-        from googleapiclient.http import MediaFileUpload
         kid = klasor_id or self.drive_klasor_id
         mevcut = self._dosya_bul(ad, kid)
-        media = MediaFileUpload(lokal_yol, resumable=True)
+        media = _GMediaUpload(lokal_yol, resumable=True)
 
         if mevcut:
             f = self._service.files().update(
@@ -629,9 +633,8 @@ class DriveSyncServisi:
 
             # Yükle
             try:
-                from googleapiclient.http import MediaFileUpload
-                media = MediaFileUpload(str(log_f), mimetype='text/plain',
-                                        resumable=False)
+                media = _GMediaUpload(str(log_f), mimetype='text/plain',
+                                      resumable=False)
                 meta = {'name': ad, 'parents': [makine_klas]}
                 self._service.files().create(
                     body=meta, media_body=media, fields='id'
