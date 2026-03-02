@@ -29,7 +29,7 @@ class TeklifRepository:
 
     def olustur(self, proje_id: str, tur: str = "TEKLİF",
                 baslik: str = "", para_birimi: str = "TRY",
-                olusturan: str = "") -> str:
+                olusturan: str = "", alternatif_no: int = 0) -> str:
         tid = _yeni_uuid()
         # Revizyon no: aynı proje+tür için max+1
         row = self.db.getir_tek(
@@ -38,6 +38,8 @@ class TeklifRepository:
         rev = (row["m"] if row else 0) + 1
         if not baslik:
             baslik = f"{tur} Rev.{rev}"
+            if alternatif_no > 1:
+                baslik += f" Alternatif {alternatif_no}"
         with self.db.transaction() as conn:
             conn.execute(
                 """INSERT INTO teklifler
@@ -46,7 +48,7 @@ class TeklifRepository:
                    VALUES (?,?,?,?,?,?,?,?,?)""",
                 (tid, proje_id, tur, baslik, para_birimi, rev,
                  olusturan, simdi_iso(), simdi_iso()))
-        logger.info(f"Teklif oluşturuldu: {tur} Rev.{rev} ({tid[:8]})")
+        logger.info(f"Teklif oluşturuldu: {baslik} ({tid[:8]})")
         return tid
 
     def getir(self, teklif_id: str) -> dict | None:

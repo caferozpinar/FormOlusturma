@@ -40,6 +40,14 @@ veri/drive_token.json
 credentials.json
 client_secret*.json
 
+# Oturum (şifreli kullanıcı bilgisi — hiçbir zaman commit edilmemeli)
+veri/.session
+
+# Üretilen çıktı dosyaları
+ciktilar/
+gecici/
+kayitlar/
+
 # Şablonlar
 sablonlar/*.xlsx
 

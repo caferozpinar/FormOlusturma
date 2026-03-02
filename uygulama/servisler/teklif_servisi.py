@@ -50,7 +50,13 @@ class TeklifServisi:
                         para_birimi: str = "TRY") -> Tuple[bool, str, Optional[str]]:
         state = app_state()
         olusturan = state.aktif_kullanici.kullanici_adi if state.aktif_kullanici else ""
-        teklif_id = self.repo.olustur(proje_id, tur, "", para_birimi, olusturan)
+
+        # Aynı proje+tür için kaç aktif (non-KAPANDI) teklif var?
+        mevcutlar = [t for t in self.repo.proje_teklifleri(proje_id)
+                     if t["tur"] == tur and t["durum"] != "KAPANDI"]
+        alternatif_no = len(mevcutlar) + 1 if mevcutlar else 0
+
+        teklif_id = self.repo.olustur(proje_id, tur, "", para_birimi, olusturan, alternatif_no)
 
         # Proje ürünlerini + alt kalemleri otomatik yükle
         if self.proje_srv:

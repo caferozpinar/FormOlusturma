@@ -153,7 +153,6 @@ def baslat():
     pencere.show()
 
     logger.info("Uygulama başlatıldı.")
-    logger.info("Varsayılan giriş: admin / admin123")
 
     kod = app.exec_()
 
