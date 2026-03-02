@@ -15,15 +15,17 @@ PROJE = os.path.abspath('.')
 # PyInstaller statik analizle göremez — collect_all ile zorla topla
 gapi_datas,   gapi_binaries,   gapi_hiddenimports   = collect_all('googleapiclient')
 goauth_datas, goauth_binaries, goauth_hiddenimports  = collect_all('google_auth_oauthlib')
+gauth_datas,  gauth_binaries,  gauth_hiddenimports   = collect_all('google.auth')
+goauth2_datas, goauth2_binaries, goauth2_hiddenimports = collect_all('google.oauth2')
 
 a = Analysis(
     ['main.py'],
     pathex=[PROJE],
-    binaries=[] + gapi_binaries + goauth_binaries,
+    binaries=[] + gapi_binaries + goauth_binaries + gauth_binaries + goauth2_binaries,
     datas=[
         ('sablonlar', 'sablonlar'),
         ('veri', 'veri'),
-    ] + gapi_datas + goauth_datas,
+    ] + gapi_datas + goauth_datas + gauth_datas + goauth2_datas,
     hiddenimports=[
         'PyQt5',
         'PyQt5.QtWidgets',
@@ -80,7 +82,7 @@ a = Analysis(
         'urllib3',
         'urllib3.util',
         'urllib3.util.retry',
-    ] + gapi_hiddenimports + goauth_hiddenimports,
+    ] + gapi_hiddenimports + goauth_hiddenimports + gauth_hiddenimports + goauth2_hiddenimports,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
