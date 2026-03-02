@@ -1,263 +1,309 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Sync Sayfası — Backend entegreli snapshot, conflict, otomatik kontrol."""
+"""
+Sync Sayfası — Google Drive DB Merge + Dosya Sync.
+Manuel tetikleme, lock mekanizması, çakışma dialogu.
+"""
 
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QTableView, QProgressBar, QFrame, QMessageBox, QFileDialog
+    QProgressBar, QFrame, QMessageBox, QDialog, QFormLayout,
+    QLineEdit, QDialogButtonBox, QGroupBox, QTextEdit, QApplication
 )
-from PyQt5.QtCore import Qt, pyqtSignal, QTimer
+from PyQt5.QtCore import Qt, pyqtSignal, QThread
 
-from uygulama.arayuz.ui_yardimcilar import SimpleTableModel, setup_table
-from uygulama.ortak.yardimcilar import tarih_formatla
+from uygulama.ortak.yardimcilar import logger_olustur
+from uygulama.ortak.app_state import app_state
+
+logger = logger_olustur("sync_sayfa")
+
+
+class CakismaDialog(QDialog):
+    """Çakışan kayıt için lokal/drive seçimi."""
+
+    def __init__(self, tablo, lokal, drive, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(f"Çakışma — {tablo}")
+        self.setMinimumWidth(500)
+        self.karar = "atla"
+
+        lo = QVBoxLayout(self)
+        lo.addWidget(QLabel(f"<b>{tablo}</b> tablosunda çakışma tespit edildi:"))
+        lo.addSpacing(8)
+
+        fark_text = ""
+        for k in lokal:
+            lv = str(lokal.get(k, ""))
+            dv = str(drive.get(k, ""))
+            if lv != dv and k not in ("guncelleme_tarihi", "olusturma_tarihi"):
+                fark_text += (f"<b>{k}:</b><br>"
+                              f"  Lokal: <span style='color:#1565C0'>{lv[:80]}</span><br>"
+                              f"  Drive: <span style='color:#C62828'>{dv[:80]}</span><br><br>")
+
+        if not fark_text:
+            fark_text = "Zaman damgası farklı (içerik aynı görünüyor)"
+
+        lz = lokal.get("guncelleme_tarihi", "") or lokal.get("olusturma_tarihi", "")
+        dz = drive.get("guncelleme_tarihi", "") or drive.get("olusturma_tarihi", "")
+        fark_text += f"<hr>Lokal zaman: {lz}<br>Drive zaman: {dz}"
+
+        te = QTextEdit()
+        te.setReadOnly(True)
+        te.setHtml(fark_text)
+        te.setMaximumHeight(200)
+        lo.addWidget(te)
+        lo.addSpacing(8)
+
+        bb = QHBoxLayout()
+        for text, val in [("✅ Lokal Kalsın", "lokal"),
+                          ("☁️ Drive Kalsın", "drive"),
+                          ("Atla", "atla")]:
+            b = QPushButton(text)
+            b.setFixedHeight(32)
+            b.clicked.connect(lambda _, v=val: self._sec(v))
+            bb.addWidget(b)
+        lo.addLayout(bb)
+
+    def _sec(self, karar):
+        self.karar = karar
+        self.accept()
+
+
+class SyncWorker(QThread):
+    """Arka planda sync çalıştırır."""
+    ilerleme = pyqtSignal(str)
+    bitti = pyqtSignal(bool, str)
+    cakisma = pyqtSignal(str, dict, dict)
+
+    def __init__(self, drive_srv, kullanici):
+        super().__init__()
+        self.drive_srv = drive_srv
+        self.kullanici = kullanici
+        self._cakisma_karar = None
+
+    def run(self):
+        ok, msg = self.drive_srv.sync(
+            self.kullanici,
+            cakisma_callback=self._cakisma_handler,
+            ilerleme_callback=lambda m: self.ilerleme.emit(m))
+        self.bitti.emit(ok, msg)
+
+    def _cakisma_handler(self, tablo, lokal, drive):
+        self._cakisma_karar = None
+        self.cakisma.emit(tablo, lokal, drive)
+        import time
+        while self._cakisma_karar is None:
+            time.sleep(0.1)
+        return self._cakisma_karar
 
 
 class SyncPage(QWidget):
     go_back = pyqtSignal()
 
-    def __init__(self, sync_servisi=None, parent=None):
+    def __init__(self, sync_servisi=None, drive_sync_srv=None, parent=None):
         super().__init__(parent)
         self.sync_servisi = sync_servisi
-        self._son_sync_id = None
-        self._conflictler = []
-
-        # Otomatik sync timer (10 dk)
-        self._auto_timer = QTimer(self)
-        self._auto_timer.setInterval(600_000)  # 10 dakika
-        self._auto_timer.timeout.connect(self._otomatik_sync_kontrol)
-
+        self.drive_srv = drive_sync_srv
+        self._worker = None
         self._build()
 
     def _build(self):
         outer = QVBoxLayout(self)
         outer.setContentsMargins(32, 24, 32, 24)
-        outer.setSpacing(20)
+        outer.setSpacing(16)
 
-        # Header
         header = QHBoxLayout()
-        t = QLabel("Senkronizasyon"); t.setObjectName("title")
-        bb = QPushButton("← Geri"); bb.clicked.connect(self.go_back.emit)
+        t = QLabel("Google Drive Senkronizasyon")
+        t.setObjectName("title")
+        bb = QPushButton("← Geri")
+        bb.clicked.connect(self.go_back.emit)
         header.addWidget(t); header.addStretch(); header.addWidget(bb)
         outer.addLayout(header)
 
-        # Durum kartı
-        status_card = QFrame(); status_card.setObjectName("card")
-        sl = QVBoxLayout(status_card); sl.setContentsMargins(24, 20, 24, 20)
+        # Bağlantı
+        g1 = QGroupBox("☁️ Google Drive Bağlantısı")
+        g1l = QVBoxLayout(g1)
+        self.lbl_durum = QLabel("Bağlı değil")
+        self.lbl_durum.setStyleSheet(
+            "font-size:14px;font-weight:bold;color:#C62828;padding:8px;")
+        g1l.addWidget(self.lbl_durum)
 
-        self.status_label = QLabel("Hazır")
-        self.status_label.setObjectName("subtitle")
-        self.status_label.setAlignment(Qt.AlignCenter)
-        sl.addWidget(self.status_label)
+        br = QHBoxLayout()
+        self.btn_baglan = QPushButton("🔗 Google'a Bağlan")
+        self.btn_baglan.setFixedHeight(32)
+        self.btn_baglan.clicked.connect(self._baglan)
+        br.addWidget(self.btn_baglan)
+        self.btn_ayar = QPushButton("⚙ Klasör ID Ayarla")
+        self.btn_ayar.setFixedHeight(32)
+        self.btn_ayar.clicked.connect(self._klasor_ayarla)
+        br.addWidget(self.btn_ayar)
+        br.addStretch()
+        g1l.addLayout(br)
+        outer.addWidget(g1)
 
-        self.son_sync_label = QLabel("Son sync: —")
-        self.son_sync_label.setAlignment(Qt.AlignCenter)
-        sl.addWidget(self.son_sync_label)
+        # Sync
+        g2 = QGroupBox("🔄 Senkronizasyon")
+        g2l = QVBoxLayout(g2)
+        self.lbl_sync = QLabel("Hazır")
+        self.lbl_sync.setStyleSheet("font-size:13px;padding:6px;color:#333;")
+        self.lbl_sync.setAlignment(Qt.AlignCenter)
+        g2l.addWidget(self.lbl_sync)
 
         self.progress = QProgressBar()
-        self.progress.setTextVisible(False); self.progress.setFixedHeight(6)
-        self.progress.setValue(0)
-        sl.addWidget(self.progress)
+        self.progress.setTextVisible(False)
+        self.progress.setFixedHeight(8)
+        self.progress.setRange(0, 0)
+        self.progress.setVisible(False)
+        g2l.addWidget(self.progress)
 
-        outer.addWidget(status_card)
-
-        # Butonlar
-        btn_row = QHBoxLayout()
-        self.btn_snapshot = QPushButton("📸 Snapshot Al")
-        self.btn_snapshot.setObjectName("primary")
-        self.btn_snapshot.clicked.connect(self._snapshot_al)
-        btn_row.addWidget(self.btn_snapshot)
-
-        self.btn_sync = QPushButton("🔄 Sync Başlat")
+        self.btn_sync = QPushButton("🔄 Senkronize Et")
         self.btn_sync.setObjectName("primary")
+        self.btn_sync.setFixedHeight(40)
+        self.btn_sync.setStyleSheet("font-size:14px;font-weight:bold;")
         self.btn_sync.clicked.connect(self._sync_baslat)
-        btn_row.addWidget(self.btn_sync)
+        g2l.addWidget(self.btn_sync)
+        outer.addWidget(g2)
 
-        self.btn_sync_dosya = QPushButton("📂 Dosyadan Sync")
-        self.btn_sync_dosya.clicked.connect(self._dosyadan_sync)
-        btn_row.addWidget(self.btn_sync_dosya)
-
-        btn_row.addStretch()
-
-        self.btn_auto = QPushButton("⏱ Otomatik: Kapalı")
-        self.btn_auto.setCheckable(True)
-        self.btn_auto.clicked.connect(self._otomatik_toggle)
-        btn_row.addWidget(self.btn_auto)
-        outer.addLayout(btn_row)
-
-        # Snapshot listesi
-        outer.addWidget(QLabel("Snapshot Geçmişi:"))
-        self.snap_table = QTableView(); setup_table(self.snap_table)
-        self.snap_model = SimpleTableModel(["Dosya", "Boyut (MB)", "Tarih"])
-        self.snap_table.setModel(self.snap_model)
-        self.snap_table.setMaximumHeight(140)
-        outer.addWidget(self.snap_table)
-
-        # Conflict tablosu
-        outer.addWidget(QLabel("Çakışmalar:"))
-        self.conflict_table = QTableView(); setup_table(self.conflict_table)
-        self.conflict_model = SimpleTableModel(
-            ["Tablo", "Alan", "Yerel Değer", "Uzak Değer", "Çözüm"])
-        self.conflict_table.setModel(self.conflict_model)
-        self.conflict_table.setMaximumHeight(180)
-        outer.addWidget(self.conflict_table)
-
-        # Conflict çözüm butonları
-        cr = QHBoxLayout()
-        self.btn_yerel = QPushButton("Yereli Koru")
-        self.btn_yerel.clicked.connect(lambda: self._tum_conflictleri_coz("YEREL"))
-        self.btn_uzak = QPushButton("Uzağı Al")
-        self.btn_uzak.clicked.connect(lambda: self._tum_conflictleri_coz("UZAK"))
-        cr.addWidget(self.btn_yerel); cr.addWidget(self.btn_uzak)
-        cr.addStretch()
-        outer.addLayout(cr)
-
-        # Sync geçmişi
-        outer.addWidget(QLabel("Sync Geçmişi:"))
-        self.history_table = QTableView(); setup_table(self.history_table)
-        self.history_model = SimpleTableModel(["Tür", "Durum", "Detay", "Tarih"])
-        self.history_table.setModel(self.history_model)
-        self.history_table.setMaximumHeight(160)
-        outer.addWidget(self.history_table)
-
-    # ═════════════════════════════════════════
-    # VERİ YÜKLEME
-    # ═════════════════════════════════════════
+        # Log
+        g3 = QGroupBox("📋 Sync Günlüğü")
+        g3l = QVBoxLayout(g3)
+        self.log_text = QTextEdit()
+        self.log_text.setReadOnly(True)
+        self.log_text.setMaximumHeight(200)
+        self.log_text.setStyleSheet(
+            "font-family:monospace;font-size:11px;background:#FAFAFA;")
+        g3l.addWidget(self.log_text)
+        outer.addWidget(g3)
+        outer.addStretch()
 
     def sayfa_gosterildi(self):
         self._durum_guncelle()
-        self._snapshot_listesini_yukle()
-        self._conflict_yukle()
-        self._gecmis_yukle()
+        # Kaydedilmiş klasör ID'sini yükle
+        if self.drive_srv and not self.drive_srv.drive_klasor_id:
+            try:
+                r = self.drive_srv.db.getir_tek(
+                    "SELECT deger FROM sync_meta WHERE anahtar='drive_klasor_id'")
+                if r:
+                    self.drive_srv.drive_klasor_id = r["deger"]
+            except Exception:
+                pass
+        self._durum_guncelle()
 
     def _durum_guncelle(self):
-        if not self.sync_servisi:
-            return
-        son = self.sync_servisi.son_sync()
-        if son:
-            tarih = tarih_formatla(son.get("sync_tarihi", ""))
-            durum = son.get("durum", "")
-            self.son_sync_label.setText(f"Son sync: {tarih} — {durum}")
-            self.progress.setValue(100 if durum == "TAMAMLANDI" else 50)
-            self.status_label.setText(
-                "✅ Senkron" if durum == "TAMAMLANDI"
-                else "⚠ Çakışma bekliyor" if durum == "CONFLICT_BEKLIYOR"
-                else "Hazır")
+        if self.drive_srv and self.drive_srv.baglanti_durumu():
+            self.lbl_durum.setText("✅ Google Drive'a bağlı")
+            self.lbl_durum.setStyleSheet(
+                "font-size:14px;font-weight:bold;color:#2E7D32;padding:8px;")
+            self.btn_baglan.setText("✅ Bağlı")
+            self.btn_baglan.setEnabled(False)
+            self.btn_sync.setEnabled(True)
+            kid = self.drive_srv.drive_klasor_id
+            if kid:
+                self.btn_ayar.setText(f"⚙ Klasör: ...{kid[-8:]}")
         else:
-            self.son_sync_label.setText("Son sync: Henüz yapılmadı")
-            self.progress.setValue(0)
+            self.lbl_durum.setText("❌ Google Drive'a bağlı değil")
+            self.lbl_durum.setStyleSheet(
+                "font-size:14px;font-weight:bold;color:#C62828;padding:8px;")
+            self.btn_baglan.setText("🔗 Google'a Bağlan")
+            self.btn_baglan.setEnabled(True)
+            self.btn_sync.setEnabled(False)
 
-    def _snapshot_listesini_yukle(self):
-        if not self.sync_servisi:
+    def _baglan(self):
+        if not self.drive_srv:
+            QMessageBox.warning(self, "Hata",
+                                "Drive sync servisi yapılandırılmamış.")
             return
-        snaps = self.sync_servisi.snapshot_listele()
-        veri = [[s["dosya"], str(s["boyut_mb"]), s["tarih"]] for s in snaps]
-        self.snap_model.veri_guncelle(veri)
-
-    def _conflict_yukle(self):
-        if not self.sync_servisi:
-            return
-        self._conflictler = self.sync_servisi.bekleyen_conflictler()
-        veri = [[c["tablo"], c["alan"], c["yerel_deger"][:30],
-                 c["uzak_deger"][:30], c["cozum"]]
-                for c in self._conflictler]
-        self.conflict_model.veri_guncelle(veri)
-        has_conflict = len(self._conflictler) > 0
-        self.btn_yerel.setEnabled(has_conflict)
-        self.btn_uzak.setEnabled(has_conflict)
-
-    def _gecmis_yukle(self):
-        if not self.sync_servisi:
-            return
-        gecmis = self.sync_servisi.sync_gecmisi(10)
-        veri = [[g["tur"], g["durum"], g.get("detay", "")[:50],
-                 tarih_formatla(g["sync_tarihi"])]
-                for g in gecmis]
-        self.history_model.veri_guncelle(veri)
-
-    # ═════════════════════════════════════════
-    # İŞLEMLER
-    # ═════════════════════════════════════════
-
-    def _snapshot_al(self):
-        if not self.sync_servisi:
-            return
-        self.status_label.setText("⏳ Snapshot alınıyor...")
-        self.progress.setValue(30)
-        ok, msg, yol = self.sync_servisi.snapshot_olustur()
+        self._log("Google'a bağlanılıyor...")
+        ok, msg = self.drive_srv.baglan()
+        self._log(msg)
         if ok:
-            self.progress.setValue(100)
-            self.status_label.setText("✅ Snapshot alındı")
-            self._snapshot_listesini_yukle()
+            self._durum_guncelle()
         else:
-            self.progress.setValue(0)
-            QMessageBox.warning(self, "Hata", msg)
-        self._durum_guncelle()
+            QMessageBox.warning(self, "Bağlantı Hatası", msg)
+
+    def _klasor_ayarla(self):
+        dlg = QDialog(self)
+        dlg.setWindowTitle("Drive Klasör ID")
+        fl = QFormLayout(dlg)
+        fl.addRow(QLabel(
+            "Google Drive'da paylaşımlı klasörün ID'sini girin.\n"
+            "ID, klasör URL'sinin son kısmıdır:\n"
+            "drive.google.com/drive/folders/BU_KISIM"))
+        edt = QLineEdit()
+        if self.drive_srv:
+            edt.setText(self.drive_srv.drive_klasor_id or "")
+        fl.addRow("Klasör ID:", edt)
+        bb = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        bb.accepted.connect(dlg.accept)
+        bb.rejected.connect(dlg.reject)
+        fl.addRow(bb)
+        if dlg.exec_() and self.drive_srv:
+            kid = edt.text().strip()
+            if kid:
+                self.drive_srv.drive_klasor_id = kid
+                try:
+                    with self.drive_srv.db.transaction() as c:
+                        c.execute(
+                            "INSERT OR REPLACE INTO sync_meta "
+                            "(anahtar, deger, guncelleme_tarihi) "
+                            "VALUES ('drive_klasor_id', ?, datetime('now'))",
+                            (kid,))
+                except Exception:
+                    pass
+                self._durum_guncelle()
+                self._log(f"Klasör ID kaydedildi: ...{kid[-8:]}")
 
     def _sync_baslat(self):
-        if not self.sync_servisi:
+        if not self.drive_srv:
             return
-        self.status_label.setText("⏳ Senkronizasyon başlatılıyor...")
-        self.progress.setValue(20)
+        if self._worker and self._worker.isRunning():
+            QMessageBox.information(self, "Bilgi", "Sync zaten çalışıyor.")
+            return
 
-        ok, msg, sync_id = self.sync_servisi.sync_baslat()
-        self._son_sync_id = sync_id
+        state = app_state()
+        kullanici = "admin"
+        if state.aktif_kullanici:
+            kullanici = state.aktif_kullanici.kullanici_adi
 
+        self.btn_sync.setEnabled(False)
+        self.progress.setVisible(True)
+        self.lbl_sync.setText("⏳ Senkronize ediliyor...")
+        self.log_text.clear()
+        self._log("Sync başlatıldı...")
+
+        self._worker = SyncWorker(self.drive_srv, kullanici)
+        self._worker.ilerleme.connect(self._on_ilerleme)
+        self._worker.bitti.connect(self._on_bitti)
+        self._worker.cakisma.connect(self._on_cakisma)
+        self._worker.start()
+
+    def _on_ilerleme(self, msg):
+        self._log(msg)
+        self.lbl_sync.setText(f"⏳ {msg}")
+        QApplication.processEvents()
+
+    def _on_bitti(self, ok, msg):
+        self.progress.setVisible(False)
+        self.btn_sync.setEnabled(True)
         if ok:
-            self.progress.setValue(100)
+            self.lbl_sync.setText("✅ Tamamlandı")
+            self._log(f"✅ {msg}")
+            QMessageBox.information(self, "Senkronizasyon", msg)
         else:
+            self.lbl_sync.setText("❌ Hata")
+            self._log(f"❌ {msg}")
             QMessageBox.warning(self, "Sync Hatası", msg)
+        self._worker = None
 
-        self.sayfa_gosterildi()
+    def _on_cakisma(self, tablo, lokal, drive):
+        dlg = CakismaDialog(tablo, lokal, drive, self)
+        dlg.exec_()
+        if self._worker:
+            self._worker._cakisma_karar = dlg.karar
+        self._log(f"Çakışma ({tablo}): {dlg.karar}")
 
-    def _dosyadan_sync(self):
-        if not self.sync_servisi:
-            return
-        yol, _ = QFileDialog.getOpenFileName(
-            self, "Uzak Veritabanı Seç", "",
-            "SQLite Dosyaları (*.db);;Tüm Dosyalar (*)")
-        if not yol:
-            return
-
-        self.status_label.setText("⏳ Dosyadan sync başlatılıyor...")
-        self.progress.setValue(20)
-
-        ok, msg, sync_id = self.sync_servisi.sync_baslat(uzak_db_yolu=yol)
-        self._son_sync_id = sync_id
-
-        if ok:
-            self.progress.setValue(100)
-        else:
-            QMessageBox.warning(self, "Sync Hatası", msg)
-
-        self.sayfa_gosterildi()
-
-    def _tum_conflictleri_coz(self, cozum: str):
-        if not self.sync_servisi or not self._son_sync_id:
-            return
-        ok, msg = self.sync_servisi.tum_conflictleri_coz(
-            self._son_sync_id, cozum)
-        if ok:
-            QMessageBox.information(self, "Çakışma Çözümü", msg)
-        else:
-            QMessageBox.warning(self, "Hata", msg)
-        self.sayfa_gosterildi()
-
-    def _otomatik_toggle(self):
-        if self._auto_timer.isActive():
-            self._auto_timer.stop()
-            self.btn_auto.setText("⏱ Otomatik: Kapalı")
-            self.btn_auto.setChecked(False)
-        else:
-            self._auto_timer.start()
-            self.btn_auto.setText("⏱ Otomatik: Açık (10dk)")
-            self.btn_auto.setChecked(True)
-
-    def _otomatik_sync_kontrol(self):
-        """10 dakikada bir otomatik snapshot ve durum kontrolü."""
-        if not self.sync_servisi:
-            return
-        if self.sync_servisi.sync_aktif:
-            return
-        self.sync_servisi.snapshot_olustur()
-        self._snapshot_listesini_yukle()
-        self._durum_guncelle()
+    def _log(self, msg):
+        from datetime import datetime
+        ts = datetime.now().strftime("%H:%M:%S")
+        self.log_text.append(f"[{ts}] {msg}")
+        logger.info(msg)

@@ -32,7 +32,8 @@ class AnaPencere(QMainWindow):
                  analitik_servisi=None, konum_servisi=None,
                  tesis_servisi=None, em_repo=None, em_srv=None,
                  placeholder_srv=None, teklif_srv=None,
-                 belge_olusturma_srv=None):
+                 belge_olusturma_srv=None,
+                 drive_sync_srv=None):
         super().__init__()
         self.kimlik_servisi = kimlik_servisi
         self.proje_servisi = proje_servisi
@@ -49,6 +50,7 @@ class AnaPencere(QMainWindow):
         self.placeholder_srv = placeholder_srv
         self.teklif_srv = teklif_srv
         self.belge_olusturma_srv = belge_olusturma_srv
+        self.drive_sync_srv = drive_sync_srv
 
         self.setWindowTitle("Proje Yönetim Sistemi")
         self.setMinimumSize(1200, 780)
@@ -70,7 +72,8 @@ class AnaPencere(QMainWindow):
             self.teklif_srv, self.em_repo,
             belge_olusturma_srv=self.belge_olusturma_srv)
         self.dokuman_sayfa = DocumentPage()
-        self.sync_sayfa = SyncPage(self.sync_servisi)
+        self.sync_sayfa = SyncPage(self.sync_servisi,
+                                    drive_sync_srv=self.drive_sync_srv)
         self.admin_sayfa = AdminPanelPage(
             self.urun_servisi, self.kimlik_servisi,
             self.log_repo, self.yetki_servisi,

@@ -113,6 +113,18 @@ def baslat():
         belge_repo, teklif_srv, placeholder_srv,
         proje_servisi, enterprise_maliyet_repo)
 
+    # Google Drive Sync Servisi
+    from uygulama.servisler.drive_sync_servisi import DriveSyncServisi
+    drive_sync_srv = DriveSyncServisi(db, db_yolu)
+    # Kaydedilmiş klasör ID'sini yükle
+    try:
+        r = db.getir_tek(
+            "SELECT deger FROM sync_meta WHERE anahtar='drive_klasor_id'")
+        if r:
+            drive_sync_srv.drive_klasor_id = r["deger"]
+    except Exception:
+        pass
+
     # Maliyet Motoru V2 servisleri
     parametre_hash_srv = ParametreHashServisi(maliyet_repo)
     maliyet_versiyon_srv = MaliyetVersiyonServisi(maliyet_repo)
@@ -136,7 +148,8 @@ def baslat():
                          analitik_servisi, konum_servisi, tesis_servisi,
                          enterprise_maliyet_repo, enterprise_maliyet_srv,
                          placeholder_srv, teklif_srv,
-                         belge_olusturma_srv=belge_olusturma_srv)
+                         belge_olusturma_srv=belge_olusturma_srv,
+                         drive_sync_srv=drive_sync_srv)
     pencere.show()
 
     logger.info("Uygulama başlatıldı.")

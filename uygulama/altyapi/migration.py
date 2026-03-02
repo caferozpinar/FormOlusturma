@@ -810,6 +810,19 @@ MIGRATIONS: list[tuple[int, str, str]] = [
     (43, "Alt kalem versiyonlarına sıra kolonu", """
         ALTER TABLE alt_kalem_versiyonlar ADD COLUMN sira INTEGER NOT NULL DEFAULT 999;
     """),
+
+    (44, "Merge altyapısı — güncelleme tarihleri ve sync meta", """
+        ALTER TABLE teklif_kalemleri ADD COLUMN guncelleme_tarihi TEXT DEFAULT '';
+        ALTER TABLE teklif_parametre_degerleri ADD COLUMN guncelleme_tarihi TEXT DEFAULT '';
+        ALTER TABLE proje_urunleri ADD COLUMN guncelleme_tarihi TEXT DEFAULT '';
+        ALTER TABLE proje_urunleri ADD COLUMN olusturma_tarihi TEXT DEFAULT '';
+
+        CREATE TABLE IF NOT EXISTS sync_meta (
+            anahtar TEXT PRIMARY KEY,
+            deger TEXT NOT NULL DEFAULT '',
+            guncelleme_tarihi TEXT NOT NULL DEFAULT (datetime('now'))
+        );
+    """),
 ]
 
 # ═══════════════════════════════════════
@@ -819,13 +832,10 @@ MIGRATIONS: list[tuple[int, str, str]] = [
 PLACEHOLDER_SEED = [
     # (kod, ad, kaynak, parametre_adi)
     # Proje bilgileri
-    ("PROJE_ADI", "Proje Adı", "proje_bilgi", "PROJE_ADI"),
-    ("PROJE_KODU", "Proje Kodu", "proje_bilgi", "PROJE_KODU"),
+    ("PROJE_FIRMA", "Proje Firma", "proje_bilgi", "PROJE_FIRMA"),
     ("PROJE_KONUM", "Proje Konumu", "proje_bilgi", "PROJE_KONUM"),
-    ("PROJE_ULKE", "Proje Ülkesi", "proje_bilgi", "PROJE_ULKE"),
-    ("PROJE_SEHIR", "Proje Şehri", "proje_bilgi", "PROJE_SEHIR"),
-    ("PROJE_TESIS_TURU", "Tesis Türü", "proje_bilgi", "PROJE_TESIS_TURU"),
-    ("PROJE_TARIHI", "Proje Tarihi", "proje_bilgi", "PROJE_TARIHI"),
+    ("PROJE_TESIS", "Tesis Türü", "proje_bilgi", "PROJE_TESIS"),
+    ("PROJE_URUN_SETI", "Ürün Seti", "proje_bilgi", "PROJE_URUN_SETI"),
     # Teklif toplamları
     ("TEKLIF_TOPLAM", "Teklif Ara Toplam", "teklif_param", "TEKLIF_TOPLAM"),
     ("TEKLIF_KDV", "Teklif KDV Tutarı", "teklif_param", "TEKLIF_KDV"),

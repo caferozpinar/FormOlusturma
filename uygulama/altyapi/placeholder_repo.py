@@ -19,8 +19,7 @@ PARAMETRE_KAYNAKLARI = ("urun_param", "alt_kalem_param", "proje_bilgi", "teklif_
 
 # Proje bilgi alanları (parametre_adi olarak kullanılır)
 PROJE_BILGI_ALANLARI = [
-    "PROJE_ADI", "PROJE_KODU", "PROJE_KONUM", "PROJE_TESIS_TURU",
-    "PROJE_ULKE", "PROJE_SEHIR", "PROJE_TARIHI",
+    "PROJE_FIRMA", "PROJE_KONUM", "PROJE_TESIS", "PROJE_URUN_SETI",
 ]
 
 

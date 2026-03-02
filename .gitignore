@@ -17,6 +17,7 @@ loglar/*.log
 build/
 dist/
 *.spec.bak
+*.egg-info/
 
 # IDE
 .vscode/
@@ -34,5 +35,14 @@ venv/
 .venv/
 env/
 
+# Google OAuth
+veri/drive_token.json
+credentials.json
+client_secret*.json
+
 # Şablonlar
 sablonlar/*.xlsx
+
+# PyInstaller
+*.manifest
+*.spec.tmp
