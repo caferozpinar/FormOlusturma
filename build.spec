@@ -15,6 +15,7 @@ google_hidden = (
     collect_submodules('google_auth_oauthlib') +
     collect_submodules('google.auth') +
     collect_submodules('google.oauth2')
+    collect_submodules('googleapiclient.discovery')
 )
 
 # 2. Google paketlerinin VERİ DOSYALARINI (JSON, Cert vb.) topla -> KRİTİK ADIM
@@ -23,6 +24,7 @@ google_datas = (
     collect_data_files('google_auth_oauthlib') +
     collect_data_files('google.auth') +
     collect_data_files('google.oauth2')
+    collect_data_files('googleapiclient.discovery', excludes=['*.txt', '**/__pycache__'])
 )
 
 a = Analysis(
