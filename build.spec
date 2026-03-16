@@ -1,24 +1,28 @@
 # -*- mode: python ; coding: utf-8 -*-
 """
-FormOluşturma — PyInstaller Build Spec
-Kullanım:
-    pyinstaller build.spec
+FormOluşturma — Güncellenmiş & Google API Fix
 """
 
 import os
-from PyInstaller.utils.hooks import collect_submodules
+from PyInstaller.utils.hooks import collect_submodules, collect_data_files
 
 block_cipher = None
 PROJE = os.path.abspath('.')
 
-# Google paketleri lazy import kullandığı için
-# PyInstaller statik analizle göremez. Tüm alt modülleri topluyoruz.
+# 1. Google paketlerinin ALT MODÜLLERİNİ topla
 google_hidden = (
-    collect_submodules('google') +
     collect_submodules('googleapiclient') +
     collect_submodules('google_auth_oauthlib') +
     collect_submodules('google.auth') +
     collect_submodules('google.oauth2')
+)
+
+# 2. Google paketlerinin VERİ DOSYALARINI (JSON, Cert vb.) topla -> KRİTİK ADIM
+google_datas = (
+    collect_data_files('googleapiclient') +
+    collect_data_files('google_auth_oauthlib') +
+    collect_data_files('google.auth') +
+    collect_data_files('google.oauth2')
 )
 
 a = Analysis(
@@ -28,60 +32,44 @@ a = Analysis(
     datas=[
         ('sablonlar', 'sablonlar'),
         ('veri', 'veri'),
-    ],
+    ] + google_datas, # Google verilerini buraya ekledik
     hiddenimports=[
+        # GUI ve Temel sistem
         'PyQt5',
         'PyQt5.QtWidgets',
         'PyQt5.QtCore',
         'PyQt5.QtGui',
         'PyQt5.sip',
-        'sip',  # Add this: some internal PyQt modules look for the top-level 'sip'
+        'sip', 
 
-        # pycparser Fix (usually triggered by cffi/cryptography)
-        'pycparser',
+        # Uyarı veren tablolar
         'pycparser.lextab',
         'pycparser.yacctab',
 
+        # Excel & Utils
         'openpyxl',
         'openpyxl.cell',
         'openpyxl.styles',
-        'openpyxl.utils',
-        'openpyxl.worksheet',
-
         'bcrypt',
         'sqlite3',
-        'json',
-        'hashlib',
-        'uuid',
-        're',
-        'math',
-        'copy',
-        'shutil',
 
-        # Google API
+        # Google API (Ana modüller)
         'googleapiclient.discovery',
         'googleapiclient.errors',
         'googleapiclient.http',
-
         'google.auth',
         'google.auth.transport.requests',
         'google.oauth2.credentials',
-        'google.oauth2.service_account',
         'google_auth_oauthlib.flow',
 
-        # dolaylı bağımlılıklar
+        # Bağımlılıklar
         'httplib2',
         'uritemplate',
         'requests',
-        'requests.adapters',
-        'requests.auth',
         'cachetools',
         'pyasn1',
-        'pyasn1_modules',
         'rsa',
         'certifi',
-        'charset_normalizer',
-        'urllib3',
     ] + google_hidden,
     hookspath=[],
     hooksconfig={},
@@ -108,7 +96,7 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    console=False,  # GUI uygulama
+    console=False, # Hata ayıklarken True yapabilirsin
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
