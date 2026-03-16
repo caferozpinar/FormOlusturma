@@ -1,42 +1,47 @@
 # -*- mode: python ; coding: utf-8 -*-
 """
 FormOluşturma — PyInstaller Build Spec
-Kullanım: pyinstaller build.spec
+Kullanım:
+    pyinstaller build.spec
 """
 
 import os
-import sys
-from PyInstaller.utils.hooks import collect_all
+from PyInstaller.utils.hooks import collect_submodules
 
 block_cipher = None
 PROJE = os.path.abspath('.')
 
-# Google API paketleri try/except içinde lazy import edildiği için
-# PyInstaller statik analizle göremez — collect_all ile zorla topla
-gapi_datas,   gapi_binaries,   gapi_hiddenimports   = collect_all('googleapiclient')
-goauth_datas, goauth_binaries, goauth_hiddenimports  = collect_all('google_auth_oauthlib')
-gauth_datas,  gauth_binaries,  gauth_hiddenimports   = collect_all('google.auth')
-goauth2_datas, goauth2_binaries, goauth2_hiddenimports = collect_all('google.oauth2')
+# Google paketleri lazy import kullandığı için
+# PyInstaller statik analizle göremez. Tüm alt modülleri topluyoruz.
+google_hidden = (
+    collect_submodules('google') +
+    collect_submodules('googleapiclient') +
+    collect_submodules('google_auth_oauthlib') +
+    collect_submodules('google.auth') +
+    collect_submodules('google.oauth2')
+)
 
 a = Analysis(
     ['main.py'],
     pathex=[PROJE],
-    binaries=[] + gapi_binaries + goauth_binaries + gauth_binaries + goauth2_binaries,
+    binaries=[],
     datas=[
         ('sablonlar', 'sablonlar'),
         ('veri', 'veri'),
-    ] + gapi_datas + goauth_datas + gauth_datas + goauth2_datas,
+    ],
     hiddenimports=[
         'PyQt5',
         'PyQt5.QtWidgets',
         'PyQt5.QtCore',
         'PyQt5.QtGui',
         'PyQt5.sip',
+
         'openpyxl',
         'openpyxl.cell',
         'openpyxl.styles',
         'openpyxl.utils',
         'openpyxl.worksheet',
+
         'bcrypt',
         'sqlite3',
         'json',
@@ -46,43 +51,32 @@ a = Analysis(
         'math',
         'copy',
         'shutil',
-        # ── Google Drive API ──────────────────────────────────────────────
-        # Tüm importlar try/except içinde olduğu için statik analiz kaçırır;
-        # burada açıkça listeliyoruz.
-        'google',
-        'google.auth',
-        'google.auth.credentials',
-        'google.auth.exceptions',
-        'google.auth.transport',
-        'google.auth.transport.requests',
-        'google.oauth2',
-        'google.oauth2.credentials',
-        'google.oauth2.service_account',
-        'google_auth_oauthlib',
-        'google_auth_oauthlib.flow',
-        'googleapiclient',
+
+        # Google API
         'googleapiclient.discovery',
         'googleapiclient.errors',
         'googleapiclient.http',
-        # ── Dolaylı bağımlılıklar ─────────────────────────────────────────
+
+        'google.auth',
+        'google.auth.transport.requests',
+        'google.oauth2.credentials',
+        'google.oauth2.service_account',
+        'google_auth_oauthlib.flow',
+
+        # dolaylı bağımlılıklar
         'httplib2',
         'uritemplate',
         'requests',
         'requests.adapters',
         'requests.auth',
         'cachetools',
-        'cachetools.func',
         'pyasn1',
-        'pyasn1.type',
-        'pyasn1.codec',
         'pyasn1_modules',
         'rsa',
         'certifi',
         'charset_normalizer',
         'urllib3',
-        'urllib3.util',
-        'urllib3.util.retry',
-    ] + gapi_hiddenimports + goauth_hiddenimports + gauth_hiddenimports + goauth2_hiddenimports,
+    ] + google_hidden,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -108,13 +102,13 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    console=False,  # GUI uygulama — konsol penceresi açılmaz
+    console=False,  # GUI uygulama
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=None,  # İkon eklemek istersen: icon='icon.ico'
+    icon=None,
 )
 
 coll = COLLECT(
