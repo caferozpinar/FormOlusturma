@@ -35,6 +35,12 @@ a = Analysis(
         'PyQt5.QtCore',
         'PyQt5.QtGui',
         'PyQt5.sip',
+        'sip',  # Add this: some internal PyQt modules look for the top-level 'sip'
+
+        # pycparser Fix (usually triggered by cffi/cryptography)
+        'pycparser',
+        'pycparser.lextab',
+        'pycparser.yacctab',
 
         'openpyxl',
         'openpyxl.cell',
