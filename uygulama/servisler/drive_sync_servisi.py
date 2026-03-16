@@ -33,7 +33,8 @@ try:
     from googleapiclient.http import MediaFileUpload as _GMediaUpload
     from googleapiclient.http import MediaIoBaseDownload as _GMediaDownload
     _GOOGLE_OK = True
-except ImportError:
+except ImportError as e:
+    print(f"KRİTİK HATA: Google Modülü Yüklenemedi -> {e}")
     _GOOGLE_OK = False
 
 # ═══════════════════════════════════════
