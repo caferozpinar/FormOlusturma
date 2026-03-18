@@ -261,73 +261,156 @@ def kurulum_modu() -> None:
 # GÜNCELLEME MODU
 # ─────────────────────────────────────────────
 
+class GuncellemePenceresi:
+    def __init__(self, eski: str, yeni: str):
+        self.root = tk.Tk()
+        self.root.title(f"{APP_NAME} Güncelleniyor")
+        self.root.geometry("440x200")
+        self.root.resizable(False, False)
+        self.root.eval("tk::PlaceWindow . center")
+        self.root.protocol("WM_DELETE_WINDOW", lambda: None)  # kapatmayı engelle
+
+        tk.Label(
+            self.root,
+            text=f"{APP_NAME} güncelleniyor...",
+            font=("Segoe UI", 11, "bold"),
+        ).pack(pady=(22, 4))
+
+        tk.Label(
+            self.root,
+            text=f"v{eski}  →  v{yeni}",
+            font=("Segoe UI", 9),
+            fg="#444",
+        ).pack()
+
+        self.durum_var = tk.StringVar(value="Hazırlanıyor...")
+        tk.Label(
+            self.root, textvariable=self.durum_var, font=("Segoe UI", 9), fg="#555"
+        ).pack(pady=(6, 0))
+
+        self.pb = ttk.Progressbar(self.root, length=380, mode="determinate")
+        self.pb.pack(pady=12)
+
+    def durum(self, mesaj: str) -> None:
+        self.durum_var.set(mesaj)
+        self.root.update_idletasks()
+
+    def ilerleme(self, yuzde: float) -> None:
+        self.pb["value"] = yuzde
+        self.root.update_idletasks()
+
+    def kapat(self) -> None:
+        self.root.destroy()
+
+
 def guncelleme_modu(pid: int) -> None:
+    # 1. Versiyon kontrolü (sessiz, arka plan)
     try:
         yerel = yerel_versiyon()
         _log(f"Güncelleme kontrolü başladı. Yerel: {yerel}")
+
+        # Kontrol aşamasında küçük bir "Kontrol ediliyor..." penceresi
+        kontrol_root = tk.Tk()
+        kontrol_root.withdraw()
+
         tag, url = github_son_surum()
         _log(f"GitHub son sürüm: {tag}")
+
+        kontrol_root.destroy()
 
         if not versiyon_kucuk_mu(yerel, tag):
             _log("Güncelleme yok.")
             return
 
-        # Güncelleme var — kullanıcıya sor
-        root = tk.Tk()
-        root.withdraw()
-        cevap = messagebox.askyesno(
-            "Güncelleme Mevcut",
-            f"{APP_NAME} v{tag} mevcut (mevcut sürüm: v{yerel}).\n\n"
-            f"Güncelleme yapılsın mı?\n"
-            f"(Uygulama kapanıp güncellendikten sonra otomatik açılır.)",
-        )
-        root.destroy()
+    except Exception as e:
+        _log(f"Versiyon kontrol hatası: {e}")
+        try:
+            kontrol_root.destroy()
+        except Exception:
+            pass
+        return
 
-        if not cevap:
-            _log("Kullanıcı güncellemeyi reddetti.")
-            return
+    # 2. Kullanıcıya sor
+    sor_root = tk.Tk()
+    sor_root.withdraw()
+    cevap = messagebox.askyesno(
+        "Güncelleme Mevcut",
+        f"{APP_NAME} v{tag} mevcut (mevcut sürüm: v{yerel}).\n\n"
+        f"Güncelleme yapılsın mı?\n"
+        f"(Uygulama kapanıp güncellendikten sonra otomatik açılır.)",
+    )
+    sor_root.destroy()
 
-        _log("Güncelleme onaylandı. Flag oluşturuluyor.")
-        Path(UPDATE_FLAG).write_text(tag, encoding="utf-8")
+    if not cevap:
+        _log("Kullanıcı güncellemeyi reddetti.")
+        return
 
-        # Ana uygulamanın kapanmasını bekle (max 30 saniye)
-        for _ in range(60):
-            if not process_calisiyor_mu(pid):
-                break
-            time.sleep(0.5)
-        else:
-            _log("Uygulama 30 saniyede kapanmadı, iptal ediliyor.")
+    # 3. İlerleme penceresi aç, indirme + kurulumu thread'de yap
+    _log("Güncelleme onaylandı.")
+    Path(UPDATE_FLAG).write_text(tag, encoding="utf-8")
+
+    pencere = GuncellemePenceresi(yerel, tag)
+    hata_kutusu: list[str] = []
+
+    def _guncelle():
+        try:
+            # Ana uygulamanın kapanmasını bekle (max 30 saniye)
+            pencere.durum("Uygulama kapatılıyor, bekleniyor...")
+            for _ in range(60):
+                if not process_calisiyor_mu(pid):
+                    break
+                time.sleep(0.5)
+            else:
+                raise TimeoutError("Uygulama 30 saniyede kapanmadı.")
+
+            pencere.durum(f"v{tag} indiriliyor...")
+            _log(f"İndirme başlıyor: {url}")
+            zip_gecici = os.path.join(APP_INSTALL_DIR, "_guncelleme_temp.zip")
+            zip_indir(url, zip_gecici, ilerleme_cb=pencere.ilerleme)
+
+            pencere.durum("Dosyalar güncelleniyor...")
+            pencere.ilerleme(100)
+            zip_ac_guncelle(zip_gecici, APP_INSTALL_DIR)
+            os.remove(zip_gecici)
+
+            Path(VERSION_FILE).write_text(tag, encoding="utf-8")
             if os.path.exists(UPDATE_FLAG):
                 os.remove(UPDATE_FLAG)
-            return
 
-        _log(f"İndirme başlıyor: {url}")
-        zip_gecici = os.path.join(APP_INSTALL_DIR, "_guncelleme_temp.zip")
-        zip_indir(url, zip_gecici)
-        zip_ac_guncelle(zip_gecici, APP_INSTALL_DIR)
-        os.remove(zip_gecici)
+            _log(f"Güncelleme tamamlandı: v{tag}")
+            pencere.root.after(0, pencere.kapat)
 
-        Path(VERSION_FILE).write_text(tag, encoding="utf-8")
+            bitis_root = tk.Tk()
+            bitis_root.withdraw()
+            messagebox.showinfo(
+                "Güncelleme Tamamlandı",
+                f"{APP_NAME} v{tag} sürümüne başarıyla güncellendi.\n"
+                f"Uygulama yeniden başlatılıyor...",
+            )
+            bitis_root.destroy()
 
-        if os.path.exists(UPDATE_FLAG):
-            os.remove(UPDATE_FLAG)
+            subprocess.Popen([MAIN_EXE], cwd=APP_INSTALL_DIR)
 
-        _log(f"Güncelleme tamamlandı: v{tag}")
+        except Exception as e:
+            _log(f"Güncelleme hatası: {e}")
+            hata_kutusu.append(str(e))
+            if os.path.exists(UPDATE_FLAG):
+                os.remove(UPDATE_FLAG)
+            pencere.root.after(0, pencere.kapat)
 
-        root2 = tk.Tk()
-        root2.withdraw()
-        messagebox.showinfo(
-            "Güncelleme Tamamlandı",
-            f"{APP_NAME} v{tag} sürümüne güncellendi.",
+    t = threading.Thread(target=_guncelle, daemon=True)
+    t.start()
+    pencere.root.mainloop()
+
+    if hata_kutusu:
+        err_root = tk.Tk()
+        err_root.withdraw()
+        messagebox.showerror(
+            "Güncelleme Hatası",
+            f"Güncelleme sırasında hata oluştu:\n{hata_kutusu[0]}\n\n"
+            f"Uygulama güncellenmedi.",
         )
-        root2.destroy()
-
-        subprocess.Popen([MAIN_EXE], cwd=APP_INSTALL_DIR)
-
-    except Exception as e:
-        _log(f"Güncelleme hatası: {e}")
-        if os.path.exists(UPDATE_FLAG):
-            os.remove(UPDATE_FLAG)
+        err_root.destroy()
 
 
 # ─────────────────────────────────────────────
