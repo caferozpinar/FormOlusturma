@@ -222,16 +222,20 @@ def baslat():
                        f"Hata: {type(e).__name__}\n"
                        f"Detay: {e}")
         
-        # UI hata mesajı göster
-        from PyQt5.QtWidgets import QApplication, QMessageBox
-        app = QApplication(sys.argv)
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Critical)
-        msg.setWindowTitle("Başlatma Hatası")
-        msg.setText(f"Uygulama başlatılamadı:\n\n{str(e)}\n\n"
-                   f"Loglara bakın: loglar/ dizininde")
-        msg.setStandardButtons(QMessageBox.Ok)
-        msg.exec_()
+        # UI hata mesajı göster (eğer QApplication zaten oluşturulduysa)
+        try:
+            from PyQt5.QtWidgets import QApplication, QMessageBox
+            app = QApplication.instance() or QApplication(sys.argv)
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setWindowTitle("Başlatma Hatası")
+            msg.setText(f"Uygulama başlatılamadı:\n\n{str(e)}\n\n"
+                       f"Loglara bakın: loglar/ dizininde")
+            msg.setStandardButtons(QMessageBox.Ok)
+            msg.exec_()
+        except Exception:
+            # UI gösterilemezse, sadece log'a yaz
+            print(f"HATA: {e}\nLoglara bakın: loglar/ dizininde")
         sys.exit(1)
 
 
