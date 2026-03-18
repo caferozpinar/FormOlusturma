@@ -106,18 +106,22 @@ def _guncelleme_kontrol_baslat(pencere) -> None:
 
 def baslat():
     """Uygulamayı başlatır."""
+    
+    try:
+        # ── 1. Veritabanı ──
+        db_yolu = os.path.join(VERI_DIR, "veri", "proje_yonetimi.db")
+        db = Veritabani(db_yolu)
+        db.baglan()
+        logger.info(f"Veritabanı: {db_yolu}")
 
-    # ── 1. Veritabanı ──
-    db_yolu = os.path.join(VERI_DIR, "veri", "proje_yonetimi.db")
-    db = Veritabani(db_yolu)
-    db.baglan()
-    logger.info(f"Veritabanı: {db_yolu}")
-
-    # ── 2. Migration ──
-    migration = MigrationMotoru(db)
-    uygulanan = migration.uygula()
-    if uygulanan > 0:
-        logger.info(f"{uygulanan} migration uygulandı.")
+        # ── 2. Migration ──
+        migration = MigrationMotoru(db)
+        uygulanan = migration.uygula()
+        mevcut_surum = migration.mevcut_surum()
+        logger.info(f"Veritabanı sürümü: v{mevcut_surum} | "
+                    f"{uygulanan} migration uygulandı")
+        if uygulanan > 0:
+            logger.info(f"Migration güncelleme tamamlandı.")
 
     # ── 3. Repository'ler ──
     kullanici_repo = KullaniciRepository(db)
@@ -208,10 +212,27 @@ def baslat():
 
     kod = app.exec_()
 
-    # ── 8. Temizlik ──
+    # ── 9. Temizlik ──
     db.kapat()
     logger.info("Uygulama kapatıldı.")
     sys.exit(kod)
+
+    except Exception as e:
+        logger.critical(f"Uygulama başlatılamadı!\n"
+                       f"Hata: {type(e).__name__}\n"
+                       f"Detay: {e}")
+        
+        # UI hata mesajı göster
+        from PyQt5.QtWidgets import QApplication, QMessageBox
+        app = QApplication(sys.argv)
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Critical)
+        msg.setWindowTitle("Başlatma Hatası")
+        msg.setText(f"Uygulama başlatılamadı:\n\n{str(e)}\n\n"
+                   f"Loglara bakın: loglar/ dizininde")
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.exec_()
+        sys.exit(1)
 
 
 if __name__ == "__main__":

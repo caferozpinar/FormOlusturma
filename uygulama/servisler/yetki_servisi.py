@@ -68,6 +68,18 @@ IZIN_MATRISI: dict[str, set[KullaniciRolu]] = {
     # Log
     "log_goruntule":    {KullaniciRolu.ADMIN},
     "log_aktar":        {KullaniciRolu.ADMIN},
+
+    # Teklif (ADMIN her zaman erişebilir)
+    "teklif_olustur":   {KullaniciRolu.ADMIN, KullaniciRolu.EDITOR},
+    "teklif_guncelle":  {KullaniciRolu.ADMIN, KullaniciRolu.EDITOR},
+    "teklif_gonder":    {KullaniciRolu.ADMIN, KullaniciRolu.EDITOR},
+    "teklif_goruntule": {KullaniciRolu.ADMIN, KullaniciRolu.EDITOR, KullaniciRolu.VIEWER},
+
+    # Placeholder
+    "placeholder_islemler": {KullaniciRolu.ADMIN},
+
+    # Diğer tüm işlemler
+    "analitik_goruntule": {KullaniciRolu.ADMIN, KullaniciRolu.EDITOR, KullaniciRolu.VIEWER},
 }
 
 

@@ -104,7 +104,7 @@ class ProjectListPage(QWidget):
         self.btn_sync.setToolTip("Senkronizasyon")
         self.btn_sync.setCursor(QCursor(Qt.PointingHandCursor))
         sarma_buton_yetkisi(self.btn_sync, "sync_baslat",
-                           self.yetki_servisi, lambda: self.open_sync.emit(), gizle=True)
+                           self.yetki_servisi, lambda: self.open_sync.emit(), gizle=False)
 
         # Kullanıcı menüsü
         self.btn_user = QPushButton("☰")
