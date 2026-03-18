@@ -35,12 +35,19 @@ import requests
 
 GITHUB_REPO = "caferozpinar/FormOlusturma"
 APP_NAME = "FormOlusturma"
-APP_INSTALL_DIR = os.path.join(os.environ.get("APPDATA", ""), "ZETYapı", APP_NAME)
+
+# Exe, installer.exe ve flag dosyaları buraya kurulur (%APPDATA%\ZET\FormOlusturma)
+APP_INSTALL_DIR = os.path.join(os.environ.get("APPDATA", ""), "ZET", APP_NAME)
+
+# Kullanıcı verisi buraya gider (Documents\ZET\FormOlusturma) — güncelleme sırasında silinmez
+_documents = os.path.join(os.environ.get("USERPROFILE", os.path.expanduser("~")), "Documents")
+USER_DATA_DIR = os.path.join(_documents, "ZET", APP_NAME)
+
 MAIN_EXE = os.path.join(APP_INSTALL_DIR, "FormOlusturma.exe")
 INSTALLER_EXE = os.path.join(APP_INSTALL_DIR, "installer.exe")
 VERSION_FILE = os.path.join(APP_INSTALL_DIR, "version.txt")
 UPDATE_FLAG = os.path.join(APP_INSTALL_DIR, "update_requested.flag")
-LOG_FILE = os.path.join(APP_INSTALL_DIR, "loglar", "installer.log")
+LOG_FILE = os.path.join(USER_DATA_DIR, "loglar", "installer.log")
 
 
 # ─────────────────────────────────────────────

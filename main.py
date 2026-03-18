@@ -21,10 +21,12 @@ PROJE_KOKU = os.path.dirname(os.path.abspath(__file__))
 if PROJE_KOKU not in sys.path:
     sys.path.insert(0, PROJE_KOKU)
 
-from uygulama.ortak.yardimcilar import uygulama_dizini
+from uygulama.ortak.yardimcilar import uygulama_dizini, kullanici_veri_dizini
 
-# Kullanıcı veri dizini: exe yanı (frozen) veya proje kökü (dev)
+# Exe dizini: installer.exe, version.txt, update flag buradadır
 APP_DIR = uygulama_dizini()
+# Kullanıcı veri dizini: Documents/ZET/FormOlusturma — güncelleme sırasında silinmez
+VERI_DIR = kullanici_veri_dizini()
 
 from uygulama.altyapi.veritabani import Veritabani
 from uygulama.altyapi.migration import MigrationMotoru
@@ -106,7 +108,7 @@ def baslat():
     """Uygulamayı başlatır."""
 
     # ── 1. Veritabanı ──
-    db_yolu = os.path.join(APP_DIR, "veri", "proje_yonetimi.db")
+    db_yolu = os.path.join(VERI_DIR, "veri", "proje_yonetimi.db")
     db = Veritabani(db_yolu)
     db.baglan()
     logger.info(f"Veritabanı: {db_yolu}")

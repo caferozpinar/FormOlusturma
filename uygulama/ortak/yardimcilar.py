@@ -13,18 +13,35 @@ from pathlib import Path
 
 
 # ─────────────────────────────────────────────
-# UYGULAMA DİZİNİ
+# DİZİN YARDIMCILARI
 # ─────────────────────────────────────────────
 
 def uygulama_dizini() -> str:
     """
-    Uygulamanın kullanıcı veri dizinini döndürür.
-    Frozen (exe) modda: FormOlusturma.exe'nin bulunduğu klasör.
-    Dev modda: proje kökü (bu dosyadan 2 seviye yukarı).
+    Exe'nin kurulu olduğu dizini döndürür (%APPDATA%\\ZET\\FormOlusturma).
+    Frozen modda: FormOlusturma.exe'nin bulunduğu klasör.
+    Dev modda: proje kökü.
     """
     if getattr(sys, 'frozen', False):
         return os.path.dirname(sys.executable)
     return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
+def kullanici_veri_dizini() -> str:
+    """
+    Kullanıcıya özel veri dizinini döndürür (Documents/ZET/FormOlusturma).
+    Veri tabanı, loglar ve şablonlar buraya yazılır — güncelleme sırasında silinmez.
+    Windows: %USERPROFILE%\\Documents\\ZET\\FormOlusturma
+    Linux/macOS: ~/Documents/ZET/FormOlusturma
+    Dev modda: proje kökü (tek dizin kullanımı).
+    """
+    if not getattr(sys, 'frozen', False):
+        return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    if sys.platform == "win32":
+        base = os.path.join(os.environ.get("USERPROFILE", os.path.expanduser("~")), "Documents")
+    else:
+        base = os.path.join(os.path.expanduser("~"), "Documents")
+    return os.path.join(base, "ZET", "FormOlusturma")
 
 
 # ─────────────────────────────────────────────

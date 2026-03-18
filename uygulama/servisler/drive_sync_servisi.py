@@ -527,8 +527,8 @@ class DriveSyncServisi:
 
         # Şablonlar sync
         _ilerleme("Şablonlar senkronize ediliyor...")
-        from uygulama.ortak.yardimcilar import uygulama_dizini
-        sablon_lokal = os.path.join(uygulama_dizini(), "sablonlar")
+        from uygulama.ortak.yardimcilar import kullanici_veri_dizini
+        sablon_lokal = os.path.join(kullanici_veri_dizini(), "sablonlar")
         if os.path.isdir(sablon_lokal):
             sablon_drive = self._klasor_bul_veya_olustur("sablonlar")
             self._klasor_sync(sablon_lokal, sablon_drive, _ilerleme)

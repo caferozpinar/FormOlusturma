@@ -12,7 +12,7 @@ from copy import copy
 from typing import Tuple, Optional
 
 from uygulama.altyapi.belge_repo import BelgeRepository
-from uygulama.ortak.yardimcilar import logger_olustur, uygulama_dizini
+from uygulama.ortak.yardimcilar import logger_olustur, kullanici_veri_dizini
 from uygulama.ortak.app_state import app_state
 
 logger = logger_olustur("belge_srv")
@@ -55,7 +55,7 @@ class BelgeServisi:
                       sheet_adi: str = "Sheet1") -> Tuple[bool, str, Optional[str]]:
         if not os.path.exists(kaynak_yol):
             return False, "Dosya bulunamadı.", None
-        sablon_dir = os.path.join(uygulama_dizini(), "sablonlar")
+        sablon_dir = os.path.join(kullanici_veri_dizini(), "sablonlar")
         os.makedirs(sablon_dir, exist_ok=True)
         dosya_adi = os.path.basename(kaynak_yol)
         hedef = os.path.join(sablon_dir, dosya_adi)
