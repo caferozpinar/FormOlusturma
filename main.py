@@ -123,99 +123,99 @@ def baslat():
         if uygulanan > 0:
             logger.info(f"Migration güncelleme tamamlandı.")
 
-    # ── 3. Repository'ler ──
-    kullanici_repo = KullaniciRepository(db)
-    proje_repo = ProjeRepository(db)
-    belge_repo = BelgeRepository(db)
-    maliyet_repo = MaliyetRepository(db)
-    urun_repo = UrunRepository(db)
-    sync_repo = SyncRepository(db)
-    konum_repo = KonumRepository(db)
-    tesis_repo = TesisRepository(db)
-    proje_urun_repo = ProjeUrunRepository(db)
-    versiyon_repo = VersiyonRepository(db)
-    log_repo = LogRepository(db)
+        # ── 3. Repository'ler ──
+        kullanici_repo = KullaniciRepository(db)
+        proje_repo = ProjeRepository(db)
+        belge_repo = BelgeRepository(db)
+        maliyet_repo = MaliyetRepository(db)
+        urun_repo = UrunRepository(db)
+        sync_repo = SyncRepository(db)
+        konum_repo = KonumRepository(db)
+        tesis_repo = TesisRepository(db)
+        proje_urun_repo = ProjeUrunRepository(db)
+        versiyon_repo = VersiyonRepository(db)
+        log_repo = LogRepository(db)
 
-    # ── 4. Servisler ──
-    kimlik_servisi = KimlikServisi(kullanici_repo, log_repo)
-    proje_servisi = ProjeServisi(proje_repo, log_repo, proje_urun_repo)
-    belge_servisi = BelgeServisi(belge_repo)  # eski uyum — doküman yönetimi için
-    urun_servisi = UrunServisi(urun_repo, log_repo)
-    sync_servisi = SyncServisi(sync_repo, log_repo)
-    yetki_servisi = YetkiServisi(log_repo)
-    konum_servisi = KonumServisi(konum_repo)
-    tesis_servisi = TesisServisi(tesis_repo)
-    analitik_repo = AnalitikRepository(db)
-    enterprise_maliyet_repo = EnterpriseMaliyetRepository(db)
-    placeholder_repo = PlaceholderRepository(db)
-    teklif_repo = TeklifRepository(db)
-    analitik_servisi = AnalitikServisi(analitik_repo)
-    enterprise_maliyet_srv = EnterpriseMaliyetServisi(enterprise_maliyet_repo)
-    placeholder_srv = PlaceholderServisi(placeholder_repo)
-    teklif_srv = TeklifServisi(
-        teklif_repo, enterprise_maliyet_repo, enterprise_maliyet_srv,
-        proje_servisi)
+        # ── 4. Servisler ──
+        kimlik_servisi = KimlikServisi(kullanici_repo, log_repo)
+        proje_servisi = ProjeServisi(proje_repo, log_repo, proje_urun_repo)
+        belge_servisi = BelgeServisi(belge_repo)  # eski uyum — doküman yönetimi için
+        urun_servisi = UrunServisi(urun_repo, log_repo)
+        sync_servisi = SyncServisi(sync_repo, log_repo)
+        yetki_servisi = YetkiServisi(log_repo)
+        konum_servisi = KonumServisi(konum_repo)
+        tesis_servisi = TesisServisi(tesis_repo)
+        analitik_repo = AnalitikRepository(db)
+        enterprise_maliyet_repo = EnterpriseMaliyetRepository(db)
+        placeholder_repo = PlaceholderRepository(db)
+        teklif_repo = TeklifRepository(db)
+        analitik_servisi = AnalitikServisi(analitik_repo)
+        enterprise_maliyet_srv = EnterpriseMaliyetServisi(enterprise_maliyet_repo)
+        placeholder_srv = PlaceholderServisi(placeholder_repo)
+        teklif_srv = TeklifServisi(
+            teklif_repo, enterprise_maliyet_repo, enterprise_maliyet_srv,
+            proje_servisi)
 
-    # Belge Oluşturma Motoru
-    belge_olusturma_srv = BelgeServisi(
-        belge_repo, teklif_srv, placeholder_srv,
-        proje_servisi, enterprise_maliyet_repo)
+        # Belge Oluşturma Motoru
+        belge_olusturma_srv = BelgeServisi(
+            belge_repo, teklif_srv, placeholder_srv,
+            proje_servisi, enterprise_maliyet_repo)
 
-    # Google Drive Sync Servisi
-    from uygulama.servisler.drive_sync_servisi import DriveSyncServisi
-    drive_sync_srv = DriveSyncServisi(db, db_yolu)
-    # Kaydedilmiş klasör ID'sini yükle
-    try:
-        r = db.getir_tek(
-            "SELECT deger FROM sync_meta WHERE anahtar='drive_klasor_id'")
-        if r:
-            drive_sync_srv.drive_klasor_id = r["deger"]
-            logger.debug(f"Drive klasör ID yüklendi: {r['deger']}")
-    except Exception as sync_meta_err:
-        logger.warning(
-            f"Drive senkronizasyon meta bilgileri yükleniyor: {type(sync_meta_err).__name__}\n"
-            f"Detay: {sync_meta_err}\n"
-            "Drive senkronizasyonu başlangıçta biraz ağır çalışabilir."
-        )
+        # Google Drive Sync Servisi
+        from uygulama.servisler.drive_sync_servisi import DriveSyncServisi
+        drive_sync_srv = DriveSyncServisi(db, db_yolu)
+        # Kaydedilmiş klasör ID'sini yükle
+        try:
+            r = db.getir_tek(
+                "SELECT deger FROM sync_meta WHERE anahtar='drive_klasor_id'")
+            if r:
+                drive_sync_srv.drive_klasor_id = r["deger"]
+                logger.debug(f"Drive klasör ID yüklendi: {r['deger']}")
+        except Exception as sync_meta_err:
+            logger.warning(
+                f"Drive senkronizasyon meta bilgileri yükleniyor: {type(sync_meta_err).__name__}\n"
+                f"Detay: {sync_meta_err}\n"
+                "Drive senkronizasyonu başlangıçta biraz ağır çalışabilir."
+            )
 
-    # Maliyet Motoru V2 servisleri
-    parametre_hash_srv = ParametreHashServisi(maliyet_repo)
-    maliyet_versiyon_srv = MaliyetVersiyonServisi(maliyet_repo)
-    maliyet_hesap_srv = MaliyetHesapServisi(maliyet_repo)
-    kar_hiyerarsi_srv = KarHiyerarsiServisi(proje_repo)
+        # Maliyet Motoru V2 servisleri
+        parametre_hash_srv = ParametreHashServisi(maliyet_repo)
+        maliyet_versiyon_srv = MaliyetVersiyonServisi(maliyet_repo)
+        maliyet_hesap_srv = MaliyetHesapServisi(maliyet_repo)
+        kar_hiyerarsi_srv = KarHiyerarsiServisi(proje_repo)
 
-    # ── 5. Varsayılan admin ──
-    kimlik_servisi.varsayilan_admin_olustur()
+        # ── 5. Varsayılan admin ──
+        kimlik_servisi.varsayilan_admin_olustur()
 
-    # ── 6. App State ──
-    state = app_state()
-    state.db_yolu = db_yolu
+        # ── 6. App State ──
+        state = app_state()
+        state.db_yolu = db_yolu
 
-    # ── 7. UI Başlat ──
-    app = QApplication(sys.argv)
-    app.setStyleSheet(STYLESHEET)
-    app.setStyle("Fusion")
+        # ── 7. UI Başlat ──
+        app = QApplication(sys.argv)
+        app.setStyleSheet(STYLESHEET)
+        app.setStyle("Fusion")
 
-    pencere = AnaPencere(kimlik_servisi, proje_servisi, belge_servisi,
-                         urun_servisi, sync_servisi, yetki_servisi, log_repo,
-                         analitik_servisi, konum_servisi, tesis_servisi,
-                         enterprise_maliyet_repo, enterprise_maliyet_srv,
-                         placeholder_srv, teklif_srv,
-                         belge_olusturma_srv=belge_olusturma_srv,
-                         drive_sync_srv=drive_sync_srv)
-    pencere.show()
+        pencere = AnaPencere(kimlik_servisi, proje_servisi, belge_servisi,
+                             urun_servisi, sync_servisi, yetki_servisi, log_repo,
+                             analitik_servisi, konum_servisi, tesis_servisi,
+                             enterprise_maliyet_repo, enterprise_maliyet_srv,
+                             placeholder_srv, teklif_srv,
+                             belge_olusturma_srv=belge_olusturma_srv,
+                             drive_sync_srv=drive_sync_srv)
+        pencere.show()
 
-    logger.info("Uygulama başlatıldı.")
+        logger.info("Uygulama başlatıldı.")
 
-    # ── 8. Güncelleme Kontrolü ──
-    _guncelleme_kontrol_baslat(pencere)
+        # ── 8. Güncelleme Kontrolü ──
+        _guncelleme_kontrol_baslat(pencere)
 
-    kod = app.exec_()
+        kod = app.exec_()
 
-    # ── 9. Temizlik ──
-    db.kapat()
-    logger.info("Uygulama kapatıldı.")
-    sys.exit(kod)
+        # ── 9. Temizlik ──
+        db.kapat()
+        logger.info("Uygulama kapatıldı.")
+        sys.exit(kod)
 
     except Exception as e:
         logger.critical(f"Uygulama başlatılamadı!\n"
