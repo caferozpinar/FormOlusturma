@@ -100,9 +100,10 @@ class SyncWorker(QThread):
 class SyncPage(QWidget):
     go_back = pyqtSignal()
 
-    def __init__(self, sync_servisi=None, drive_sync_srv=None, parent=None):
+    def __init__(self, sync_servisi=None, yetki_servisi=None, drive_sync_srv=None, parent=None):
         super().__init__(parent)
         self.sync_servisi = sync_servisi
+        self.yetki_servisi = yetki_servisi
         self.drive_srv = drive_sync_srv
         self._worker = None
         self._build()

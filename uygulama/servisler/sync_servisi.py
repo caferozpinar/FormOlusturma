@@ -95,9 +95,12 @@ class SyncServisi:
             logger.info(f"Snapshot oluşturuldu: {yol}")
             return True, "Snapshot başarıyla oluşturuldu.", yol
 
+        except IOError as io_err:
+            logger.error(f"Snapshot oluşturma I/O hatası: {type(io_err).__name__}\nDetay: {io_err}")
+            return False, f"Disk yazma hatası: {io_err}", None
         except Exception as e:
-            logger.error(f"Snapshot hatası: {e}")
-            return False, f"Snapshot oluşturulamadı: {e}", None
+            logger.error(f"Snapshot oluşturma hatası: {type(e).__name__}\nDetay: {e}")
+            return False, f"Snapshot oluşturulamadı: {type(e).__name__} - {e}", None
 
     def snapshot_listele(self) -> list[dict]:
         return self.sync_repo.snapshot_listele()
@@ -170,9 +173,30 @@ class SyncServisi:
             logger.info("Sync tamamlandı (conflict yok)")
             return True, "Senkronizasyon başarıyla tamamlandı.", sync_id
 
+        except sqlite3.Error as db_err:
+            logger.error(f"Veritabanı hatasında Sync başarısız:\nHata tipi: {type(db_err).__name__}\nDetay: {db_err}")
+            try:
+                self.sync_repo.sync_kaydi_guncelle(
+                    sync_id, SYNC_HATA, f"Veritabanı hatası: {type(db_err).__name__}")
+            except:
+                pass
+            return False, f"Veritabanı hatası: {type(db_err).__name__}\nDetay: {db_err}", None
+        except IOError as io_err:
+            logger.error(f"Disk I/O hatası Sync sırasında:\nHata tipi: {type(io_err).__name__}\nDetay: {io_err}")
+            try:
+                self.sync_repo.sync_kaydi_guncelle(
+                    sync_id, SYNC_HATA, f"Disk hatası: {io_err}")
+            except:
+                pass
+            return False, f"Disk hatası: {io_err}", None
         except Exception as e:
-            logger.error(f"Sync hatası: {e}")
-            return False, f"Senkronizasyon hatası: {e}", None
+            logger.error(f"Senkronizasyon hatası: {type(e).__name__}\nDetay: {e}\nTraceback:\n{__import__('traceback').format_exc()}")
+            try:
+                self.sync_repo.sync_kaydi_guncelle(
+                    sync_id, SYNC_HATA, f"Genel hata: {type(e).__name__}")
+            except:
+                pass
+            return False, f"Senkronizasyon hatası: {type(e).__name__}\nDetay: {e}", None
 
         finally:
             self._sync_aktif = False

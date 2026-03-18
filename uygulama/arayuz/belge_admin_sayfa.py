@@ -18,6 +18,7 @@ from PyQt5.QtGui import QColor
 
 from uygulama.altyapi.belge_repo import BOLUM_TURLERI
 from uygulama.ortak.yardimcilar import logger_olustur
+from uygulama.arayuz.ui_yardimcilar import sarma_buton_yetkisi, goster_eğer_yetkili
 
 logger = logger_olustur("belge_admin")
 
@@ -37,11 +38,12 @@ def _tbl(t, rh=28):
 class BelgeAdminSayfasi(QWidget):
     """Admin paneline tab olarak eklenen belge yönetim widget'ı."""
 
-    def __init__(self, belge_srv=None, urun_srv=None, em_repo=None, parent=None):
+    def __init__(self, belge_srv=None, urun_srv=None, em_repo=None, yetki_servisi=None, parent=None):
         super().__init__(parent)
         self.srv = belge_srv
         self.urun_srv = urun_srv
         self.em_repo = em_repo
+        self.yetki_servisi = yetki_servisi
         self._secili_tur_id = None
         self._secili_bolum_id = None
         self._sablonlar = []
@@ -69,13 +71,13 @@ class BelgeAdminSayfasi(QWidget):
         sb = QHBoxLayout()
         b_yukle = QPushButton("+ Yükle")
         b_yukle.setFixedHeight(26)
-        b_yukle.clicked.connect(self._sablon_yukle)
+        sarma_buton_yetkisi(b_yukle, "admin_panel", self.yetki_servisi, self._sablon_yukle)
         b_ac = QPushButton("📂 Aç")
         b_ac.setFixedHeight(26)
         b_ac.clicked.connect(self._sablon_ac)
         b_sil = QPushButton("Sil")
         b_sil.setFixedHeight(26)
-        b_sil.clicked.connect(self._sablon_sil)
+        sarma_buton_yetkisi(b_sil, "admin_panel", self.yetki_servisi, self._sablon_sil)
         sb.addWidget(b_yukle)
         sb.addWidget(b_ac)
         sb.addWidget(b_sil)
@@ -124,10 +126,10 @@ class BelgeAdminSayfasi(QWidget):
         bb = QHBoxLayout()
         b_bolum_ekle = QPushButton("+ Bölüm")
         b_bolum_ekle.setFixedHeight(26)
-        b_bolum_ekle.clicked.connect(self._bolum_ekle)
+        sarma_buton_yetkisi(b_bolum_ekle, "admin_panel", self.yetki_servisi, self._bolum_ekle)
         b_bolum_sil = QPushButton("Sil")
         b_bolum_sil.setFixedHeight(26)
-        b_bolum_sil.clicked.connect(self._bolum_sil)
+        sarma_buton_yetkisi(b_bolum_sil, "admin_panel", self.yetki_servisi, self._bolum_sil)
         b_yukari = QPushButton("↑")
         b_yukari.setFixedSize(26, 26)
         b_yukari.clicked.connect(lambda: self._bolum_tasi(-1))
@@ -170,10 +172,10 @@ class BelgeAdminSayfasi(QWidget):
         ab = QHBoxLayout()
         b_atama_ekle = QPushButton("+ Atama")
         b_atama_ekle.setFixedHeight(26)
-        b_atama_ekle.clicked.connect(self._atama_ekle)
+        sarma_buton_yetkisi(b_atama_ekle, "admin_panel", self.yetki_servisi, self._atama_ekle)
         b_atama_sil = QPushButton("Sil")
         b_atama_sil.setFixedHeight(26)
-        b_atama_sil.clicked.connect(self._atama_sil)
+        sarma_buton_yetkisi(b_atama_sil, "admin_panel", self.yetki_servisi, self._atama_sil)
         ab.addWidget(b_atama_ekle)
         ab.addWidget(b_atama_sil)
         ab.addStretch()

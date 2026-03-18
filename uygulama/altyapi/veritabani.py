@@ -54,9 +54,28 @@ class Veritabani:
         try:
             yield conn
             conn.commit()
+        except sqlite3.IntegrityError as integrity_err:
+            conn.rollback()
+            logger.error(
+                f"Transaction Integrity hatası (rollback yapıldı):\n"
+                f"Hata: {type(integrity_err).__name__}\n"
+                f"Detay: {integrity_err}"
+            )
+            raise
+        except sqlite3.DatabaseError as db_err:
+            conn.rollback()
+            logger.error(
+                f"Transaction Veritabanı hatası (rollback yapıldı):\n"
+                f"Hata: {type(db_err).__name__}\n"
+                f"Detay: {db_err}"
+            )
+            raise
         except Exception as e:
             conn.rollback()
-            logger.error(f"Transaction hatası, rollback yapıldı: {e}")
+            logger.error(
+                f"Transaction hatası (rollback yapıldı): {type(e).__name__}\n"
+                f"Detay: {e}"
+            )
             raise
 
     def calistir(self, sql: str, params: tuple = ()) -> sqlite3.Cursor:

@@ -928,6 +928,11 @@ class MigrationMotoru:
         try:
             _placeholder_seed_uygula(self.db)
         except Exception as e:
-            logger.warning(f"Placeholder seed hatası (göz ardı): {e}")
+            logger.warning(
+                f"Placeholder seed oluşturulamadı (göz ardı edildi).\n"
+                f"Hata tipi: {type(e).__name__}\n"
+                f"Detay: {e}\n"
+                "Placeholder'lar daha sonra manuel olarak oluşturulabilir."
+            )
 
         return uygulanan

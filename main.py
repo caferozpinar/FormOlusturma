@@ -166,8 +166,13 @@ def baslat():
             "SELECT deger FROM sync_meta WHERE anahtar='drive_klasor_id'")
         if r:
             drive_sync_srv.drive_klasor_id = r["deger"]
-    except Exception:
-        pass
+            logger.debug(f"Drive klasör ID yüklendi: {r['deger']}")
+    except Exception as sync_meta_err:
+        logger.warning(
+            f"Drive senkronizasyon meta bilgileri yükleniyor: {type(sync_meta_err).__name__}\n"
+            f"Detay: {sync_meta_err}\n"
+            "Drive senkronizasyonu başlangıçta biraz ağır çalışabilir."
+        )
 
     # Maliyet Motoru V2 servisleri
     parametre_hash_srv = ParametreHashServisi(maliyet_repo)

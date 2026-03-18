@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QDate, QTimer, pyqtSignal
 from PyQt5.QtGui import QCursor
 
-from uygulama.arayuz.ui_yardimcilar import SimpleTableModel, setup_table
+from uygulama.arayuz.ui_yardimcilar import SimpleTableModel, setup_table, goster_eğer_yetkili, dısablele_eğer_yetkisiz, sarma_buton_yetkisi
 from uygulama.domain.modeller import ProjeDurumu
 from uygulama.ortak.app_state import app_state
 from uygulama.ortak.yardimcilar import tarih_sadece_gun
@@ -29,12 +29,13 @@ class ProjectListPage(QWidget):
     cikis_yap = pyqtSignal()
 
     def __init__(self, proje_servisi, konum_servisi=None,
-                 tesis_servisi=None, urun_servisi=None, parent=None):
+                 tesis_servisi=None, urun_servisi=None, yetki_servisi=None, parent=None):
         super().__init__(parent)
         self.proje_servisi = proje_servisi
         self.konum_servisi = konum_servisi
         self.tesis_servisi = tesis_servisi
         self.urun_servisi = urun_servisi
+        self.yetki_servisi = yetki_servisi
         self._projeler = []  # mevcut proje listesi cache
         self._build()
 
@@ -94,14 +95,16 @@ class ProjectListPage(QWidget):
         self.btn_new_project = QPushButton("+ Yeni Proje")
         self.btn_new_project.setObjectName("primary")
         self.btn_new_project.setCursor(QCursor(Qt.PointingHandCursor))
-        self.btn_new_project.clicked.connect(self._yeni_proje)
+        sarma_buton_yetkisi(self.btn_new_project, "proje_olustur", 
+                           self.yetki_servisi, self._yeni_proje, gizle=True)
 
         # Sync butonu
         self.btn_sync = QPushButton("⟳")
         self.btn_sync.setObjectName("syncGreen")
         self.btn_sync.setToolTip("Senkronizasyon")
         self.btn_sync.setCursor(QCursor(Qt.PointingHandCursor))
-        self.btn_sync.clicked.connect(self.open_sync.emit)
+        sarma_buton_yetkisi(self.btn_sync, "sync_baslat",
+                           self.yetki_servisi, lambda: self.open_sync.emit(), gizle=True)
 
         # Kullanıcı menüsü
         self.btn_user = QPushButton("☰")
@@ -110,6 +113,8 @@ class ProjectListPage(QWidget):
         user_menu = QMenu(self)
         self.admin_action = user_menu.addAction(
             "Admin Paneli", self.open_admin.emit)
+        # Admin panel sadece yetkili kullanıcılara görsün
+        goster_eğer_yetkili(self.admin_action, "admin_panel", self.yetki_servisi)
         user_menu.addAction("📊 Analitik", self.open_analitik.emit)
         user_menu.addSeparator()
         user_menu.addAction("Çıkış Yap", self.cikis_yap.emit)

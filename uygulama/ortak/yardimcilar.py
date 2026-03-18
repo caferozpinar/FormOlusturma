@@ -51,7 +51,7 @@ def kullanici_veri_dizini() -> str:
 def logger_olustur(ad: str, log_dizini: str = "") -> logging.Logger:
     """Modül bazlı logger oluşturur."""
     if not log_dizini:
-        log_dizini = os.path.join(uygulama_dizini(), "loglar")
+        log_dizini = os.path.join(kullanici_veri_dizini(), "loglar")
     Path(log_dizini).mkdir(parents=True, exist_ok=True)
 
     logger = logging.getLogger(ad)

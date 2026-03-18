@@ -194,14 +194,20 @@ class SyncRepository:
                     (son_tarih,))
                 if rows:
                     degisiklikler[tablo] = [dict(r) for r in rows]
-            except Exception:
+            except Exception as timestamp_err:
                 # Bazı tablolarda guncelleme_tarihi yoksa atla
+                logger.debug(
+                    f"Tablo '{tablo}' için timestamp sütunu bulunamadı. "
+                    f"Fallback yapılıyor. Hata: {type(timestamp_err).__name__}"
+                )
                 try:
                     rows = self.db.getir_hepsi(
                         f"""SELECT id FROM {tablo}
                             WHERE rowid > (SELECT COALESCE(MAX(rowid), 0)
                             FROM {tablo} WHERE 1=0)""")
-                except Exception:
-                    pass
+                except Exception as fallback_err:
+                    logger.warning(
+                        f"Tablo '{tablo}' okunması tamamen başarısız: {type(fallback_err).__name__} - {fallback_err}"
+                    )
 
         return degisiklikler

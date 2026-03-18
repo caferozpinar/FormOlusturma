@@ -68,17 +68,17 @@ class AnaPencere(QMainWindow):
         self.login_sayfa = LoginPage(self.kimlik_servisi)
         self.proje_listesi_sayfa = ProjectListPage(
             self.proje_servisi, self.konum_servisi,
-            self.tesis_servisi, self.urun_servisi)
+            self.tesis_servisi, self.urun_servisi, self.yetki_servisi)
         self.proje_detay_sayfa = ProjectDetailPage(
             self.proje_servisi, self.belge_servisi, self.log_repo,
-            self.teklif_srv, self.em_repo,
+            self.teklif_srv, self.em_repo, self.yetki_servisi,
             belge_olusturma_srv=self.belge_olusturma_srv)
         self.dokuman_sayfa = DocumentPage()
-        self.sync_sayfa = SyncPage(self.sync_servisi,
+        self.sync_sayfa = SyncPage(self.sync_servisi, self.yetki_servisi,
                                     drive_sync_srv=self.drive_sync_srv)
         self.admin_sayfa = AdminPanelPage(
-            self.urun_servisi, self.kimlik_servisi,
-            self.log_repo, self.yetki_servisi,
+            self.urun_servisi, self.kimlik_servisi, self.yetki_servisi,
+            self.log_repo,
             self.konum_servisi, self.tesis_servisi,
             self.em_repo, self.em_srv, self.placeholder_srv,
             belge_srv=self.belge_olusturma_srv)

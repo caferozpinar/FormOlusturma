@@ -9,22 +9,22 @@ from PyQt5.QtWidgets import (
     QFormLayout, QDialog
 )
 from PyQt5.QtCore import Qt, pyqtSignal
-from uygulama.arayuz.ui_yardimcilar import SimpleTableModel, setup_table
+from uygulama.arayuz.ui_yardimcilar import SimpleTableModel, setup_table, sarma_buton_yetkisi
 
 
 class AdminPanelPage(QWidget):
     go_back = pyqtSignal()
 
-    def __init__(self, urun_servisi=None, kimlik_servisi=None,
-                 log_repo=None, yetki_servisi=None,
+    def __init__(self, urun_servisi=None, kimlik_servisi=None, yetki_servisi=None,
+                 log_repo=None,
                  konum_servisi=None, tesis_servisi=None,
                  em_repo=None, em_srv=None,
                  placeholder_srv=None, belge_srv=None, parent=None):
         super().__init__(parent)
         self.urun_servisi = urun_servisi
         self.kimlik_servisi = kimlik_servisi
-        self.log_repo = log_repo
         self.yetki_servisi = yetki_servisi
+        self.log_repo = log_repo
         self.konum_servisi = konum_servisi
         self.tesis_servisi = tesis_servisi
         self.em_repo = em_repo
@@ -58,7 +58,7 @@ class AdminPanelPage(QWidget):
         # Belge Yönetimi tab
         from uygulama.arayuz.belge_admin_sayfa import BelgeAdminSayfasi
         self.belge_admin = BelgeAdminSayfasi(
-            self.belge_srv, self.urun_servisi, self.em_repo)
+            self.belge_srv, self.urun_servisi, self.em_repo, self.yetki_servisi)
         self.tabs.addTab(self.belge_admin, "Belge Şablonları")
         self.tabs.addTab(self._build_kullanicilar_tab(), "Kullanıcılar")
         self.tabs.addTab(self._build_konum_tab(), "Konum")
@@ -75,13 +75,23 @@ class AdminPanelPage(QWidget):
         self.user_model = SimpleTableModel(["Kullanıcı Adı", "Rol", "Aktif"])
         self.user_table.setModel(self.user_model); l.addWidget(self.user_table)
         br = QHBoxLayout()
-        for txt, slot, obj in [("+ Kullanıcı Ekle", self._kullanici_ekle, "primary"),
-                                ("Rol Değiştir", self._rol_degistir, None),
-                                ("Deaktif Et", self._kullanici_deaktif, "danger")]:
-            b = QPushButton(txt); b.clicked.connect(slot)
-            if obj: b.setObjectName(obj)
-            br.addWidget(b)
-        br.addStretch(); l.addLayout(br)
+        
+        b_ekle = QPushButton("+ Kullanıcı Ekle")
+        b_ekle.setObjectName("primary")
+        sarma_buton_yetkisi(b_ekle, "kullanici_olustur", self.yetki_servisi, self._kullanici_ekle)
+        
+        b_rol = QPushButton("Rol Değiştir")
+        sarma_buton_yetkisi(b_rol, "kullanici_rol_degistir", self.yetki_servisi, self._rol_degistir)
+        
+        b_deaktif = QPushButton("Deaktif Et")
+        b_deaktif.setObjectName("danger")
+        sarma_buton_yetkisi(b_deaktif, "kullanici_sil", self.yetki_servisi, self._kullanici_deaktif)
+        
+        br.addWidget(b_ekle)
+        br.addWidget(b_rol)
+        br.addWidget(b_deaktif)
+        br.addStretch()
+        l.addLayout(br)
         return w
 
     # ── VERİ YÜKLEME ──

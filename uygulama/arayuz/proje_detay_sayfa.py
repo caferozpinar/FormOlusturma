@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, pyqtSignal
 
 from uygulama.arayuz.ui_yardimcilar import (
-    SimpleTableModel, make_badge, make_stat_card, setup_table
+    SimpleTableModel, make_badge, make_stat_card, setup_table, sarma_buton_yetkisi
 )
 from uygulama.domain.modeller import ProjeDurumu
 from uygulama.ortak.app_state import app_state
@@ -27,7 +27,7 @@ class ProjectDetailPage(QWidget):
     open_document = pyqtSignal(str)  # belge_id
 
     def __init__(self, proje_servisi, belge_servisi, log_repo,
-                 teklif_srv=None, em_repo=None,
+                 teklif_srv=None, em_repo=None, yetki_servisi=None,
                  belge_olusturma_srv=None, parent=None):
         super().__init__(parent)
         self.proje_servisi = proje_servisi
@@ -36,6 +36,7 @@ class ProjectDetailPage(QWidget):
         self.teklif_srv = teklif_srv
         self.belge_olusturma_srv = belge_olusturma_srv
         self.em_repo = em_repo
+        self.yetki_servisi = yetki_servisi
         self._proje_id = None
         self._proje = None
         self._belgeler = []
@@ -83,19 +84,19 @@ class ProjectDetailPage(QWidget):
         br.setSpacing(8)
 
         self.btn_edit = QPushButton("Düzenle")
-        self.btn_edit.clicked.connect(self._duzenle)
+        sarma_buton_yetkisi(self.btn_edit, "proje_guncelle", self.yetki_servisi, self._duzenle)
 
         self.btn_close_project = QPushButton("Projeyi Kapat")
         self.btn_close_project.setObjectName("danger")
-        self.btn_close_project.clicked.connect(self._proje_kapat)
+        sarma_buton_yetkisi(self.btn_close_project, "proje_kapat", self.yetki_servisi, self._proje_kapat)
 
         self.btn_activate = QPushButton("Aktifleştir")
         self.btn_activate.setObjectName("success")
-        self.btn_activate.clicked.connect(self._proje_aktifle)
+        sarma_buton_yetkisi(self.btn_activate, "proje_aktifle", self.yetki_servisi, self._proje_aktifle)
 
         self.btn_delete = QPushButton("Sil")
         self.btn_delete.setObjectName("danger")
-        self.btn_delete.clicked.connect(self._proje_sil)
+        sarma_buton_yetkisi(self.btn_delete, "proje_sil", self.yetki_servisi, self._proje_sil)
 
         btn_back = QPushButton("← Geri")
         btn_back.clicked.connect(self.go_back.emit)

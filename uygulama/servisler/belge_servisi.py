@@ -21,9 +21,14 @@ try:
     from openpyxl import load_workbook, Workbook
     from openpyxl.utils import get_column_letter, column_index_from_string
     HAS_OPENPYXL = True
-except ImportError:
+except ImportError as import_err:
     HAS_OPENPYXL = False
-    logger.warning("openpyxl yüklü değil — pip install openpyxl")
+    logger.warning(
+        f"UYARI: Excel kütüphanesi (openpyxl) yüklü değil.\n"
+        f"Hata detayı: {import_err}\n"
+        f"Belge oluşturma özellikleri kullanılamayacaktır.\n"
+        f"Çözüm: pip install openpyxl==3.1"
+    )
 
 
 def _col_parse(aralik: str) -> Tuple[int, int]:
@@ -70,11 +75,19 @@ class BelgeServisi:
 
     def sablon_sheetleri(self, dosya_yolu: str) -> list[str]:
         if not HAS_OPENPYXL or not os.path.exists(dosya_yolu):
+            if not os.path.exists(dosya_yolu):
+                logger.debug(f"Şablon dosyası yok: {dosya_yolu}")
             return []
         try:
             wb = load_workbook(dosya_yolu, read_only=True)
-            s = wb.sheetnames; wb.close(); return s
-        except Exception:
+            s = wb.sheetnames
+            wb.close()
+            return s
+        except PermissionError as perm_err:
+            logger.error(f"Şablon dosyası okunamadı (İzin yok): {dosya_yolu}\nHata: {perm_err}")
+            return []
+        except Exception as e:
+            logger.error(f"Şablon dosyası okunamadı: {dosya_yolu}\nHata tipi: {type(e).__name__}\nDetay: {e}")
             return []
 
     # ═══════════════════════════════════════
@@ -88,14 +101,17 @@ class BelgeServisi:
 
         teklif = self.teklif_srv.getir(teklif_id) if self.teklif_srv else None
         if not teklif:
+            logger.error(f"Belge oluşturulamadı: Teklif ID '{teklif_id}' bulunamadı")
             return False, "Teklif bulunamadı.", None
 
         proje = self.proje_srv.getir(teklif["proje_id"]) if self.proje_srv else None
         if not proje:
+            logger.error(f"Belge oluşturulamadı: Teklif {teklif_id} için Proje '{teklif['proje_id']}' bulunamadı")
             return False, "Proje bulunamadı.", None
 
         belge_turu = self.repo.belge_turu_kod_ile(belge_turu_kodu)
         if not belge_turu:
+            logger.error(f"Belge oluşturulamadı: Belge türü kodu '{belge_turu_kodu}' bulunamadı")
             return False, f"Belge türü bulunamadı: {belge_turu_kodu}", None
 
         proje_urunler = self.proje_srv.proje_urunleri(
@@ -104,6 +120,7 @@ class BelgeServisi:
         c1, c2 = _col_parse(belge_turu["sutun_araligi"])
         bolumler = self.repo.bolumler(belge_turu["id"])
         if not bolumler:
+            logger.error(f"Belge oluşturulamadı: Belge türü '{belge_turu_kodu}' ({belge_turu['id']}) için bölüm tanımlı değil")
             return False, "Bu belge türü için bölüm tanımlı değil.", None
 
         wb_out = Workbook(); ws_out = wb_out.active; ws_out.title = "Belge"
@@ -140,20 +157,36 @@ class BelgeServisi:
 
         klasor_adi = safe(f"{p_ad} {p_konum} {urun_str} {ph}".strip())
         klasor_yolu = os.path.join(hedef_klasor, klasor_adi)
-        os.makedirs(klasor_yolu, exist_ok=True)
+        
+        try:
+            os.makedirs(klasor_yolu, exist_ok=True)
+        except Exception as mkdir_err:
+            logger.error(f"Klasör oluşturulamadı: {klasor_yolu}\nHata: {type(mkdir_err).__name__} - {mkdir_err}")
+            return False, f"Klasör oluşturulamadı: {klasor_yolu}\nHata: {mkdir_err}", None
 
         dosya_adi = safe(f"{p_ad} {p_konum} {urun_str} {ph}.xlsx".strip())
         dosya_yolu = os.path.join(klasor_yolu, dosya_adi)
 
         try:
             wb_out.save(dosya_yolu)
-        except Exception as e:
-            return False, f"Kaydetme hatası: {e}", None
+        except PermissionError as perm_err:
+            logger.error(f"Dosya kaydetme hatası (İzin Reddedildi): {dosya_yolu}\nHata: {perm_err}")
+            return False, f"Dosya kaydедilemiyor - yeterli izin yok.\nLütfen dosyanın kapalı olduğundan emin olun.", None
+        except IOError as io_err:
+            logger.error(f"Dosya I/O hatası: {dosya_yolu}\nHata: {type(io_err).__name__} - {io_err}")
+            return False, f"Dosya yazma hatası: {io_err}", None
+        except Exception as save_err:
+            logger.error(f"Belge kaydetme başarısız: {dosya_yolu}\nHata tipi: {type(save_err).__name__}\nHata: {save_err}")
+            return False, f"Kaydetme hatası: {type(save_err).__name__} - {save_err}", None
 
         state = app_state()
         olusan = state.aktif_kullanici.kullanici_adi if state.aktif_kullanici else ""
-        self.repo.uretim_kaydet(
-            teklif_id, belge_turu["id"], dosya_yolu, dosya_adi, klasor_yolu, olusan)
+        try:
+            self.repo.uretim_kaydet(
+                teklif_id, belge_turu["id"], dosya_yolu, dosya_adi, klasor_yolu, olusan)
+        except Exception as db_err:
+            logger.warning(f"Belge oluşturuldu ama veritabanına kaydedilemedi:\nDosya: {dosya_yolu}\nHata: {type(db_err).__name__} - {db_err}")
+        
         logger.info(f"Belge oluşturuldu: {dosya_yolu}")
         return True, f"Belge oluşturuldu: {dosya_adi}", dosya_yolu
 
@@ -270,14 +303,24 @@ class BelgeServisi:
     def _satirlari_kopyala(self, ws_out, out_row, dosya, sheet,
                              r1, r2, c1, c2) -> int:
         if not os.path.exists(dosya):
-            logger.warning(f"Şablon yok: {dosya}"); return 0
+            logger.warning(f"Şablon dosyası bulunamadı: {dosya}")
+            return 0
         try:
             wb = load_workbook(dosya)
+        except PermissionError as perm_err:
+            logger.error(f"Şablon dosyası okunamadı (İzin yok): {dosya}\nHata: {perm_err}")
+            return 0
         except Exception as e:
-            logger.error(f"Açılamadı: {dosya} — {e}"); return 0
+            logger.error(f"Şablon dosyası açılamadı: {dosya}\nHata tipi: {type(e).__name__}\nDetay: {e}")
+            return 0
+        
         if sheet not in wb.sheetnames:
-            wb.close(); return 0
-        ws = wb[sheet]; n = 0
+            logger.warning(f"Sheet '{sheet}' bulunamadı. Dosya: {dosya}\nMevcut sheets: {wb.sheetnames}")
+            wb.close()
+            return 0
+        
+        ws = wb[sheet]
+        n = 0
         for sr in range(r1, r2 + 1):
             dr = out_row + n
             if ws.row_dimensions[sr].height:
@@ -287,10 +330,14 @@ class BelgeServisi:
                 dc = ws_out.cell(row=dr, column=col)
                 dc.value = sc.value
                 if sc.has_style:
-                    dc.font = copy(sc.font); dc.border = copy(sc.border)
-                    dc.fill = copy(sc.fill); dc.number_format = sc.number_format
-                    dc.protection = copy(sc.protection); dc.alignment = copy(sc.alignment)
+                    dc.font = copy(sc.font)
+                    dc.border = copy(sc.border)
+                    dc.fill = copy(sc.fill)
+                    dc.number_format = sc.number_format
+                    dc.protection = copy(sc.protection)
+                    dc.alignment = copy(sc.alignment)
             n += 1
+        
         # Merged cells
         for mg in ws.merged_cells.ranges:
             if mg.min_row >= r1 and mg.max_row <= r2 and mg.min_col >= c1 and mg.max_col <= c2:
@@ -298,9 +345,11 @@ class BelgeServisi:
                 rng = f"{get_column_letter(mg.min_col)}{mg.min_row+off}:{get_column_letter(mg.max_col)}{mg.max_row+off}"
                 try:
                     ws_out.merge_cells(rng)
-                except Exception:
-                    pass
-        wb.close(); return n
+                except Exception as merge_err:
+                    logger.debug(f"Merged cell oluşturulamadı: {rng}\nHata: {type(merge_err).__name__} - {merge_err}")
+        
+        wb.close()
+        return n
 
     def _ph_degistir(self, ws, r1, r2, c1, c2, baglam):
         pat = re.compile(r'\{/[A-ZÇĞİÖŞÜa-zçğıöşü0-9_ :]+/\}')

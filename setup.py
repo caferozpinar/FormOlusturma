@@ -39,15 +39,35 @@ def python_kontrol():
 
 
 def pip_kur(paket):
+    """
+    pip ile paket kurmayı dener. Hata durumunda hata detaylarını açık bir şekilde döndürür.
+    """
     try:
         cmd = [sys.executable, "-m", "pip", "install", paket, "-q"]
         # Linux'ta --break-system-packages gerekebilir
         if platform.system() == "Linux":
             cmd.append("--break-system-packages")
-        subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        return True
-    except subprocess.CalledProcessError:
-        return False
+        
+        # Hata çıkışını yakalaması için stderr'ı PIPE olarak ayarla
+        result = subprocess.run(
+            cmd, 
+            stdout=subprocess.PIPE, 
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=120  # 2 dakika timeout
+        )
+        
+        if result.returncode == 0:
+            return True, None
+        else:
+            # pip hatası — detaylı bilgi döndür
+            hata_cikti = result.stderr.strip() if result.stderr else result.stdout.strip()
+            return False, hata_cikti
+            
+    except subprocess.TimeoutExpired as timeout_err:
+        return False, f"Kurulum zaman aşımına uğradı (120 saniye). Paket: {paket}"
+    except Exception as e:
+        return False, f"{type(e).__name__}: {e}"
 
 
 def bagimliliklari_kur():
@@ -68,16 +88,33 @@ def bagimliliklari_kur():
         return True
 
     print(f"\n  {len(eksik)} paket kuruluyor...")
+    basarili = 0
+    basarisiz = []
+    
     for dep in eksik:
         print(f"  → {dep} kuruluyor...", end=" ", flush=True)
-        if pip_kur(dep):
+        kurulum_ok, hata_mesaji = pip_kur(dep)
+        if kurulum_ok:
             print(renkli("✓", "yesil"))
+            basarili += 1
         else:
             print(renkli("✗ HATA", "kirmizi"))
-            print(renkli(f"\n  Elle kurun: pip install {dep}", "kirmizi"))
-            return False
+            basarisiz.append((dep, hata_mesaji))
 
-    print(renkli("\n  Tüm bağımlılıklar kuruldu ✓", "yesil"))
+    if basarisiz:
+        print(renkli(f"\n  ✗ {len(basarisiz)} paket kurulamadı:", "kirmizi"))
+        for paket, hata in basarisiz:
+            print(renkli(f"\n  Paket: {paket}", "kirmizi"))
+            if hata:
+                # Hatayı satır satır göster
+                hata_satirlari = hata.split('\n')[:5]  # İlk 5 satırı göster
+                for satir in hata_satirlari:
+                    if satir.strip():
+                        print(f"    {satir}")
+            print(f"\n  Elle kurmak için: pip install {paket}")
+        return False
+
+    print(renkli(f"\n  ✓ {basarili} paket kuruldu", "yesil"))
     return True
 
 

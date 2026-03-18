@@ -5,6 +5,7 @@ Kimlik Servisi — Giriş, çıkış, şifre yönetimi, kullanıcı CRUD.
 İş kuralları bu katmandadır; veritabanı erişimi repository üzerinden yapılır.
 """
 
+import sqlite3
 import bcrypt
 from typing import Optional, Tuple
 
@@ -45,7 +46,8 @@ class KimlikServisi:
                 sifre.encode("utf-8"),
                 hash_deger.encode("utf-8")
             )
-        except Exception:
+        except Exception as e:
+            logger.warning(f"Şifre doğrulama hatası: {type(e).__name__} - {e}")
             return False
 
     # ─────────────────────────────────────────
@@ -243,8 +245,10 @@ class KimlikServisi:
                 detay=detay,
             )
             self.log_repo.kaydet(log)
+        except sqlite3.DatabaseError as db_err:
+            logger.error(f"Log kaydı veritabanı hatası:\nHata: {type(db_err).__name__} - {db_err}\nDetay: {detay}")
         except Exception as e:
-            logger.error(f"Log kaydı hatası: {e}")
+            logger.error(f"Log kaydı hatası: {type(e).__name__}\nHata: {e}\nDetay: {detay}")
 
     def tum_kullanicilar(self) -> list:
         """Tüm kullanıcıları listeler (soft delete hariç)."""

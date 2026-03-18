@@ -34,7 +34,14 @@ try:
     from googleapiclient.http import MediaIoBaseDownload as _GMediaDownload
     _GOOGLE_OK = True
 except ImportError as e:
-    logger.info(f"KRİTİK HATA: Google Modülü Yüklenemedi -> {e}")
+    hatali_kutuphanele = str(e)
+    logger.error(
+        f"KRITIK HATA: Google API kütüphaneleri yüklenemedi.\n"
+        f"Hata detayı: {hatali_kutuphanele}\n"
+        f"Çözüm: Aşağıdaki komutu çalıştırın:\n"
+        f"  pip install google-auth google-auth-oauthlib google-api-python-client\n"
+        f"Kurulabilene kadar, Google Drive senkronizasyonu devre dışı olacaktır."
+    )
     _GOOGLE_OK = False
 
 # ═══════════════════════════════════════
@@ -124,16 +131,41 @@ class DriveSyncServisi:
                 self._token_yolu, SCOPES)
 
             if creds and creds.expired and creds.refresh_token:
-                creds.refresh(_GRequest())
-                with open(self._token_yolu, 'w') as f:
-                    f.write(creds.to_json())
+                try:
+                    creds.refresh(_GRequest())
+                    with open(self._token_yolu, 'w') as f:
+                        f.write(creds.to_json())
+                    logger.debug("Google Drive token yenilendi.")
+                except Exception as refresh_error:
+                    logger.warning(
+                        f"Google Drive token yenileme başarısız: {type(refresh_error).__name__}: {refresh_error}\n"
+                        f"Token dosyası yolu: {self._token_yolu}"
+                    )
+                    return
 
             if creds and creds.valid:
                 self._creds = creds
                 self._service = _gbuild('drive', 'v3', credentials=creds)
                 logger.info("Google Drive: kaydedilmiş token ile bağlantı kuruldu.")
+        except FileNotFoundError as fnf:
+            logger.debug(f"Token dosyası okunamadı (ilk başlatma?): {self._token_yolu} - {fnf}")
+        except json.JSONDecodeError as jde:
+            logger.warning(
+                f"Token dosyası hatalı JSON: {self._token_yolu}\n"
+                f"Detay: {jde}\n"
+                "Token dosyası silinecek ve yeniden oluşturulacak."
+            )
+            try:
+                os.remove(self._token_yolu)
+            except Exception as cleanup_error:
+                logger.error(f"Token dosyası silinemiyor: {cleanup_error}")
         except Exception as e:
-            logger.warning(f"Google Drive token yükleme başarısız: {e}")
+            logger.warning(
+                f"Google Drive token yükleme başarısız: {type(e).__name__}\n"
+                f"Token dosyası: {self._token_yolu}\n"
+                f"Hata: {e}\n"
+                "Lütfen Google OAuth'u yeniden yetkilendirin."
+            )
 
     def baglan(self, credentials_yolu: str = None) -> tuple[bool, str]:
         """Google OAuth ile bağlan."""
@@ -168,12 +200,59 @@ class DriveSyncServisi:
                             credentials_yolu = yol
                             break
                 if not credentials_yolu or not os.path.exists(credentials_yolu):
-                    return False, ("credentials.json bulunamadı.\n"
-                                   "Google Cloud Console'dan OAuth credential indirin.")
+                    proje_koku = os.path.dirname(os.path.dirname(self.db_yolu))
+                    expected_path = os.path.join(proje_koku, "credentials.json")
+                    return False, (
+                        "credentials.json dosyası bulunamadı.\n\n"
+                        f"Arama yapılan konumlar:\n"
+                        f"  • {os.path.join(proje_koku, 'credentials.json')}\n"
+                        f"  • {os.path.join(proje_koku, 'client_secret.json')}\n\n"
+                        "Çözüm:\n"
+                        "1. Google Cloud Console'dan OAuth 2.0 Client ID (Desktop) oluşturun\n"
+                        "2. JSON dosyasını indirin ve aşağıdaki konuma yerleştirin:\n"
+                        f"   {expected_path}\n\n"
+                        "3. Dosya adı 'credentials.json' veya 'client_secret.json' olmalıdır.\n"
+                        "4. Uygulamayı yeniden başlatın."
+                    )
 
-                flow = _GFlow.from_client_secrets_file(
-                    credentials_yolu, SCOPES)
-                creds = flow.run_local_server(port=0)
+                try:
+                    flow = _GFlow.from_client_secrets_file(
+                        credentials_yolu, SCOPES)
+                except FileNotFoundError as fnf:
+                    logger.error(f"credentials.json okunamadı: {credentials_yolu} - {fnf}")
+                    return False, (
+                        f"credentials.json dosyası okunabilir değil.\n"
+                        f"Dosya yolu: {credentials_yolu}\n"
+                        f"Lütfen dosyanın var ve okunabilir olduğunu kontrol edin."
+                    )
+                except json.JSONDecodeError as jde:
+                    logger.error(f"credentials.json JSON hatalı: {credentials_yolu} - {jde}")
+                    return False, (
+                        f"credentials.json dosyası geçersiz JSON içeridir.\n"
+                        f"Dosya yolu: {credentials_yolu}\n"
+                        f"Hata: {str(jde)}\n"
+                        f"Dosyayı Google Cloud Console'dan yeniden indirin."
+                    )
+                except Exception as e:
+                    logger.error(f"credentials.json işlenemiyor: {credentials_yolu} - {type(e).__name__}: {e}")
+                    return False, (
+                        f"credentials.json dosyası işlenemiyor.\n"
+                        f"Dosya yolu: {credentials_yolu}\n"
+                        f"Hata tipi: {type(e).__name__}\n"
+                        f"Hata: {str(e)}"
+                    )
+                
+                try:
+                    creds = flow.run_local_server(port=0)
+                except Exception as auth_error:
+                    logger.error(f"Google OAuth yetkilendirmesi başarısız: {type(auth_error).__name__} - {auth_error}")
+                    return False, (
+                        f"Google OAuth yetkilendirmesi başarısız.\n"
+                        f"Hata tipi: {type(auth_error).__name__}\n"
+                        f"Hata: {str(auth_error)}\n\n"
+                        "Tarayıcı pencerenizde Google hesabınıza giriş yapabildiğiniz "
+                        "kontrol edin ve yetkilendirmeyi tamamlayın."
+                    )
 
             with open(self._token_yolu, 'w') as f:
                 f.write(creds.to_json())

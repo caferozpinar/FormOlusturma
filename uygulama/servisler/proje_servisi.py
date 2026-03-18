@@ -72,12 +72,16 @@ class ProjeServisi:
             self.proje_repo.olustur(proje)
         except sqlite3.IntegrityError as e:
             if "UNIQUE" in str(e) and "hash_kodu" in str(e):
+                logger.warning(f"Proje zaten var: {firma} - {konum} - {tesis} - {urun_seti}")
                 return False, "⚠️ Bu proje zaten var! (Firma-Konum-Tesis-Ürün Seti aynı)", None
-            logger.error(f"Veritabanı hatası: {e}")
+            logger.error(f"Veritabanı Integrity hatası: {type(e).__name__}\nDetay: {e}")
             return False, f"Veritabanı hatası: {e}", None
+        except sqlite3.DatabaseError as db_err:
+            logger.error(f"Proje oluşturulamadı - Veritabanı hatası: {type(db_err).__name__}\nDetay: {db_err}")
+            return False, f"Veritabanı hatası: {type(db_err).__name__} - {db_err}", None
         except Exception as e:
-            logger.error(f"Proje oluşturma hatası: {e}")
-            return False, f"Hata: {e}", None
+            logger.error(f"Proje oluşturma hatası: {type(e).__name__}\nDetay: {e}\nProje: {firma} - {konum}")
+            return False, f"Hata: {type(e).__name__} - {str(e)[:100]}", None
 
         self._log_kaydet(
             IslemTipi.PROJE_OLUSTUR, "projeler", proje.id,
