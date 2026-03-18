@@ -11,13 +11,20 @@ Varsayılan giriş bilgileri:
 
 import sys
 import os
+import subprocess
 
 from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QTimer
 
 # Proje kök dizinini Python path'ine ekle
 PROJE_KOKU = os.path.dirname(os.path.abspath(__file__))
 if PROJE_KOKU not in sys.path:
     sys.path.insert(0, PROJE_KOKU)
+
+from uygulama.ortak.yardimcilar import uygulama_dizini
+
+# Kullanıcı veri dizini: exe yanı (frozen) veya proje kökü (dev)
+APP_DIR = uygulama_dizini()
 
 from uygulama.altyapi.veritabani import Veritabani
 from uygulama.altyapi.migration import MigrationMotoru
@@ -59,12 +66,47 @@ from uygulama.ortak.yardimcilar import logger_olustur
 
 logger = logger_olustur("main")
 
+UPDATE_FLAG = os.path.join(APP_DIR, "update_requested.flag")
+
+
+def _guncelleme_kontrol_baslat(pencere) -> None:
+    """
+    installer.exe'yi arkaplanda --update modunda başlatır.
+    Sonra her 5 saniyede update_requested.flag dosyasını kontrol eder.
+    Flag bulunursa kullanıcıya bilgi verir ve uygulamayı kapatır.
+    """
+    installer_exe = os.path.join(APP_DIR, "installer.exe")
+    if os.path.exists(installer_exe):
+        try:
+            subprocess.Popen(
+                [installer_exe, "--update", f"--pid={os.getpid()}"],
+                creationflags=subprocess.CREATE_NO_WINDOW,
+                cwd=APP_DIR,
+            )
+            logger.info("Güncelleme kontrolü başlatıldı.")
+        except Exception as e:
+            logger.info(f"Güncelleme kontrolü başlatılamadı: {e}")
+
+    def _flag_kontrol():
+        if os.path.exists(UPDATE_FLAG):
+            from PyQt5.QtWidgets import QMessageBox
+            msg = QMessageBox(pencere)
+            msg.setWindowTitle("Güncelleme")
+            msg.setText("Güncelleme indiriliyor, uygulama yeniden başlatılacak...")
+            msg.setStandardButtons(QMessageBox.Ok)
+            msg.exec_()
+            pencere.close()
+
+    timer = QTimer(pencere)
+    timer.timeout.connect(_flag_kontrol)
+    timer.start(5000)
+
 
 def baslat():
     """Uygulamayı başlatır."""
 
     # ── 1. Veritabanı ──
-    db_yolu = os.path.join(PROJE_KOKU, "veri", "proje_yonetimi.db")
+    db_yolu = os.path.join(APP_DIR, "veri", "proje_yonetimi.db")
     db = Veritabani(db_yolu)
     db.baglan()
     logger.info(f"Veritabanı: {db_yolu}")
@@ -153,6 +195,9 @@ def baslat():
     pencere.show()
 
     logger.info("Uygulama başlatıldı.")
+
+    # ── 8. Güncelleme Kontrolü ──
+    _guncelleme_kontrol_baslat(pencere)
 
     kod = app.exec_()
 

@@ -8,6 +8,7 @@ __pycache__/
 veri/*.db
 veri/*.db-journal
 veri/*.db-wal
+veri/*.db-shm
 veri/sync
 
 # Loglar

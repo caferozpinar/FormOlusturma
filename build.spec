@@ -33,7 +33,6 @@ a = Analysis(
     binaries=[],
     datas=[
         ('sablonlar', 'sablonlar'),
-        ('veri', 'veri'),
     ] + google_datas, # Google verilerini buraya ekledik
     hiddenimports=[
         # GUI ve Temel sistem

@@ -10,9 +10,12 @@ on:
   workflow_dispatch:  # Manuel tetikleme
 
 jobs:
-  build:
+  # ─────────────────────────────────────────────
+  # Ana uygulama build — her release'de çalışır
+  # ─────────────────────────────────────────────
+  build-app:
     runs-on: windows-latest
-    
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -30,14 +33,31 @@ jobs:
 
     - name: Klasörleri Oluştur
       run: |
-        mkdir -p veri
-        mkdir -p loglar
         mkdir -p sablonlar
       shell: bash
 
-    - name: PyInstaller ile Build
+    - name: version.txt Oluştur
+      run: |
+        $tag = "${{ github.ref_name }}"
+        # Tag yoksa (workflow_dispatch) varsayılan versiyon kullan
+        if ($tag -eq "" -or $tag -eq "main" -or -not $tag.StartsWith("v")) {
+          $tag = Get-Content version.txt -ErrorAction SilentlyContinue
+          if (-not $tag) { $tag = "0.0.0" }
+        } else {
+          $tag = $tag.TrimStart("v")
+        }
+        Set-Content -Path version.txt -Value $tag -Encoding UTF8 -NoNewline
+        Write-Host "Versiyon: $tag"
+      shell: powershell
+
+    - name: PyInstaller ile Build (Ana Uygulama)
       run: |
         pyinstaller build.spec
+
+    - name: version.txt'yi dist klasörüne kopyala
+      run: |
+        Copy-Item version.txt dist\FormOlusturma\version.txt
+      shell: powershell
 
     - name: Build Kontrol
       run: |
@@ -58,10 +78,68 @@ jobs:
         path: dist/FormOlusturma_Windows.zip
         retention-days: 30
 
-    # Tag push ise Release oluştur
+    - name: version.txt Artifact Yükle
+      uses: actions/upload-artifact@v4
+      with:
+        name: version-txt
+        path: version.txt
+        retention-days: 30
+
+    # Tag push ise Release oluştur (uygulama zip + version.txt)
     - name: Release Oluştur
       if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v2
       with:
-        files: dist/FormOlusturma_Windows.zip
+        files: |
+          dist/FormOlusturma_Windows.zip
+          version.txt
         generate_release_notes: true
+
+  # ─────────────────────────────────────────────
+  # installer.exe build — sadece ilk release'de
+  # veya manuel tetiklemede çalışır
+  # ─────────────────────────────────────────────
+  build-installer:
+    runs-on: windows-latest
+    # Sadece 'installer' etiketi içeren tag'lerde veya manuel tetiklemede çalışır
+    # Örnek: git tag v1.0.0-installer && git push origin v1.0.0-installer
+    # Normal release'lerde bu job atlanır.
+    if: contains(github.ref, 'installer') || github.event_name == 'workflow_dispatch'
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Python Kur
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: installer.py Bağımlılıklarını Kur
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests pyinstaller pyinstaller-hooks-contrib
+
+    - name: PyInstaller ile Build (installer.exe)
+      run: |
+        pyinstaller installer.spec
+
+    - name: Build Kontrol
+      run: |
+        dir dist\installer.exe
+      shell: cmd
+
+    - name: installer.exe Artifact Yükle
+      uses: actions/upload-artifact@v4
+      with:
+        name: installer-exe
+        path: dist/installer.exe
+        retention-days: 90
+
+    # installer.exe'yi release'e ekle (eğer tag push ise)
+    - name: installer.exe'yi Release'e Ekle
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v2
+      with:
+        files: dist/installer.exe
+        generate_release_notes: false

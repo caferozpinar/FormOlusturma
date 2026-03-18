@@ -7,16 +7,34 @@ Ortak yardımcı fonksiyonlar.
 import hashlib
 import logging
 import os
+import sys
 from datetime import datetime
 from pathlib import Path
+
+
+# ─────────────────────────────────────────────
+# UYGULAMA DİZİNİ
+# ─────────────────────────────────────────────
+
+def uygulama_dizini() -> str:
+    """
+    Uygulamanın kullanıcı veri dizinini döndürür.
+    Frozen (exe) modda: FormOlusturma.exe'nin bulunduğu klasör.
+    Dev modda: proje kökü (bu dosyadan 2 seviye yukarı).
+    """
+    if getattr(sys, 'frozen', False):
+        return os.path.dirname(sys.executable)
+    return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 # ─────────────────────────────────────────────
 # LOGLAMA
 # ─────────────────────────────────────────────
 
-def logger_olustur(ad: str, log_dizini: str = "loglar") -> logging.Logger:
+def logger_olustur(ad: str, log_dizini: str = "") -> logging.Logger:
     """Modül bazlı logger oluşturur."""
+    if not log_dizini:
+        log_dizini = os.path.join(uygulama_dizini(), "loglar")
     Path(log_dizini).mkdir(parents=True, exist_ok=True)
 
     logger = logging.getLogger(ad)

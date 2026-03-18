@@ -525,11 +525,10 @@ class DriveSyncServisi:
             if ilerleme_callback:
                 ilerleme_callback(msg)
 
-        proje_kok = os.path.dirname(self.db_yolu)
-
         # Şablonlar sync
         _ilerleme("Şablonlar senkronize ediliyor...")
-        sablon_lokal = os.path.join(proje_kok, "sablonlar")
+        from uygulama.ortak.yardimcilar import uygulama_dizini
+        sablon_lokal = os.path.join(uygulama_dizini(), "sablonlar")
         if os.path.isdir(sablon_lokal):
             sablon_drive = self._klasor_bul_veya_olustur("sablonlar")
             self._klasor_sync(sablon_lokal, sablon_drive, _ilerleme)
