@@ -1,8 +1,8 @@
 # FormOlusturma — Proje Yönetim Sistemi
 
-**Versiyon:** v34  
-**Tarih:** 20 Şubat 2026  
-**Platform:** Windows (PyQt5)
+**Versiyon:** v3.0.6
+**Platform:** Windows 10+ (PyQt5)
+**Lisans:** Proprietary — ZET Yapı © 2026
 
 ---
 
@@ -10,10 +10,10 @@
 
 - [Hızlı Başlangıç](#hızlı-başlangıç)
 - [Kurulum](#kurulum)
-- [Başlama](#başlama)
-- [Veritabanı Yönetimi](#veritabanı-yönetimi)
 - [Varsayılan Giriş Bilgileri](#varsayılan-giriş-bilgileri)
 - [Özellikler](#özellikler)
+- [Google Drive Senkronizasyonu](#google-drive-senkronizasyonu)
+- [Otomatik Güncelleme](#otomatik-güncelleme)
 - [Sorun Giderme](#sorun-giderme)
 
 ---
@@ -28,7 +28,7 @@ pip install -r requirements.txt
 python main.py
 ```
 
-**Not:** İlk çalıştırmada veritabanı otomatik oluşturulur ve migration'lar uygulanır.
+İlk çalıştırmada veritabanı otomatik oluşturulur, migration'lar uygulanır ve admin kullanıcısı oluşturulur.
 
 ---
 
@@ -36,16 +36,18 @@ python main.py
 
 ### Sistem Gereksinimleri
 
-- **Python:** 3.9+
-- **OS:** Windows 10+
-- **RAM:** 4GB+ önerilir
-- **Disk:** 1GB boş alan
+| | |
+|---|---|
+| **Python** | 3.9+ |
+| **İşletim Sistemi** | Windows 10+ |
+| **RAM** | 512 MB boş RAM |
+| **Disk** | 1 GB boş alan |
 
 ### Adım Adım
 
 1. **Repository'yi klonla**
    ```bash
-   git clone <repo-url>
+   git clone https://github.com/caferozpinar/FormOlusturma.git
    cd FormOlusturma
    ```
 
@@ -67,61 +69,6 @@ python main.py
 
 ---
 
-## 🔑 Başlama
-
-### İlk Çalıştırma
-
-1. Uygulamayı açtığında otomatik olarak:
-   - Veritabanı oluşturulur (`veri/proje_yonetimi.db`)
-   - v1–v44 migration'ları uygulanır
-   - Admin kullanıcısı oluşturulur (yoksa)
-   - Temel placeholder'lar seed'lenir
-
-2. **Admin Paneline Gir**
-   - Kullanıcı: `admin`
-   - Şifre: `admin123`
-
-### Şifre Değiştirme
-
-Admin olarak giriş yaptıktan sonra:
-1. ☰ menüsünü aç (sağ üst)
-2. "Şifre Değiştir" seçene basın
-3. Eski ve yeni şifreni gir
-
----
-
-## 💾 Veritabanı Yönetimi
-
-### Veritabanı Yolları
-
-| Amaç | Yol |
-|------|-----|
-| Uygulama DB | `veri/proje_yonetimi.db` |
-| Drive Token | `veri/drive_token.json` |
-| Senkronizasyon | `veri/sync/` |
-
-### Veritabanı Sıfırlama
-
-⚠️ **Dikkat:** Bu tüm verileri siler!
-
-```bash
-# 1. Uygulamayı kapat
-# 2. veri/proje_yonetimi.db dosyasını sil
-del veri\proje_yonetimi.db
-
-# 3. Uygulamayı yeniden başlat
-python main.py
-```
-
-### Veritabanı Yedekleme
-
-```bash
-# Bash/PowerShell
-copy veri\proje_yonetimi.db proje_yonetimi_backup_$(Get-Date -Format yyyyMMdd_HHmmss).db
-```
-
----
-
 ## 👤 Varsayılan Giriş Bilgileri
 
 | Alan | Değer |
@@ -130,93 +77,153 @@ copy veri\proje_yonetimi.db proje_yonetimi_backup_$(Get-Date -Format yyyyMMdd_HH
 | Şifre | `admin123` |
 | Rol | Admin |
 
-**Tavsiye:** İlk giriş yapıldıktan sonra şifreyi değiştir!
+> İlk girişten sonra şifreyi değiştir: ☰ menüsü → Şifre Değiştir
 
 ---
 
 ## ✨ Özellikler
 
-### v25–v34 (En Son)
+### Proje Yönetimi
+- Proje oluşturma, düzenleme, durum izleme
+- Ürün seti atama ve proje bazlı ürün yönetimi
+- Maliyet snapshot'ları
 
-- **Enterprise Maliyet Motoru**
-  - 9 parametre tipi (Tam Sayı, Para, Ölçü, vb.)
-  - Güvenli formül parser (AST tabanlı)
-  - Versiyon sistemi (ürün/alt kalem pasif-aktif)
-  
-- **Admin Ürün Yönetimi** *(Yeni ui)*
-  - 3 seviye stacked layout (modal yok)
-  - Ürün parametreleri + alt kalemler
-  - Dropdown seçenek yönetimi
-  
-- **Placeholder Sistemi** *(Yeni)*
-  - 5 kural tipi (Doğrudan, Eşitlik, Karşılaştırma, Birleştirme, Şablon)
-  - 9 operatör (=, !=, >, <, >=, <=, içerir, ile başlar, ile biter)
-  - 3 parametre kaynağı (Ürün, Alt Kalem, Proje)
+### Kullanıcı Yönetimi & RBAC
+- Rol tabanlı erişim kontrolü (Admin / Editor / Viewer)
+- Yetki bazlı buton/widget kontrolü
+- Kullanıcı oluşturma, şifre değiştirme
 
-- **Teklif Sistemi**
-  - Dinamik kalem ekleme/düzenleme
-  - Otomatik maliyet hesaplaması
-  - PDF/DOCX dışa aktarma *(hazırlık*
+### Ürün & Maliyet Motoru
+- Ürün kataloğu (parametreler, alt kalemler, versiyonlar)
+- 9 parametre tipi (Tam Sayı, Para, Ölçü, Yüzde, vb.)
+- AST tabanlı güvenli formül parser
+- Versiyon sistemi (pasif/aktif yönetimi)
+- Maliyet şablonları ve kombinasyon hesaplama
 
-### Önceki Sürümler
+### Teklif Sistemi
+- Dinamik kalem ekleme/düzenleme
+- Otomatik maliyet hesaplama
+- Excel/DOCX dışa aktarma
 
-- Proje yönetimi (CRUD, durum izleme)
-- Kullanıcı yönetimi (roller + izinler)
-- Google Drive senkronizasyonu
-- Belge yönetimi (ürün katalogları)
-- Analitik ve raporlama
-- Merge altyapısı (çevrimdışı düzenleme)
+### Belge Yönetimi
+- Belge türleri (Teklif, Keşif, Tanım)
+- Şablon atama, bölüm yönetimi
+- Placeholder sistemi (5 kural tipi, 9 operatör)
+
+### Analitik
+- Proje ve teklif istatistikleri
+- Grafik görselleştirmeler
+
+### Google Drive Senkronizasyonu
+- Tüm iş verisi tabloları çift yönlü merge (34 tablo)
+- Çakışma çözümü (lokal / drive / atla)
+- Şablon dosyaları sync
+- Log dosyaları Drive'a yükleme
+- Sync geçmişi ve per-row detay loglama
+
+---
+
+## ☁️ Google Drive Senkronizasyonu
+
+### Kurulum
+
+1. [Google Cloud Console](https://console.cloud.google.com)'da bir proje oluştur
+2. Drive API'yi etkinleştir
+3. OAuth 2.0 kimlik bilgilerini indir → `veri/credentials.json` olarak kaydet
+4. Uygulamada: **Senkronizasyon** → **Google'a Bağlan**
+5. Drive'da paylaşımlı bir klasör oluştur → **Klasör ID Ayarla**
+
+### Nasıl Çalışır
+
+- Sync sırasında lokal ve Drive veritabanları birleştirilir (union merge)
+- Her tabloda: sadece lokalde olan → Drive'a eklenir; sadece Drive'da olan → lokale eklenir
+- Aynı kayıt ikisinde de varsa: daha yeni zaman damgası kazanır
+- Zaman bilgisi yoksa veya eşitse: çakışma dialogu açılır
+- Sync sonucu **Sync Geçmişi** tablosunda saklanır; çift tıkla per-row detay görüntülenir
+
+### Veri Güvenliği
+
+- Sync sırasında Drive'da `.sync_lock` dosyası oluşturulur (eş zamanlı sync engellenir)
+- Lock 30 dakika sonra otomatik sona erer
+- Drive verisi, lokalde olmayan bir kayıt nedeniyle **asla silinmez** (sadece ekleme/güncelleme)
+
+---
+
+## 🔄 Otomatik Güncelleme
+
+`installer.exe` uygulaması [GitHub Releases](https://github.com/caferozpinar/FormOlusturma/releases)'dan son sürümü kontrol eder.
+
+- Güncelleme varsa ZIP indirir ve uygular
+- Kullanıcı verileri (`Documents/ZET/FormOlusturma/`) güncelleme sırasında korunur
+
+---
+
+## 💾 Veritabanı
+
+### Dosya Konumları
+
+| Dosya | Konum |
+|-------|-------|
+| Uygulama DB | `veri/proje_yonetimi.db` |
+| Drive Token | `veri/drive_token.json` |
+| Drive Kimlik Bilgisi | `veri/credentials.json` |
+| Log dosyaları | `loglar/YYYY-MM-DD.log` |
+
+### Sıfırlama
+
+> ⚠️ Tüm veriler silinir!
+
+```bash
+# Uygulamayı kapat, sonra:
+del veri\proje_yonetimi.db
+python main.py
+```
 
 ---
 
 ## 🛠️ Sorun Giderme
 
-### "Veritabanı kilidi" hatası
+### "database is locked" hatası
 
+Birden fazla uygulama örneği açık kalmış olabilir.
+
+```bash
+taskkill /F /IM python.exe
+# Ardından uygulamayı yeniden başlat
 ```
-Error: database is locked
-```
 
-**Çözüm:**
-1. Uygulamayı kapat
-2. Başka Python işlemini kapat (`taskkill /F /IM python.exe`)
-3. Uygulamayı yeniden başlat
-
-### "Migration başarısız" hatası
+### Migration hatası
 
 ```
 Error: no such table...
 ```
 
-**Çözüm:**
-1. `veri/proje_yonetimi.db` dosyasını sil
-2. Uygulamayı yeniden başlat
-3. Migration'lar yeniden uygulanacak
+`veri/proje_yonetimi.db` dosyasını sil ve yeniden başlat. Migration'lar v1–v46 sırayla uygulanacak.
 
-### Admin kullanıcısı giriş yapamıyor
+### Google Drive bağlantısı kurulamıyor
 
-```
-Login failed: Kullanıcı bulunamadı
-```
+- `veri/credentials.json` dosyasının var olduğundan emin ol
+- Drive API'nin Google Cloud Console'da etkinleştirildiğini kontrol et
+- `veri/drive_token.json` dosyasını silerek yeniden yetkilendir
 
-**Çözüm:**
-1. `veri/proje_yonetimi.db` sil ve yeniden başlat (admin otomatik oluşturulacak)
-2. Veya admin kullanıcı manuel olarak create et: `INSERT INTO kullanicilar (id, kullanici_adi, sifre_hash, rol) VALUES (uuid(), 'admin', hash('admin123'), 'Admin')`
+### Sync sonrası Drive verisi eksik görünüyor
 
-### Çok yavaş başlıyor
+v3.0.6 ile giderildi. Sürümün güncel olduğundan emin ol.
 
-- RAM'da yeterli yer var mı kontrol et
-- Antivirus'u geçici olarak kapat
-- `veri/` dizini SSD'de olduğundan emin ol
+---
+
+## 📝 Sürüm Geçmişi
+
+| Sürüm | Tarih | Özet |
+|-------|-------|------|
+| **v3.0.6** | Mart 2026 | Drive sync veri silme hatası giderildi (SQLite thread fix), per-row sync loglama, sync geçmişi ekranı |
+| v3.0.5 | Mart 2026 | GitHub API rate limit fix (installer), sync thread core dump fix, yetki butonu fix |
+| v3.0.4 | Mart 2026 | QApplication instance fix |
+| v3.0.2–3 | Şubat 2026 | Otomatik güncelleme penceresi, loglama iyileştirmeleri, RBAC yardımcı fonksiyonlar |
+| v34 ve öncesi | Ocak–Şubat 2026 | Enterprise maliyet motoru, placeholder sistemi, teklif sistemi, Drive sync altyapısı |
 
 ---
 
 ## 📞 Destek
 
-Sorular veya bug raporları için [Issues](github.com/zenapi/FormOlusturma/issues) açın.
-
----
-
-## 📝 Lisans
-
-Proprietary — ZET Yapı © 2026
+Bug raporları ve öneriler için: [Issues](https://github.com/caferozpinar/FormOlusturma/issues)
