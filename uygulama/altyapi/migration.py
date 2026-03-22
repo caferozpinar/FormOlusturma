@@ -823,6 +823,36 @@ MIGRATIONS: list[tuple[int, str, str]] = [
             guncelleme_tarihi TEXT NOT NULL DEFAULT (datetime('now'))
         );
     """),
+
+    (45, "Merge altyapısı — guncelleme_tarihi eksik tablolara eklenir", """
+        ALTER TABLE urun_alanlari ADD COLUMN guncelleme_tarihi TEXT NOT NULL DEFAULT '';
+        ALTER TABLE urun_alan_secenekleri ADD COLUMN guncelleme_tarihi TEXT NOT NULL DEFAULT '';
+        ALTER TABLE alt_kalemler ADD COLUMN guncelleme_tarihi TEXT NOT NULL DEFAULT '';
+        ALTER TABLE urun_alt_kalemleri ADD COLUMN guncelleme_tarihi TEXT NOT NULL DEFAULT '';
+        ALTER TABLE belge_urunleri ADD COLUMN guncelleme_tarihi TEXT NOT NULL DEFAULT '';
+        ALTER TABLE belge_alt_kalemleri ADD COLUMN guncelleme_tarihi TEXT NOT NULL DEFAULT '';
+        ALTER TABLE alt_kalem_maliyet_girdi_degerleri ADD COLUMN guncelleme_tarihi TEXT NOT NULL DEFAULT '';
+        ALTER TABLE alt_kalem_maliyet_formulleri ADD COLUMN guncelleme_tarihi TEXT NOT NULL DEFAULT '';
+        ALTER TABLE parametre_dropdown_degerler ADD COLUMN guncelleme_tarihi TEXT NOT NULL DEFAULT '';
+        ALTER TABLE alt_kalem_parametreler ADD COLUMN guncelleme_tarihi TEXT NOT NULL DEFAULT '';
+        ALTER TABLE maliyet_parametreler ADD COLUMN guncelleme_tarihi TEXT NOT NULL DEFAULT '';
+        ALTER TABLE belge_bolumler ADD COLUMN guncelleme_tarihi TEXT NOT NULL DEFAULT '';
+        ALTER TABLE belge_sablon_atamalari ADD COLUMN guncelleme_tarihi TEXT NOT NULL DEFAULT '';
+        ALTER TABLE birimler ADD COLUMN guncelleme_tarihi TEXT NOT NULL DEFAULT '';
+        ALTER TABLE belge_turleri ADD COLUMN guncelleme_tarihi TEXT NOT NULL DEFAULT '';
+    """),
+
+    (46, "Sync log tablosu", """
+        CREATE TABLE IF NOT EXISTS sync_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            tarih TEXT NOT NULL,
+            kullanici TEXT NOT NULL DEFAULT '',
+            sonuc TEXT NOT NULL DEFAULT '',
+            mesaj TEXT NOT NULL DEFAULT '',
+            stats TEXT NOT NULL DEFAULT '{}',
+            detay_log TEXT NOT NULL DEFAULT ''
+        )
+    """),
 ]
 
 # ═══════════════════════════════════════
@@ -905,7 +935,14 @@ class MigrationMotoru:
                 for ifade in sql.strip().split(";"):
                     ifade = ifade.strip()
                     if ifade:
-                        conn.execute(ifade)
+                        try:
+                            conn.execute(ifade)
+                        except Exception as e:
+                            # ALTER TABLE ADD COLUMN zaten varsa geç (yarım kalan migration)
+                            if "duplicate column name" in str(e).lower():
+                                logger.debug(f"Kolon zaten var, atlanıyor: {e}")
+                            else:
+                                raise
 
                 # Sürümü kaydet (v1 kendi tablosunu oluşturduğu için
                 # ilk migration'dan sonra tabloya yazabiliriz)

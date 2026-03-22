@@ -29,7 +29,8 @@ class Veritabani:
     def baglan(self) -> sqlite3.Connection:
         """Veritabanına bağlan veya mevcut bağlantıyı döndür."""
         if self._baglanti is None:
-            self._baglanti = sqlite3.connect(self.db_yolu)
+            self._baglanti = sqlite3.connect(
+                self.db_yolu, check_same_thread=False)
             self._baglanti.row_factory = sqlite3.Row
             self._baglanti.execute("PRAGMA journal_mode=WAL")
             self._baglanti.execute("PRAGMA foreign_keys=ON")

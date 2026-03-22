@@ -8,7 +8,8 @@ Manuel tetikleme, lock mekanizması, çakışma dialogu.
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QProgressBar, QFrame, QMessageBox, QDialog, QFormLayout,
-    QLineEdit, QDialogButtonBox, QGroupBox, QTextEdit, QApplication
+    QLineEdit, QDialogButtonBox, QGroupBox, QTextEdit, QApplication,
+    QTableView
 )
 from PyQt5.QtCore import Qt, pyqtSignal, QThread
 
@@ -193,6 +194,25 @@ class SyncPage(QWidget):
             "font-family:monospace;font-size:11px;background:#FAFAFA;")
         g3l.addWidget(self.log_text)
         outer.addWidget(g3)
+
+        # Sync Geçmişi
+        g4 = QGroupBox("📜 Sync Geçmişi")
+        g4l = QVBoxLayout(g4)
+        from uygulama.arayuz.ui_yardimcilar import SimpleTableModel, setup_table
+        self._gecmis_model = SimpleTableModel(
+            ["Tarih", "Kullanıcı", "Sonuç", "Eklenen", "Güncellenen", "Çakışma", "Mesaj"])
+        self._gecmis_rows = []
+        self.tbl_gecmis = QTableView()
+        self.tbl_gecmis.setModel(self._gecmis_model)
+        setup_table(self.tbl_gecmis)
+        self.tbl_gecmis.setMaximumHeight(160)
+        self.tbl_gecmis.doubleClicked.connect(self._gecmis_detay_goster)
+        g4l.addWidget(self.tbl_gecmis)
+        lbl_hint = QLabel("Satıra çift tıklayarak detaylı logu görüntüleyebilirsiniz.")
+        lbl_hint.setStyleSheet("font-size:11px;color:#888;")
+        g4l.addWidget(lbl_hint)
+        outer.addWidget(g4)
+
         outer.addStretch()
 
     def sayfa_gosterildi(self):
@@ -207,6 +227,7 @@ class SyncPage(QWidget):
             except Exception:
                 pass
         self._durum_guncelle()
+        self._gecmis_yukle()
 
     def _durum_guncelle(self):
         if self.drive_srv and self.drive_srv.baglanti_durumu():
@@ -313,6 +334,7 @@ class SyncPage(QWidget):
             self._log(f"❌ {msg}")
             QMessageBox.warning(self, "Sync Hatası", msg)
         self._worker = None
+        self._gecmis_yukle()
 
     def _on_cakisma(self, tablo, lokal, drive):
         dlg = CakismaDialog(tablo, lokal, drive, self)
@@ -320,6 +342,50 @@ class SyncPage(QWidget):
         if self._worker:
             self._worker._cakisma_karar = dlg.karar
         self._log(f"Çakışma ({tablo}): {dlg.karar}")
+
+    def _gecmis_yukle(self):
+        if not self.drive_srv:
+            return
+        import json
+        try:
+            rows = self.drive_srv.db.getir_hepsi(
+                "SELECT id, tarih, kullanici, sonuc, mesaj, stats "
+                "FROM sync_log ORDER BY id DESC LIMIT 10"
+            ) or []
+            self._gecmis_rows = list(rows)
+            data = []
+            for r in rows:
+                s = json.loads(r["stats"] or "{}")
+                data.append([
+                    r["tarih"], r["kullanici"], r["sonuc"],
+                    s.get("eklenen", 0), s.get("guncellenen", 0),
+                    s.get("cakisma", 0), r["mesaj"][:60]
+                ])
+            self._gecmis_model.veri_guncelle(data)
+        except Exception as e:
+            logger.warning(f"Sync geçmişi yüklenemedi: {e}")
+
+    def _gecmis_detay_goster(self, index):
+        row_idx = index.row()
+        if row_idx >= len(self._gecmis_rows):
+            return
+        r = self._gecmis_rows[row_idx]
+        try:
+            detay = self.drive_srv.db.getir_tek(
+                "SELECT detay_log FROM sync_log WHERE id=?", (r["id"],))
+            log = detay["detay_log"] if detay else ""
+        except Exception:
+            log = ""
+        dlg = QDialog(self)
+        dlg.setWindowTitle(f"Sync Detayı — {r['tarih']} ({r['sonuc']})")
+        dlg.resize(720, 520)
+        lo = QVBoxLayout(dlg)
+        te = QTextEdit()
+        te.setReadOnly(True)
+        te.setPlainText(log or "(detay log yok)")
+        te.setStyleSheet("font-family:monospace;font-size:11px;background:#FAFAFA;")
+        lo.addWidget(te)
+        dlg.exec_()
 
     def _log(self, msg):
         from datetime import datetime

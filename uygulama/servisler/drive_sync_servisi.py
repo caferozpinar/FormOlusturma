@@ -49,47 +49,67 @@ except ImportError as e:
 # ═══════════════════════════════════════
 
 MERGE_TABLOLARI = [
-    {
-        "tablo": "projeler",
-        "pk": "id",
-        "zaman": "guncelleme_tarihi",
-        "olusturma": "olusturma_tarihi",
-        "etiket_col": "firma",  # çakışma dialogunda gösterilecek
-        "alt_tablolar": ["proje_urunleri"],
-    },
-    {
-        "tablo": "proje_urunleri",
-        "pk": "id",
-        "zaman": "guncelleme_tarihi",
-        "olusturma": "olusturma_tarihi",
-        "etiket_col": "urun_id",
-        "ust_fk": ("proje_id", "projeler"),
-    },
-    {
-        "tablo": "teklifler",
-        "pk": "id",
-        "zaman": "guncelleme_tarihi",
-        "olusturma": "olusturma_tarihi",
-        "etiket_col": "baslik",
-        "alt_tablolar": ["teklif_kalemleri"],
-    },
-    {
-        "tablo": "teklif_kalemleri",
-        "pk": "id",
-        "zaman": "guncelleme_tarihi",
-        "olusturma": "olusturma_tarihi",
-        "etiket_col": "id",
-        "ust_fk": ("teklif_id", "teklifler"),
-        "alt_tablolar": ["teklif_parametre_degerleri"],
-    },
-    {
-        "tablo": "teklif_parametre_degerleri",
-        "pk": "id",
-        "zaman": "guncelleme_tarihi",
-        "olusturma": "olusturma_tarihi",
-        "etiket_col": "parametre_adi",
-        "ust_fk": ("kalem_id", "teklif_kalemleri"),
-    },
+    # ─── KATALOG / SEED ───
+    {"tablo": "parametre_tipler",      "pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "kod"},
+    {"tablo": "birimler",              "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "guncelleme_tarihi","etiket_col": "kod"},
+    {"tablo": "belge_turleri",         "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "guncelleme_tarihi","etiket_col": "kod"},
+
+    # ─── YER LOOKUP ───
+    {"tablo": "ulkeler",               "pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "ad"},
+    {"tablo": "sehirler",              "pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "ad",          "ust_fk": ("ulke_id", "ulkeler")},
+    {"tablo": "tesis_turleri",         "pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "ad"},
+    {"tablo": "konum_fiyatlar",        "pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "sehir"},
+    {"tablo": "konum_maliyet_carpanlari", "pk": "id", "zaman": "created_at",    "olusturma": "created_at",       "etiket_col": "konum"},
+
+    # ─── KULLANICILER ───
+    {"tablo": "kullanicilar",          "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "olusturma_tarihi", "etiket_col": "kullanici_adi"},
+
+    # ─── ÜRÜN KATALOĞU ───
+    {"tablo": "urunler",               "pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "ad"},
+    {"tablo": "urun_alanlari",         "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "guncelleme_tarihi","etiket_col": "etiket",       "ust_fk": ("urun_id", "urunler")},
+    {"tablo": "urun_alan_secenekleri", "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "guncelleme_tarihi","etiket_col": "deger",        "ust_fk": ("alan_id", "urun_alanlari")},
+    {"tablo": "urun_versiyonlar",      "pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "urun_id",      "ust_fk": ("urun_id", "urunler")},
+    {"tablo": "urun_parametreler",     "pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "ad",           "ust_fk": ("urun_versiyon_id", "urun_versiyonlar")},
+    {"tablo": "parametre_dropdown_degerler", "pk": "id", "zaman": "guncelleme_tarihi", "olusturma": "guncelleme_tarihi", "etiket_col": "deger","ust_fk": ("parametre_id", "urun_parametreler")},
+
+    # ─── ALT KALEMLER ───
+    {"tablo": "alt_kalemler",          "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "guncelleme_tarihi","etiket_col": "ad"},
+    {"tablo": "urun_alt_kalemleri",    "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "guncelleme_tarihi","etiket_col": "id",           "ust_fk": ("urun_id", "urunler")},
+    {"tablo": "alt_kalem_versiyonlar", "pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "id",           "ust_fk": ("alt_kalem_id", "alt_kalemler")},
+    {"tablo": "alt_kalem_parametreler","pk": "id", "zaman": "guncelleme_tarihi","olusturma": "guncelleme_tarihi","etiket_col": "ad",           "ust_fk": ("alt_kalem_versiyon_id", "alt_kalem_versiyonlar")},
+
+    # ─── MALİYET ───
+    {"tablo": "maliyet_sablonlar",     "pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "id",           "ust_fk": ("alt_kalem_versiyon_id", "alt_kalem_versiyonlar")},
+    {"tablo": "maliyet_parametreler",  "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "guncelleme_tarihi","etiket_col": "ad",           "ust_fk": ("maliyet_sablon_id", "maliyet_sablonlar")},
+    {"tablo": "alt_kalem_parametre_kombinasyonlari", "pk": "id", "zaman": "created_at", "olusturma": "created_at", "etiket_col": "id",         "ust_fk": ("alt_kalem_id", "alt_kalemler")},
+    {"tablo": "alt_kalem_maliyet_versiyonlari",      "pk": "id", "zaman": "created_at", "olusturma": "created_at", "etiket_col": "id",         "ust_fk": ("kombinasyon_id", "alt_kalem_parametre_kombinasyonlari")},
+    {"tablo": "alt_kalem_maliyet_girdi_degerleri",   "pk": "id", "zaman": "guncelleme_tarihi", "olusturma": "guncelleme_tarihi", "etiket_col": "girdi_adi", "ust_fk": ("versiyon_id", "alt_kalem_maliyet_versiyonlari")},
+    {"tablo": "alt_kalem_maliyet_formulleri",        "pk": "id", "zaman": "guncelleme_tarihi", "olusturma": "guncelleme_tarihi", "etiket_col": "alan_adi",  "ust_fk": ("versiyon_id", "alt_kalem_maliyet_versiyonlari")},
+
+    # ─── PLACEHOLDER ───
+    {"tablo": "placeholders",          "pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "kod"},
+    {"tablo": "placeholder_kurallar",  "pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "id",           "ust_fk": ("placeholder_id", "placeholders")},
+
+    # ─── PROJELER ───
+    {"tablo": "projeler",              "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "olusturma_tarihi", "etiket_col": "firma",        "alt_tablolar": ["proje_urunleri"]},
+    {"tablo": "proje_urunleri",        "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "olusturma_tarihi", "etiket_col": "urun_id",      "ust_fk": ("proje_id", "projeler")},
+    {"tablo": "proje_maliyet_snapshot","pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "id",           "ust_fk": ("proje_id", "projeler")},
+
+    # ─── BELGELER ───
+    {"tablo": "belgeler",              "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "olusturma_tarihi", "etiket_col": "tur",          "ust_fk": ("proje_id", "projeler")},
+    {"tablo": "belge_urunleri",        "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "guncelleme_tarihi","etiket_col": "id",           "ust_fk": ("belge_id", "belgeler")},
+    {"tablo": "belge_alt_kalemleri",   "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "guncelleme_tarihi","etiket_col": "id",           "ust_fk": ("belge_id", "belgeler")},
+
+    # ─── TEKLİFLER ───
+    {"tablo": "teklifler",             "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "olusturma_tarihi", "etiket_col": "baslik",       "alt_tablolar": ["teklif_kalemleri"]},
+    {"tablo": "teklif_kalemleri",      "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "olusturma_tarihi", "etiket_col": "id",           "ust_fk": ("teklif_id", "teklifler"), "alt_tablolar": ["teklif_parametre_degerleri"]},
+    {"tablo": "teklif_parametre_degerleri", "pk": "id", "zaman": "guncelleme_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "parametre_adi", "ust_fk": ("teklif_kalem_id", "teklif_kalemleri")},
+    {"tablo": "belge_uretim_kayitlari","pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "dosya_adi",   "ust_fk": ("teklif_id", "teklifler")},
+
+    # ─── BELGE ŞABLONLARI ───
+    {"tablo": "belge_sablon_dosyalar", "pk": "id", "zaman": "yuklenme_tarihi",  "olusturma": "yuklenme_tarihi",  "etiket_col": "ad"},
+    {"tablo": "belge_bolumler",        "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "guncelleme_tarihi","etiket_col": "ad"},
+    {"tablo": "belge_sablon_atamalari","pk": "id", "zaman": "guncelleme_tarihi","olusturma": "guncelleme_tarihi","etiket_col": "id",           "ust_fk": ("bolum_id", "belge_bolumler")},
 ]
 
 # Lock süresi — bu süreden eski lock'lar geçersiz sayılır
@@ -267,18 +287,14 @@ class DriveSyncServisi:
     # ═══════════════════════════════════════
 
     def _dosya_bul(self, ad: str, klasor_id: str = None) -> Optional[dict]:
-        """Drive'da dosya ara."""
+        """Drive'da dosya ara. Hata durumunda exception fırlatır."""
         kid = klasor_id or self.drive_klasor_id
         q = f"name='{ad}' and '{kid}' in parents and trashed=false"
-        try:
-            r = self._service.files().list(
-                q=q, fields="files(id,name,modifiedTime)", spaces='drive'
-            ).execute()
-            files = r.get('files', [])
-            return files[0] if files else None
-        except Exception as e:
-            logger.warning(f"Drive dosya arama hatası ({ad}): {type(e).__name__}: {e}")
-            return None
+        r = self._service.files().list(
+            q=q, fields="files(id,name,modifiedTime)", spaces='drive'
+        ).execute()
+        files = r.get('files', [])
+        return files[0] if files else None
 
     def _klasor_bul_veya_olustur(self, ad: str, ust_id: str = None) -> str:
         """Alt klasörü bul veya oluştur."""
@@ -328,7 +344,11 @@ class DriveSyncServisi:
 
     def _lock_kontrol(self) -> Optional[dict]:
         """Drive'da aktif lock var mı kontrol et."""
-        lock = self._dosya_bul(".sync_lock")
+        try:
+            lock = self._dosya_bul(".sync_lock")
+        except Exception as e:
+            logger.warning(f"Lock kontrol hatası: {type(e).__name__}: {e}")
+            return None
         if not lock:
             return None
 
@@ -376,7 +396,11 @@ class DriveSyncServisi:
 
     def _lock_birak(self):
         """Lock sil."""
-        lock = self._dosya_bul(".sync_lock")
+        try:
+            lock = self._dosya_bul(".sync_lock")
+        except Exception as e:
+            logger.warning(f"Lock bırakma hatası: {type(e).__name__}: {e}")
+            return
         if lock:
             self._service.files().delete(fileId=lock['id']).execute()
             logger.info("Lock bırakıldı.")
@@ -396,9 +420,20 @@ class DriveSyncServisi:
         return tmp
 
     def _db_yukle(self):
-        """Lokal DB'yi Drive'a yükle."""
-        veri_klasor = self._klasor_bul_veya_olustur("veri")
-        self._dosya_yukle(self.db_yolu, "proje_yonetimi.db", veri_klasor)
+        """Lokal DB'yi Drive'a yükle (WAL-safe backup)."""
+        import sqlite3 as _sqlite3
+        tmp_backup = tempfile.mktemp(suffix='.db')
+        try:
+            src = _sqlite3.connect(self.db_yolu)
+            dst = _sqlite3.connect(tmp_backup)
+            src.backup(dst)
+            src.close()
+            dst.close()
+            veri_klasor = self._klasor_bul_veya_olustur("veri")
+            self._dosya_yukle(tmp_backup, "proje_yonetimi.db", veri_klasor)
+        finally:
+            if os.path.exists(tmp_backup):
+                os.remove(tmp_backup)
 
     def merge(self, cakisma_callback: Callable = None,
               ilerleme_callback: Callable = None) -> tuple[bool, str, dict]:
@@ -410,10 +445,22 @@ class DriveSyncServisi:
 
         Returns: (ok, mesaj, istatistik)
         """
+        islem_log: list[str] = []
+
         def _ilerleme(msg):
             logger.info(msg)
             if ilerleme_callback:
                 ilerleme_callback(msg)
+
+        def _log(msg):
+            """Hem UI'a ilet hem kalıcı log'a ekle."""
+            islem_log.append(msg)
+            _ilerleme(msg)
+
+        def _ozet(row: dict, maks=4) -> str:
+            """Kayıt verisini kısa özet string'e çevirir."""
+            items = list(row.items())[:maks]
+            return " | ".join(f"{k}={str(v)[:30]}" for k, v in items)
 
         stats = {"eklenen": 0, "guncellenen": 0, "cakisma": 0, "degisiklik_yok": 0}
 
@@ -422,8 +469,9 @@ class DriveSyncServisi:
 
         if not drive_db_yolu:
             # İlk sync — lokali direkt yükle
-            _ilerleme("Drive'da veritabanı yok — lokal yükleniyor...")
+            _log("Drive'da veritabanı yok — lokal yükleniyor (ilk sync)...")
             self._db_yukle()
+            stats["islem_log"] = islem_log
             return True, "İlk senkronizasyon tamamlandı (lokal → Drive).", stats
 
         try:
@@ -435,39 +483,48 @@ class DriveSyncServisi:
                 pk = tbl_meta["pk"]
                 zaman_col = tbl_meta["zaman"]
                 olusturma_col = tbl_meta.get("olusturma", "olusturma_tarihi")
-                etiket = tbl_meta.get("etiket_col", pk)
-
-                _ilerleme(f"Tablo merge: {tablo}...")
 
                 # Tüm kayıtları çek
                 try:
                     lokal_rows = {r[pk]: dict(r) for r in
                                   self.db.getir_hepsi(f"SELECT * FROM {tablo}")}
-                except Exception:
+                except Exception as e:
+                    _log(f"[{tablo}] ⚠ lokal okunamadı: {e}")
                     lokal_rows = {}
 
                 try:
                     drive_rows = {dict(r)[pk]: dict(r) for r in
                                   drive_conn.execute(f"SELECT * FROM {tablo}").fetchall()}
-                except Exception:
+                except Exception as e:
+                    _log(f"[{tablo}] ⚠ drive okunamadı: {e}")
                     drive_rows = {}
 
                 lokal_ids = set(lokal_rows.keys())
                 drive_ids = set(drive_rows.keys())
 
+                _log(f"[{tablo}] lokal={len(lokal_rows)} satır, drive={len(drive_rows)} satır")
+
                 # 1. Sadece lokal'de var → Drive'a ekle
                 sadece_lokal = lokal_ids - drive_ids
                 for rid in sadece_lokal:
                     row = lokal_rows[rid]
-                    self._kayit_ekle(drive_conn, tablo, row)
-                    stats["eklenen"] += 1
+                    try:
+                        self._kayit_ekle(drive_conn, tablo, row)
+                        _log(f"  ↑LOKAL→DRIVE [{tablo}] id={rid}: {_ozet(row)}")
+                        stats["eklenen"] += 1
+                    except Exception as e:
+                        _log(f"  ❌LOKAL→DRIVE [{tablo}] id={rid} HATA: {type(e).__name__}: {e} | veri={_ozet(row)}")
 
                 # 2. Sadece Drive'da var → Lokal'e ekle
                 sadece_drive = drive_ids - lokal_ids
                 for rid in sadece_drive:
                     row = drive_rows[rid]
-                    self._kayit_ekle_lokal(tablo, row)
-                    stats["eklenen"] += 1
+                    try:
+                        self._kayit_ekle_lokal(tablo, row)
+                        _log(f"  ↓DRIVE→LOKAL [{tablo}] id={rid}: {_ozet(row)}")
+                        stats["eklenen"] += 1
+                    except Exception as e:
+                        _log(f"  ❌DRIVE→LOKAL [{tablo}] id={rid} HATA: {type(e).__name__}: {e} | veri={_ozet(row)}")
 
                 # 3. İkisinde de var → karşılaştır
                 ortak = lokal_ids & drive_ids
@@ -487,12 +544,20 @@ class DriveSyncServisi:
                     if lz and dz and lz != dz:
                         if lz > dz:
                             # Lokal daha yeni → Drive'ı güncelle
-                            self._kayit_guncelle(drive_conn, tablo, pk, lr)
-                            stats["guncellenen"] += 1
+                            try:
+                                self._kayit_guncelle(drive_conn, tablo, pk, lr)
+                                _log(f"  ✎LOKAL→DRIVE [{tablo}] id={rid}: lokal={lz} > drive={dz}")
+                                stats["guncellenen"] += 1
+                            except Exception as e:
+                                _log(f"  ❌GÜNCELLE LOKAL→DRIVE [{tablo}] id={rid} HATA: {e}")
                         elif dz > lz:
                             # Drive daha yeni → Lokal'i güncelle
-                            self._kayit_guncelle_lokal(tablo, pk, dr)
-                            stats["guncellenen"] += 1
+                            try:
+                                self._kayit_guncelle_lokal(tablo, pk, dr)
+                                _log(f"  ✎DRIVE→LOKAL [{tablo}] id={rid}: drive={dz} > lokal={lz}")
+                                stats["guncellenen"] += 1
+                            except Exception as e:
+                                _log(f"  ❌GÜNCELLE DRIVE→LOKAL [{tablo}] id={rid} HATA: {e}")
                     elif lr != dr:
                         # Zaman bilgisi yok veya eşit ama içerik farklı → çakışma
                         stats["cakisma"] += 1
@@ -500,22 +565,32 @@ class DriveSyncServisi:
                         if cakisma_callback:
                             karar = cakisma_callback(tablo, lr, dr)
 
+                        _log(f"  ⚠ÇAKIŞMA [{tablo}] id={rid}: karar={karar} | "
+                             f"lokal={_ozet(lr)} | drive={_ozet(dr)}")
+
                         if karar == "lokal":
-                            self._kayit_guncelle(drive_conn, tablo, pk, lr)
+                            try:
+                                self._kayit_guncelle(drive_conn, tablo, pk, lr)
+                            except Exception as e:
+                                _log(f"  ❌ÇAKIŞMA LOKAL→DRIVE [{tablo}] id={rid} HATA: {e}")
                         elif karar == "drive":
-                            self._kayit_guncelle_lokal(tablo, pk, dr)
+                            try:
+                                self._kayit_guncelle_lokal(tablo, pk, dr)
+                            except Exception as e:
+                                _log(f"  ❌ÇAKIŞMA DRIVE→LOKAL [{tablo}] id={rid} HATA: {e}")
                         # "atla" → hiçbir şey yapma
 
             drive_conn.commit()
             drive_conn.close()
 
             # Merge edilmiş Drive DB'yi yükle
-            _ilerleme("Merge edilmiş veritabanı yükleniyor...")
+            _ilerleme("Merge edilmiş veritabanı Drive'a yükleniyor...")
             veri_klasor = self._klasor_bul_veya_olustur("veri")
             self._dosya_yukle(drive_db_yolu, "proje_yonetimi.db", veri_klasor)
 
         except Exception as e:
             logger.error(f"Merge hatası: {e}")
+            stats["islem_log"] = islem_log
             return False, f"Merge hatası: {e}", stats
         finally:
             if drive_db_yolu and os.path.exists(drive_db_yolu):
@@ -527,11 +602,14 @@ class DriveSyncServisi:
 
         toplam = stats["eklenen"] + stats["guncellenen"]
         if toplam == 0:
-            return True, "Zaten güncel — değişiklik yok.", stats
-        return True, (f"Senkronizasyon tamamlandı.\n"
-                       f"Eklenen: {stats['eklenen']}, "
-                       f"Güncellenen: {stats['guncellenen']}, "
-                       f"Çakışma: {stats['cakisma']}"), stats
+            msg = "Zaten güncel — değişiklik yok."
+        else:
+            msg = (f"Senkronizasyon tamamlandı.\n"
+                   f"Eklenen: {stats['eklenen']}, "
+                   f"Güncellenen: {stats['guncellenen']}, "
+                   f"Çakışma: {stats['cakisma']}")
+        stats["islem_log"] = islem_log
+        return True, msg, stats
 
     def _kayitlar_ayni(self, r1: dict, r2: dict) -> bool:
         """İki kayıt aynı mı? (zaman hariç karşılaştır)"""
@@ -544,30 +622,24 @@ class DriveSyncServisi:
         return True
 
     def _kayit_ekle(self, conn, tablo: str, row: dict):
-        """Drive DB'ye kayıt ekle."""
+        """Drive DB'ye kayıt ekle. Hata durumunda exception fırlatır."""
         cols = list(row.keys())
         vals = [row[c] for c in cols]
         ph = ",".join(["?"] * len(cols))
         col_str = ",".join(cols)
-        try:
-            conn.execute(f"INSERT OR IGNORE INTO {tablo} ({col_str}) VALUES ({ph})", vals)
-        except Exception as e:
-            logger.warning(f"Drive'a ekleme hatası ({tablo}): {e}")
+        conn.execute(f"INSERT OR IGNORE INTO {tablo} ({col_str}) VALUES ({ph})", vals)
 
     def _kayit_ekle_lokal(self, tablo: str, row: dict):
-        """Lokal DB'ye kayıt ekle."""
+        """Lokal DB'ye kayıt ekle. Hata durumunda exception fırlatır."""
         cols = list(row.keys())
         vals = [row[c] for c in cols]
         ph = ",".join(["?"] * len(cols))
         col_str = ",".join(cols)
-        try:
-            with self.db.transaction() as c:
-                c.execute(f"INSERT OR IGNORE INTO {tablo} ({col_str}) VALUES ({ph})", vals)
-        except Exception as e:
-            logger.warning(f"Lokal'e ekleme hatası ({tablo}): {e}")
+        with self.db.transaction() as c:
+            c.execute(f"INSERT OR IGNORE INTO {tablo} ({col_str}) VALUES ({ph})", vals)
 
     def _kayit_guncelle(self, conn, tablo: str, pk: str, row: dict):
-        """Drive DB'de kayıt güncelle."""
+        """Drive DB'de kayıt güncelle. Hata durumunda exception fırlatır."""
         sets = []
         vals = []
         for k, v in row.items():
@@ -575,14 +647,10 @@ class DriveSyncServisi:
                 sets.append(f"{k}=?")
                 vals.append(v)
         vals.append(row[pk])
-        try:
-            conn.execute(
-                f"UPDATE {tablo} SET {','.join(sets)} WHERE {pk}=?", vals)
-        except Exception as e:
-            logger.warning(f"Drive güncelleme hatası ({tablo}): {e}")
+        conn.execute(f"UPDATE {tablo} SET {','.join(sets)} WHERE {pk}=?", vals)
 
     def _kayit_guncelle_lokal(self, tablo: str, pk: str, row: dict):
-        """Lokal DB'de kayıt güncelle."""
+        """Lokal DB'de kayıt güncelle. Hata durumunda exception fırlatır."""
         sets = []
         vals = []
         for k, v in row.items():
@@ -590,12 +658,8 @@ class DriveSyncServisi:
                 sets.append(f"{k}=?")
                 vals.append(v)
         vals.append(row[pk])
-        try:
-            with self.db.transaction() as c:
-                c.execute(
-                    f"UPDATE {tablo} SET {','.join(sets)} WHERE {pk}=?", vals)
-        except Exception as e:
-            logger.warning(f"Lokal güncelleme hatası ({tablo}): {e}")
+        with self.db.transaction() as c:
+            c.execute(f"UPDATE {tablo} SET {','.join(sets)} WHERE {pk}=?", vals)
 
     # ═══════════════════════════════════════
     # DOSYA SYNC (Şablonlar + Belgeler)
@@ -795,6 +859,26 @@ class DriveSyncServisi:
                     hedef = os.path.join(lokal_klasor, ad)
                     self._dosya_indir(d["id"], hedef)
 
+    def _sync_log_kaydet(self, kullanici: str, ok: bool, mesaj: str, stats: dict):
+        """Sync sonucunu sync_log tablosuna kaydet."""
+        import json
+        log_satirlari = stats.pop("islem_log", []) if stats else []
+        try:
+            with self.db.transaction() as c:
+                c.execute(
+                    "INSERT INTO sync_log "
+                    "(tarih, kullanici, sonuc, mesaj, stats, detay_log) "
+                    "VALUES (datetime('now'), ?, ?, ?, ?, ?)",
+                    (kullanici,
+                     "basarili" if ok else "hata",
+                     mesaj,
+                     json.dumps({k: v for k, v in stats.items()
+                                 if k != "islem_log"}, ensure_ascii=False),
+                     "\n".join(log_satirlari))
+                )
+        except Exception as e:
+            logger.warning(f"Sync log kaydedilemedi: {e}")
+
     # ═══════════════════════════════════════
     # ANA SYNC METODU
     # ═══════════════════════════════════════
@@ -826,10 +910,12 @@ class DriveSyncServisi:
         if not ok:
             return False, msg
 
+        stats: dict = {}
         try:
             # 2. DB Merge
             ok, msg, stats = self.merge(cakisma_callback, ilerleme_callback)
             if not ok:
+                self._sync_log_kaydet(kullanici, False, msg, stats)
                 return False, msg
 
             # 3. Dosya sync
@@ -840,13 +926,15 @@ class DriveSyncServisi:
             ok3, msg3 = self.log_sync(ilerleme_callback)
 
             _ilerleme("Tamamlandı!")
+            self._sync_log_kaydet(kullanici, True, msg, stats)
             return True, msg
 
         except Exception as e:
             logger.error(f"Sync hatası: {e}")
+            self._sync_log_kaydet(kullanici, False, str(e), stats)
             return False, f"Senkronizasyon hatası: {e}"
         finally:
-            # 4. Lock bırak
+            # Lock bırak
             try:
                 self._lock_birak()
             except Exception as e:
