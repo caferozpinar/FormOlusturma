@@ -82,11 +82,14 @@ class SyncWorker(QThread):
         self._cakisma_karar = None
 
     def run(self):
-        ok, msg = self.drive_srv.sync(
-            self.kullanici,
-            cakisma_callback=self._cakisma_handler,
-            ilerleme_callback=lambda m: self.ilerleme.emit(m))
-        self.bitti.emit(ok, msg)
+        try:
+            ok, msg = self.drive_srv.sync(
+                self.kullanici,
+                cakisma_callback=self._cakisma_handler,
+                ilerleme_callback=lambda m: self.ilerleme.emit(m))
+            self.bitti.emit(ok, msg)
+        except Exception as e:
+            self.bitti.emit(False, f"Beklenmeyen hata: {type(e).__name__}: {e}")
 
     def _cakisma_handler(self, tablo, lokal, drive):
         self._cakisma_karar = None

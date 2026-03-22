@@ -270,11 +270,15 @@ class DriveSyncServisi:
         """Drive'da dosya ara."""
         kid = klasor_id or self.drive_klasor_id
         q = f"name='{ad}' and '{kid}' in parents and trashed=false"
-        r = self._service.files().list(
-            q=q, fields="files(id,name,modifiedTime)", spaces='drive'
-        ).execute()
-        files = r.get('files', [])
-        return files[0] if files else None
+        try:
+            r = self._service.files().list(
+                q=q, fields="files(id,name,modifiedTime)", spaces='drive'
+            ).execute()
+            files = r.get('files', [])
+            return files[0] if files else None
+        except Exception as e:
+            logger.warning(f"Drive dosya arama hatası ({ad}): {type(e).__name__}: {e}")
+            return None
 
     def _klasor_bul_veya_olustur(self, ad: str, ust_id: str = None) -> str:
         """Alt klasörü bul veya oluştur."""
