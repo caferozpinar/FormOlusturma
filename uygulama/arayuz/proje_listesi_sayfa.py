@@ -162,6 +162,9 @@ class ProjectListPage(QWidget):
                 f"👤 {k.kullanici_adi} ({k.rol.value})")
             # Admin paneli sadece Admin'e görünsün
             self.admin_action.setVisible(state.admin_mi)
+            # Yetki gerektiren butonları giriş sonrası yeniden değerlendir
+            dısablele_eğer_yetkisiz(self.btn_sync, "sync_baslat", self.yetki_servisi)
+            goster_eğer_yetkili(self.btn_new_project, "proje_olustur", self.yetki_servisi)
         else:
             self.kullanici_label.setText("")
 

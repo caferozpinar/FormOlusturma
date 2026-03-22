@@ -224,7 +224,7 @@ def baslat():
         
         # UI hata mesajı göster (eğer QApplication zaten oluşturulduysa)
         try:
-            from PyQt5.QtWidgets import QApplication, QMessageBox
+            from PyQt5.QtWidgets import QMessageBox
             app = QApplication.instance() or QApplication(sys.argv)
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Critical)
