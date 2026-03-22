@@ -68,16 +68,15 @@ def yerel_versiyon() -> str:
 
 
 def github_son_surum() -> tuple[str, str]:
-    """(versiyon_str, zip_download_url) döndürür."""
-    url = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
-    yanit = requests.get(url, timeout=15, headers={"Accept": "application/vnd.github+json"})
+    """(versiyon_str, zip_download_url) döndürür.
+    GitHub API yerine raw content + sabit URL deseni kullanır — rate limit yok.
+    """
+    url = f"https://raw.githubusercontent.com/{GITHUB_REPO}/main/version.txt"
+    yanit = requests.get(url, timeout=15)
     yanit.raise_for_status()
-    veri = yanit.json()
-    tag = veri["tag_name"].lstrip("v")
-    for asset in veri.get("assets", []):
-        if "Windows" in asset["name"] and asset["name"].endswith(".zip"):
-            return tag, asset["browser_download_url"]
-    raise ValueError(f"Release içinde Windows zip bulunamadı. Assetler: {[a['name'] for a in veri.get('assets', [])]}")
+    tag = yanit.text.strip()
+    zip_url = f"https://github.com/{GITHUB_REPO}/releases/download/v{tag}/FormOlusturma_Windows.zip"
+    return tag, zip_url
 
 
 def versiyon_kucuk_mu(a: str, b: str) -> bool:
