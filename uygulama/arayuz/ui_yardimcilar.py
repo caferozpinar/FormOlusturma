@@ -176,7 +176,13 @@ def dısablele_eğer_yetkisiz(button, islem: str, yetki_servisi,
     if not yetki_servisi:
         button.setEnabled(True)
         return True
-    
+
+    from uygulama.ortak.app_state import app_state
+    if not app_state().giris_yapildi:
+        # Henüz giriş yapılmamış — butonu açık bırak, tık anında kontrol edilir
+        button.setEnabled(True)
+        return True
+
     yetkili = kontrol_yetki(islem, yetki_servisi)
     button.setEnabled(yetkili)
     
