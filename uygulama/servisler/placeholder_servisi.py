@@ -19,7 +19,8 @@ Parametre Kaynakları:
 import re
 from typing import Optional
 from uygulama.altyapi.placeholder_repo import (
-    PlaceholderRepository, KURAL_TIPLERI, OPERATORLER, PROJE_BILGI_ALANLARI
+    PlaceholderRepository, KURAL_TIPLERI, OPERATORLER,
+    PROJE_BILGI_ALANLARI, KULLANICI_BILGI_ALANLARI
 )
 from uygulama.ortak.yardimcilar import logger_olustur
 
@@ -70,6 +71,28 @@ class PlaceholderServisi:
     # ÇÖZÜMLEME MOTORU
     # ═══════════════════════════════════════
 
+    @staticmethod
+    def _kullanici_bilgi_baglamlari() -> dict:
+        """Aktif kullanıcı bilgilerini bağlam dict'i olarak döndürür."""
+        from uygulama.ortak.app_state import app_state
+        k = app_state().aktif_kullanici
+        if not k:
+            return {}
+        return {
+            "KULLANICI_AD": k.ad,
+            "KULLANICI_SOYAD": k.soyad,
+            "KULLANICI_TAM_AD": k.tam_ad,
+            "KULLANICI_EMAIL": k.email,
+            "KULLANICI_ROL": k.rol.value,
+        }
+
+    def _baglamlari_zenginlestir(self, baglamlar: dict) -> dict:
+        """Kullanıcı bilgisi eksikse otomatik ekler."""
+        if "kullanici_bilgi" not in baglamlar:
+            baglamlar = dict(baglamlar)
+            baglamlar["kullanici_bilgi"] = self._kullanici_bilgi_baglamlari()
+        return baglamlar
+
     def cozumle(self, placeholder_kod: str, baglamlar: dict) -> str:
         """
         Tek bir placeholder'ı çözümler.
@@ -82,8 +105,10 @@ class PlaceholderServisi:
                                 "__TOPLAM_FIYAT__": "6002.50", "__ALT_KALEM_NO__": "3",
                                 "__TEKLIF_TOPLAM__": "45000", "__TEKLIF_KDV__": "9000",
                                 "__TEKLIF_GENEL_TOPLAM__": "54000"},
+            "kullanici_bilgi": {"KULLANICI_TAM_AD": "Ali Veli", ...},  # otomatik enjekte
         }
         """
+        baglamlar = self._baglamlari_zenginlestir(baglamlar)
         ph = self.repo.kod_ile_getir(placeholder_kod)
         if not ph:
             return placeholder_kod  # Çözümlenemedi, kodu aynen döndür
@@ -110,6 +135,8 @@ class PlaceholderServisi:
         Metin içindeki tüm {/XXX/} placeholder'ları çözümler.
         Form şablonunda kullanılır.
         """
+        baglamlar = self._baglamlari_zenginlestir(baglamlar)
+
         def _degistir(match):
             kod = match.group(0)
             return self.cozumle(kod, baglamlar)

@@ -184,8 +184,9 @@ def baslat():
         maliyet_hesap_srv = MaliyetHesapServisi(maliyet_repo)
         kar_hiyerarsi_srv = KarHiyerarsiServisi(proje_repo)
 
-        # ── 5. Varsayılan admin ──
+        # ── 5. Varsayılan kullanıcılar ──
         kimlik_servisi.varsayilan_admin_olustur()
+        kimlik_servisi.varsayilan_kullanici_olustur()
 
         # ── 6. App State ──
         state = app_state()

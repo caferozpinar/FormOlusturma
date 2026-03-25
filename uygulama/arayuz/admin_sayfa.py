@@ -5,11 +5,313 @@
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QTableView, QTabWidget, QFrame, QMessageBox, QLineEdit,
-    QComboBox, QCheckBox, QSpinBox, QDoubleSpinBox, QInputDialog,
-    QFormLayout, QDialog
+    QComboBox, QCheckBox, QSpinBox, QDoubleSpinBox,
+    QFormLayout, QDialog, QDialogButtonBox
 )
 from PyQt5.QtCore import Qt, pyqtSignal
 from uygulama.arayuz.ui_yardimcilar import SimpleTableModel, setup_table, sarma_buton_yetkisi
+
+
+# ═══════════════════════════════════════════════════════
+# DIALOG SINIFLARI
+# ═══════════════════════════════════════════════════════
+
+class KullaniciEkleDialog(QDialog):
+    """Yeni kullanıcı ekleme formu."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        from uygulama.domain.modeller import KullaniciRolu
+        self.setWindowTitle("Kullanıcı Ekle")
+        self.setModal(True)
+        self.setMinimumWidth(420)
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(24, 24, 24, 20)
+        layout.setSpacing(16)
+
+        baslik = QLabel("Yeni Kullanıcı")
+        baslik.setObjectName("sectionTitle")
+        layout.addWidget(baslik)
+
+        form = QFormLayout()
+        form.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        form.setSpacing(10)
+
+        self._ad = QLineEdit()
+        self._ad.setPlaceholderText("İsim")
+        form.addRow("İsim *", self._ad)
+
+        self._soyad = QLineEdit()
+        self._soyad.setPlaceholderText("Soy İsim")
+        form.addRow("Soy İsim", self._soyad)
+
+        self._email = QLineEdit()
+        self._email.setPlaceholderText("ornek@sirket.com")
+        form.addRow("E-posta *", self._email)
+
+        sifre_row = QHBoxLayout()
+        self._sifre = QLineEdit()
+        self._sifre.setPlaceholderText("En az 6 karakter")
+        self._sifre.setEchoMode(QLineEdit.Password)
+        self._goster_btn = QPushButton("Göster")
+        self._goster_btn.setCheckable(True)
+        self._goster_btn.setFixedWidth(64)
+        self._goster_btn.toggled.connect(
+            lambda checked: self._sifre.setEchoMode(
+                QLineEdit.Normal if checked else QLineEdit.Password
+            )
+        )
+        sifre_row.addWidget(self._sifre)
+        sifre_row.addWidget(self._goster_btn)
+        form.addRow("Şifre *", sifre_row)
+
+        self._rol = QComboBox()
+        for r in KullaniciRolu:
+            self._rol.addItem(r.value, r)
+        self._rol.setCurrentIndex(1)  # Editor varsayılan
+        form.addRow("Rol", self._rol)
+
+        layout.addLayout(form)
+
+        self._hata = QLabel("")
+        self._hata.setObjectName("error")
+        self._hata.hide()
+        layout.addWidget(self._hata)
+
+        btn_row = QHBoxLayout()
+        btn_row.addStretch()
+        iptal = QPushButton("İptal")
+        iptal.clicked.connect(self.reject)
+        self._olustur_btn = QPushButton("Kullanıcı Oluştur")
+        self._olustur_btn.setObjectName("primary")
+        self._olustur_btn.setMinimumHeight(36)
+        self._olustur_btn.setEnabled(False)
+        self._olustur_btn.clicked.connect(self._dogrula_ve_kabul)
+        btn_row.addWidget(iptal)
+        btn_row.addWidget(self._olustur_btn)
+        layout.addLayout(btn_row)
+
+        for w in [self._ad, self._email, self._sifre]:
+            w.textChanged.connect(self._validasyon_guncelle)
+
+    def _validasyon_guncelle(self):
+        dolu = all([
+            self._ad.text().strip(),
+            self._email.text().strip(),
+            self._sifre.text(),
+        ])
+        self._olustur_btn.setEnabled(dolu)
+
+    def _dogrula_ve_kabul(self):
+        email = self._email.text().strip()
+        if "@" not in email:
+            self._hata.setText("Geçerli bir e-posta adresi girin.")
+            self._hata.show()
+            return
+        if len(self._sifre.text()) < 6:
+            self._hata.setText("Şifre en az 6 karakter olmalıdır.")
+            self._hata.show()
+            return
+        self._hata.hide()
+        self.accept()
+
+    def veri(self) -> dict:
+        return {
+            "ad": self._ad.text().strip(),
+            "soyad": self._soyad.text().strip(),
+            "email": self._email.text().strip(),
+            "sifre": self._sifre.text(),
+            "rol": self._rol.currentData(),
+        }
+
+
+class KullaniciDuzenleDialog(QDialog):
+    """Mevcut kullanıcı bilgilerini düzenleme formu."""
+
+    def __init__(self, kullanici, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Kullanıcı Düzenle")
+        self.setModal(True)
+        self.setMinimumWidth(420)
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(24, 24, 24, 20)
+        layout.setSpacing(16)
+
+        baslik = QLabel("Kullanıcıyı Düzenle")
+        baslik.setObjectName("sectionTitle")
+        layout.addWidget(baslik)
+
+        form = QFormLayout()
+        form.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        form.setSpacing(10)
+
+        self._ad = QLineEdit(kullanici.ad)
+        form.addRow("İsim *", self._ad)
+
+        self._soyad = QLineEdit(kullanici.soyad)
+        form.addRow("Soy İsim", self._soyad)
+
+        self._email = QLineEdit(kullanici.email)
+        form.addRow("E-posta *", self._email)
+
+        sifre_row = QHBoxLayout()
+        self._sifre = QLineEdit()
+        self._sifre.setPlaceholderText("Boş bırakılırsa değişmez")
+        self._sifre.setEchoMode(QLineEdit.Password)
+        self._goster_btn = QPushButton("Göster")
+        self._goster_btn.setCheckable(True)
+        self._goster_btn.setFixedWidth(64)
+        self._goster_btn.toggled.connect(
+            lambda checked: self._sifre.setEchoMode(
+                QLineEdit.Normal if checked else QLineEdit.Password
+            )
+        )
+        sifre_row.addWidget(self._sifre)
+        sifre_row.addWidget(self._goster_btn)
+        form.addRow("Yeni Şifre", sifre_row)
+
+        layout.addLayout(form)
+
+        self._hata = QLabel("")
+        self._hata.setObjectName("error")
+        self._hata.hide()
+        layout.addWidget(self._hata)
+
+        btn_row = QHBoxLayout()
+        btn_row.addStretch()
+        iptal = QPushButton("İptal")
+        iptal.clicked.connect(self.reject)
+        self._kaydet_btn = QPushButton("Kaydet")
+        self._kaydet_btn.setObjectName("primary")
+        self._kaydet_btn.setMinimumHeight(36)
+        self._kaydet_btn.clicked.connect(self._dogrula_ve_kabul)
+        btn_row.addWidget(iptal)
+        btn_row.addWidget(self._kaydet_btn)
+        layout.addLayout(btn_row)
+
+        for w in [self._ad, self._email]:
+            w.textChanged.connect(self._validasyon_guncelle)
+        self._validasyon_guncelle()
+
+    def _validasyon_guncelle(self):
+        dolu = bool(self._ad.text().strip() and self._email.text().strip())
+        self._kaydet_btn.setEnabled(dolu)
+
+    def _dogrula_ve_kabul(self):
+        email = self._email.text().strip()
+        if "@" not in email:
+            self._hata.setText("Geçerli bir e-posta adresi girin.")
+            self._hata.show()
+            return
+        sifre = self._sifre.text()
+        if sifre and len(sifre) < 6:
+            self._hata.setText("Şifre en az 6 karakter olmalıdır.")
+            self._hata.show()
+            return
+        self._hata.hide()
+        self.accept()
+
+    def veri(self) -> dict:
+        return {
+            "ad": self._ad.text().strip(),
+            "soyad": self._soyad.text().strip(),
+            "email": self._email.text().strip(),
+            "yeni_sifre": self._sifre.text(),
+        }
+
+
+class RolDegistirDialog(QDialog):
+    """Kullanıcı rolü değiştirme formu."""
+
+    def __init__(self, kullanici_adi: str, mevcut_rol, parent=None):
+        super().__init__(parent)
+        from uygulama.domain.modeller import KullaniciRolu
+        self.setWindowTitle("Rol Değiştir")
+        self.setModal(True)
+        self.setMinimumWidth(320)
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(24, 24, 24, 20)
+        layout.setSpacing(16)
+
+        form = QFormLayout()
+        form.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        form.setSpacing(10)
+
+        k_label = QLabel(kullanici_adi)
+        k_label.setStyleSheet("font-weight: 600;")
+        form.addRow("Kullanıcı", k_label)
+
+        self._rol = QComboBox()
+        for r in KullaniciRolu:
+            self._rol.addItem(r.value, r)
+            if r == mevcut_rol:
+                self._rol.setCurrentIndex(self._rol.count() - 1)
+        form.addRow("Yeni Rol", self._rol)
+
+        layout.addLayout(form)
+
+        btn_row = QHBoxLayout()
+        btn_row.addStretch()
+        iptal = QPushButton("İptal")
+        iptal.clicked.connect(self.reject)
+        kaydet = QPushButton("Kaydet")
+        kaydet.setObjectName("primary")
+        kaydet.setMinimumHeight(36)
+        kaydet.clicked.connect(self.accept)
+        btn_row.addWidget(iptal)
+        btn_row.addWidget(kaydet)
+        layout.addLayout(btn_row)
+
+    def veri(self):
+        return self._rol.currentData()
+
+
+class AdEkleDialog(QDialog):
+    """Tek alan gerektiren ekleme formu (Ülke, Şehir, Tesis Türü)."""
+
+    def __init__(self, baslik: str, etiket: str, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(baslik)
+        self.setModal(True)
+        self.setMinimumWidth(360)
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(24, 24, 24, 20)
+        layout.setSpacing(16)
+
+        form = QFormLayout()
+        form.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        form.setSpacing(10)
+
+        self._ad = QLineEdit()
+        form.addRow(etiket, self._ad)
+        layout.addLayout(form)
+
+        btn_row = QHBoxLayout()
+        btn_row.addStretch()
+        iptal = QPushButton("İptal")
+        iptal.clicked.connect(self.reject)
+        self._ekle_btn = QPushButton("Ekle")
+        self._ekle_btn.setObjectName("primary")
+        self._ekle_btn.setMinimumHeight(36)
+        self._ekle_btn.setEnabled(False)
+        self._ekle_btn.clicked.connect(self.accept)
+        btn_row.addWidget(iptal)
+        btn_row.addWidget(self._ekle_btn)
+        layout.addLayout(btn_row)
+
+        self._ad.textChanged.connect(
+            lambda t: self._ekle_btn.setEnabled(bool(t.strip()))
+        )
+        self._ad.returnPressed.connect(
+            lambda: self.accept() if self._ekle_btn.isEnabled() else None
+        )
+
+    def veri(self) -> str:
+        return self._ad.text().strip()
 
 
 class AdminPanelPage(QWidget):
@@ -80,14 +382,18 @@ class AdminPanelPage(QWidget):
         b_ekle.setObjectName("primary")
         sarma_buton_yetkisi(b_ekle, "kullanici_olustur", self.yetki_servisi, self._kullanici_ekle)
         
+        b_duzenle = QPushButton("Düzenle")
+        sarma_buton_yetkisi(b_duzenle, "kullanici_guncelle", self.yetki_servisi, self._kullanici_duzenle)
+
         b_rol = QPushButton("Rol Değiştir")
         sarma_buton_yetkisi(b_rol, "kullanici_rol_degistir", self.yetki_servisi, self._rol_degistir)
-        
+
         b_deaktif = QPushButton("Deaktif Et")
         b_deaktif.setObjectName("danger")
         sarma_buton_yetkisi(b_deaktif, "kullanici_sil", self.yetki_servisi, self._kullanici_deaktif)
-        
+
         br.addWidget(b_ekle)
+        br.addWidget(b_duzenle)
         br.addWidget(b_rol)
         br.addWidget(b_deaktif)
         br.addStretch()
@@ -113,25 +419,41 @@ class AdminPanelPage(QWidget):
     # ── KULLANICI İŞLEMLERİ ──
     def _kullanici_ekle(self):
         if not self.kimlik_servisi: return
-        from uygulama.domain.modeller import KullaniciRolu
-        ad, ok1 = QInputDialog.getText(self, "Kullanıcı", "Kullanıcı Adı:")
-        if not ok1 or not ad: return
-        sifre, ok2 = QInputDialog.getText(self, "Kullanıcı", "Şifre:")
-        if not ok2 or not sifre: return
-        rol_str, ok3 = QInputDialog.getItem(self, "Rol", "Rol:", [r.value for r in KullaniciRolu], 1)
-        if not ok3: return
-        ok, msg, _ = self.kimlik_servisi.kullanici_olustur(ad, sifre, KullaniciRolu(rol_str))
-        if not ok: QMessageBox.warning(self, "Hata", msg)
+        dlg = KullaniciEkleDialog(self)
+        if dlg.exec_() != QDialog.Accepted: return
+        v = dlg.veri()
+        ok, msg, _ = self.kimlik_servisi.kullanici_olustur(
+            v["email"], v["sifre"], v["rol"],
+            ad=v["ad"], soyad=v["soyad"], email=v["email"]
+        )
+        if not ok:
+            QMessageBox.warning(self, "Hata", msg)
+        self._kullanicilari_yukle()
+
+    def _kullanici_duzenle(self):
+        if not self.kimlik_servisi: return
+        idx = self.user_table.currentIndex()
+        if not idx.isValid() or idx.row() >= len(self._kullanicilar): return
+        u = self._kullanicilar[idx.row()]
+        dlg = KullaniciDuzenleDialog(u, self)
+        if dlg.exec_() != QDialog.Accepted: return
+        v = dlg.veri()
+        ok, msg = self.kimlik_servisi.kullanici_bilgi_guncelle(
+            u.id, v["ad"], v["soyad"], v["email"], v["yeni_sifre"]
+        )
+        if not ok:
+            QMessageBox.warning(self, "Hata", msg)
         self._kullanicilari_yukle()
 
     def _rol_degistir(self):
         if not self.kimlik_servisi: return
-        from uygulama.domain.modeller import KullaniciRolu
         idx = self.user_table.currentIndex()
         if not idx.isValid() or idx.row() >= len(self._kullanicilar): return
         u = self._kullanicilar[idx.row()]
-        rol_str, ok = QInputDialog.getItem(self, "Rol", f"{u.kullanici_adi}:", [r.value for r in KullaniciRolu])
-        if ok: self.kimlik_servisi.rol_degistir(u.id, KullaniciRolu(rol_str)); self._kullanicilari_yukle()
+        dlg = RolDegistirDialog(u.kullanici_adi, u.rol, self)
+        if dlg.exec_() != QDialog.Accepted: return
+        self.kimlik_servisi.rol_degistir(u.id, dlg.veri())
+        self._kullanicilari_yukle()
 
     def _kullanici_deaktif(self):
         if not self.kimlik_servisi: return
@@ -217,19 +539,19 @@ class AdminPanelPage(QWidget):
 
     def _ulke_ekle(self):
         if not self.konum_servisi: return
-        ad, ok = QInputDialog.getText(self, "Ülke Ekle", "Ülke Adı:")
-        if ok and ad:
-            ok, msg, _ = self.konum_servisi.ulke_ekle(ad)
-            if not ok: QMessageBox.warning(self, "Hata", msg)
-            self._konumlari_yukle()
+        dlg = AdEkleDialog("Ülke Ekle", "Ülke Adı:", self)
+        if dlg.exec_() != QDialog.Accepted: return
+        ok, msg, _ = self.konum_servisi.ulke_ekle(dlg.veri())
+        if not ok: QMessageBox.warning(self, "Hata", msg)
+        self._konumlari_yukle()
 
     def _sehir_ekle(self):
         if not self.konum_servisi or not self._secili_ulke_konum: return
-        ad, ok = QInputDialog.getText(self, "Şehir Ekle", "Şehir Adı:")
-        if ok and ad:
-            ok, msg, _ = self.konum_servisi.sehir_ekle(self._secili_ulke_konum, ad)
-            if not ok: QMessageBox.warning(self, "Hata", msg)
-            self._sehirleri_yukle()
+        dlg = AdEkleDialog("Şehir Ekle", "Şehir Adı:", self)
+        if dlg.exec_() != QDialog.Accepted: return
+        ok, msg, _ = self.konum_servisi.sehir_ekle(self._secili_ulke_konum, dlg.veri())
+        if not ok: QMessageBox.warning(self, "Hata", msg)
+        self._sehirleri_yukle()
 
     # ── TESİS VERİ ──
     _tesisler = []
@@ -242,11 +564,11 @@ class AdminPanelPage(QWidget):
 
     def _tesis_ekle(self):
         if not self.tesis_servisi: return
-        ad, ok = QInputDialog.getText(self, "Tesis Türü Ekle", "Tesis Türü:")
-        if ok and ad:
-            ok, msg, _ = self.tesis_servisi.ekle(ad)
-            if not ok: QMessageBox.warning(self, "Hata", msg)
-            self._tesisleri_yukle()
+        dlg = AdEkleDialog("Tesis Türü Ekle", "Tesis Türü:", self)
+        if dlg.exec_() != QDialog.Accepted: return
+        ok, msg, _ = self.tesis_servisi.ekle(dlg.veri())
+        if not ok: QMessageBox.warning(self, "Hata", msg)
+        self._tesisleri_yukle()
 
     # ═════════════════════════════════════════
     # TAB 7: AUDIT LOG

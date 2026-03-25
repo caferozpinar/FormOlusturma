@@ -159,7 +159,7 @@ class ProjectListPage(QWidget):
         if state.aktif_kullanici:
             k = state.aktif_kullanici
             self.kullanici_label.setText(
-                f"👤 {k.kullanici_adi} ({k.rol.value})")
+                f"👤 {k.tam_ad} ({k.rol.value})")
             # Admin paneli sadece Admin'e görünsün
             self.admin_action.setVisible(state.admin_mi)
             # Yetki gerektiren butonları giriş sonrası yeniden değerlendir

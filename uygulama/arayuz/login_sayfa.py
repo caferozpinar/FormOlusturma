@@ -51,7 +51,7 @@ class LoginPage(QWidget):
 
         # Alanlar
         self.username = QLineEdit()
-        self.username.setPlaceholderText("Kullanıcı Adı")
+        self.username.setPlaceholderText("ornek@sirket.com")
 
         self.password = QLineEdit()
         self.password.setPlaceholderText("Şifre")
@@ -60,7 +60,7 @@ class LoginPage(QWidget):
 
         self.remember = QCheckBox("Beni Hatırla")
 
-        card_layout.addWidget(QLabel("Kullanıcı Adı"))
+        card_layout.addWidget(QLabel("E-posta"))
         card_layout.addWidget(self.username)
         card_layout.addWidget(QLabel("Şifre"))
         card_layout.addWidget(self.password)
@@ -101,7 +101,7 @@ class LoginPage(QWidget):
 
     def _giris_yap(self):
         """Giriş butonuna basıldığında çağrılır."""
-        kullanici_adi = self.username.text().strip()
+        email = self.username.text().strip()
         sifre = self.password.text()
 
         # Butonu devre dışı bırak
@@ -110,11 +110,11 @@ class LoginPage(QWidget):
         self.error_label.hide()
 
         try:
-            basarili, mesaj = self.kimlik_servisi.giris_yap(kullanici_adi, sifre)
+            basarili, mesaj = self.kimlik_servisi.giris_yap(email, sifre)
 
             if basarili:
                 if self.remember.isChecked():
-                    OturumYoneticisi.kaydet(kullanici_adi, sifre)
+                    OturumYoneticisi.kaydet(email, sifre)
                 else:
                     OturumYoneticisi.sil()
                 self.error_label.hide()

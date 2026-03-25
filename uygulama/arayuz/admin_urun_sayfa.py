@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import (
     QTableWidget, QTableWidgetItem, QHeaderView, QAbstractItemView,
     QLineEdit, QComboBox, QCheckBox, QSpinBox, QDoubleSpinBox,
     QFormLayout, QScrollArea, QFrame, QMessageBox, QDialog,
-    QStackedWidget, QGroupBox, QTextEdit, QInputDialog, QSplitter
+    QStackedWidget, QGroupBox, QTextEdit, QSplitter
 )
 from PyQt5.QtCore import Qt, pyqtSignal, QSize
 from PyQt5.QtGui import QCursor
@@ -36,6 +36,126 @@ def _tablo_butonu(text: str = "✕", genislik: int = 32) -> QPushButton:
     btn.setStyleSheet(
         "QPushButton { font-size: 11px; padding: 0px; margin: 1px; }")
     return btn
+
+
+# ═══════════════════════════════════════════
+# YARDIMCI DIALOG SINIFLARI
+# ═══════════════════════════════════════════
+
+class AdDialog(QDialog):
+    """Tek metin alanı gerektiren ekleme/düzenleme formu."""
+
+    def __init__(self, baslik: str, etiket: str,
+                 mevcut_deger: str = "", parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(baslik)
+        self.setModal(True)
+        self.setMinimumWidth(360)
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(24, 24, 24, 20)
+        layout.setSpacing(16)
+
+        form = QFormLayout()
+        form.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        form.setSpacing(10)
+
+        self._alan = QLineEdit(mevcut_deger)
+        form.addRow(etiket, self._alan)
+        layout.addLayout(form)
+
+        btn_row = QHBoxLayout()
+        btn_row.addStretch()
+        iptal = QPushButton("İptal")
+        iptal.clicked.connect(self.reject)
+        self._kaydet_btn = QPushButton("Ekle" if not mevcut_deger else "Kaydet")
+        self._kaydet_btn.setObjectName("primary")
+        self._kaydet_btn.setMinimumHeight(36)
+        self._kaydet_btn.setEnabled(bool(mevcut_deger))
+        self._kaydet_btn.clicked.connect(self.accept)
+        btn_row.addWidget(iptal)
+        btn_row.addWidget(self._kaydet_btn)
+        layout.addLayout(btn_row)
+
+        self._alan.textChanged.connect(
+            lambda t: self._kaydet_btn.setEnabled(bool(t.strip()))
+        )
+        self._alan.returnPressed.connect(
+            lambda: self.accept() if self._kaydet_btn.isEnabled() else None
+        )
+        if not mevcut_deger:
+            self._alan.setFocus()
+
+    def veri(self) -> str:
+        return self._alan.text().strip()
+
+
+class UrunFormDialog(QDialog):
+    """Ürün ekleme ve düzenleme formu (Kod + Ad)."""
+
+    def __init__(self, baslik: str, kod: str = "",
+                 ad: str = "", parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(baslik)
+        self.setModal(True)
+        self.setMinimumWidth(400)
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(24, 24, 24, 20)
+        layout.setSpacing(16)
+
+        lbl = QLabel(baslik)
+        lbl.setObjectName("sectionTitle")
+        layout.addWidget(lbl)
+
+        form = QFormLayout()
+        form.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        form.setSpacing(10)
+
+        self._kod = QLineEdit(kod)
+        self._kod.setPlaceholderText("ör: KANAT-01")
+        form.addRow("Ürün Kodu *", self._kod)
+
+        self._ad = QLineEdit(ad)
+        self._ad.setPlaceholderText("ör: Kanat Sistemi")
+        form.addRow("Ürün Adı *", self._ad)
+
+        layout.addLayout(form)
+
+        self._hata = QLabel("")
+        self._hata.setObjectName("error")
+        self._hata.hide()
+        layout.addWidget(self._hata)
+
+        btn_row = QHBoxLayout()
+        btn_row.addStretch()
+        iptal = QPushButton("İptal")
+        iptal.clicked.connect(self.reject)
+        self._kaydet_btn = QPushButton("Kaydet" if kod else "Oluştur")
+        self._kaydet_btn.setObjectName("primary")
+        self._kaydet_btn.setMinimumHeight(36)
+        self._kaydet_btn.setEnabled(bool(kod and ad))
+        self._kaydet_btn.clicked.connect(self.accept)
+        btn_row.addWidget(iptal)
+        btn_row.addWidget(self._kaydet_btn)
+        layout.addLayout(btn_row)
+
+        for w in [self._kod, self._ad]:
+            w.textChanged.connect(self._validasyon_guncelle)
+
+        if not kod:
+            self._kod.setFocus()
+
+    def _validasyon_guncelle(self):
+        self._kaydet_btn.setEnabled(
+            bool(self._kod.text().strip() and self._ad.text().strip())
+        )
+
+    def veri(self) -> dict:
+        return {
+            "kod": self._kod.text().strip().upper(),
+            "ad": self._ad.text().strip(),
+        }
 
 
 # ═══════════════════════════════════════════
@@ -386,11 +506,13 @@ class UrunListeWidget(QWidget):
         self.btn_ekle.clicked.connect(self._yeni_urun)
         self.btn_duzenle = QPushButton("Düzenle")
         self.btn_duzenle.clicked.connect(self._duzenle)
+        self.btn_detay = QPushButton("Detay →")
+        self.btn_detay.clicked.connect(self._detaya_git)
         self.btn_aktif = QPushButton("Aktif/Pasif")
         self.btn_aktif.clicked.connect(self._aktif_toggle)
         self.btn_sil = QPushButton("Sil"); self.btn_sil.setObjectName("danger")
         self.btn_sil.clicked.connect(self._sil)
-        for b in [self.btn_ekle, self.btn_duzenle, self.btn_aktif, self.btn_sil]:
+        for b in [self.btn_ekle, self.btn_duzenle, self.btn_detay, self.btn_aktif, self.btn_sil]:
             br.addWidget(b)
         br.addStretch(); layout.addLayout(br)
 
@@ -416,18 +538,29 @@ class UrunListeWidget(QWidget):
         u = self._secili_urun()
         if u: self.urun_sec.emit(u.id)
 
-    def _duzenle(self):
+    def _detaya_git(self):
         u = self._secili_urun()
         if u: self.urun_sec.emit(u.id)
 
+    def _duzenle(self):
+        u = self._secili_urun()
+        if not u: return
+        dlg = UrunFormDialog("Ürünü Düzenle", kod=u.kod, ad=u.ad, parent=self)
+        if dlg.exec_() != QDialog.Accepted: return
+        v = dlg.veri()
+        ok, msg = self.urun_servisi.guncelle(u.id, kod=v["kod"], ad=v["ad"])
+        if not ok:
+            QMessageBox.warning(self, "Hata", msg)
+        self.yukle()
+
     def _yeni_urun(self):
         if not self.urun_servisi: return
-        kod, ok1 = QInputDialog.getText(self, "Ürün Kodu", "Kod:")
-        if not ok1 or not kod: return
-        ad, ok2 = QInputDialog.getText(self, "Ürün Adı", "Ad:")
-        if not ok2 or not ad: return
-        ok, msg, _ = self.urun_servisi.olustur(kod, ad)
-        if not ok: QMessageBox.warning(self, "Hata", msg)
+        dlg = UrunFormDialog("Yeni Ürün", parent=self)
+        if dlg.exec_() != QDialog.Accepted: return
+        v = dlg.veri()
+        ok, msg, _ = self.urun_servisi.olustur(v["kod"], v["ad"])
+        if not ok:
+            QMessageBox.warning(self, "Hata", msg)
         self.yukle()
 
     def _aktif_toggle(self):
@@ -702,9 +835,9 @@ class UrunDetayWidget(QWidget):
 
     def _alt_kalem_ekle(self):
         if not self.urun_servisi or not self._urun_ver_id: return
-        ad, ok = QInputDialog.getText(self, "Alt Kalem Ekle", "Alt Kalem Adı:")
-        if not ok or not ad: return
-        ak_id = self.urun_servisi.urun_repo.alt_kalem_olustur(ad)
+        dlg = AdDialog("Alt Kalem Ekle", "Alt Kalem Adı:", parent=self)
+        if dlg.exec_() != QDialog.Accepted: return
+        ak_id = self.urun_servisi.urun_repo.alt_kalem_olustur(dlg.veri())
         self.em_repo.alt_kalem_versiyon_olustur(ak_id, self._urun_ver_id)
         self._alt_kalemleri_yukle()
 
@@ -763,13 +896,11 @@ class UrunDetayWidget(QWidget):
         if not ak_data:
             return
         
-        yeni_ad, ok = QInputDialog.getText(
-            self, "Alt Kalem Adını Düzenle", "Yeni Ad:", 
-            text=ak_data.get("ad", ""))
-        
-        if ok and yeni_ad.strip():
-            self.urun_servisi.urun_repo.alt_kalem_guncelle(alt_kalem_id, ad=yeni_ad.strip())
-            self._alt_kalemleri_yukle()
+        dlg = AdDialog("Alt Kalem Adını Düzenle", "Ad:",
+                       mevcut_deger=ak_data.get("ad", ""), parent=self)
+        if dlg.exec_() != QDialog.Accepted: return
+        self.urun_servisi.urun_repo.alt_kalem_guncelle(alt_kalem_id, ad=dlg.veri())
+        self._alt_kalemleri_yukle()
 
     def _ak_sil(self, akv_id: str):
         """Alt kalemi bu ürün versiyonundan kaldır."""

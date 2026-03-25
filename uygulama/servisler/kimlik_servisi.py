@@ -54,33 +54,32 @@ class KimlikServisi:
     # GİRİŞ / ÇIKIŞ
     # ─────────────────────────────────────────
 
-    def giris_yap(self, kullanici_adi: str, sifre: str) -> Tuple[bool, str]:
+    def giris_yap(self, email: str, sifre: str) -> Tuple[bool, str]:
         """
-        Giriş işlemi.
+        Giriş işlemi (e-posta + şifre).
         Returns: (başarılı_mı, mesaj)
         """
-        if not kullanici_adi or not sifre:
-            return False, "Kullanıcı adı ve şifre gereklidir."
+        if not email or not sifre:
+            return False, "E-posta ve şifre gereklidir."
 
-        kullanici = self.kullanici_repo.adi_ile_getir(kullanici_adi)
+        kullanici = self.kullanici_repo.email_ile_getir(email)
 
         if kullanici is None:
-            logger.warning(f"Başarısız giriş denemesi: {kullanici_adi} (bulunamadı)")
-            return False, "Kullanıcı adı veya şifre hatalı."
+            logger.warning(f"Başarısız giriş denemesi: {email} (bulunamadı)")
+            return False, "E-posta veya şifre hatalı."
 
         if not kullanici.aktif:
-            logger.warning(f"Deaktif kullanıcı giriş denemesi: {kullanici_adi}")
+            logger.warning(f"Deaktif kullanıcı giriş denemesi: {email}")
             return False, "Bu hesap devre dışı bırakılmış."
 
         if not self.sifre_dogrula(sifre, kullanici.sifre_hash):
-            # Başarısız giriş logu
             self._log_kaydet(
                 kullanici.id, IslemTipi.GIRIS_BASARISIZ,
                 "kullanicilar", kullanici.id,
-                f"Başarısız giriş: {kullanici_adi}"
+                f"Başarısız giriş: {email}"
             )
-            logger.warning(f"Başarısız giriş: {kullanici_adi} (yanlış şifre)")
-            return False, "Kullanıcı adı veya şifre hatalı."
+            logger.warning(f"Başarısız giriş: {email} (yanlış şifre)")
+            return False, "E-posta veya şifre hatalı."
 
         # Başarılı giriş
         state = app_state()
@@ -89,11 +88,11 @@ class KimlikServisi:
         self._log_kaydet(
             kullanici.id, IslemTipi.GIRIS_BASARILI,
             "kullanicilar", kullanici.id,
-            f"Giriş yapıldı: {kullanici_adi}"
+            f"Giriş yapıldı: {email}"
         )
 
-        logger.info(f"Giriş başarılı: {kullanici_adi} ({kullanici.rol.value})")
-        return True, f"Hoş geldiniz, {kullanici_adi}!"
+        logger.info(f"Giriş başarılı: {email} ({kullanici.rol.value})")
+        return True, f"Hoş geldiniz, {kullanici.tam_ad}!"
 
     def cikis_yap(self) -> None:
         """Çıkış işlemi."""
@@ -107,7 +106,9 @@ class KimlikServisi:
     # ─────────────────────────────────────────
 
     def kullanici_olustur(self, kullanici_adi: str, sifre: str,
-                          rol: KullaniciRolu = KullaniciRolu.EDITOR
+                          rol: KullaniciRolu = KullaniciRolu.EDITOR,
+                          ad: str = "", soyad: str = "",
+                          email: str = ""
                           ) -> Tuple[bool, str, Optional[Kullanici]]:
         """
         Yeni kullanıcı oluşturur.
@@ -120,14 +121,23 @@ class KimlikServisi:
         if not sifre or len(sifre) < 6:
             return False, "Şifre en az 6 karakter olmalıdır.", None
 
+        if email and "@" not in email:
+            return False, "Geçerli bir e-posta adresi girin.", None
+
         if self.kullanici_repo.kullanici_adi_mevcut_mu(kullanici_adi):
             return False, "Bu kullanıcı adı zaten kullanılıyor.", None
+
+        if email and self.kullanici_repo.email_ile_getir(email):
+            return False, "Bu e-posta adresi zaten kullanılıyor.", None
 
         # Oluştur
         kullanici = Kullanici(
             kullanici_adi=kullanici_adi,
             sifre_hash=self.sifre_hashle(sifre),
             rol=rol,
+            ad=ad,
+            soyad=soyad,
+            email=email,
         )
         self.kullanici_repo.olustur(kullanici)
 
@@ -218,16 +228,78 @@ class KimlikServisi:
         """
         mevcut = self.kullanici_repo.adi_ile_getir("admin")
         if mevcut:
+            # Mevcut admin'in emaili boşsa güncelle
+            if not mevcut.email:
+                mevcut.email = "admin@localhost"
+                self.kullanici_repo.guncelle(mevcut)
             return
 
         basarili, mesaj, _ = self.kullanici_olustur(
             kullanici_adi="admin",
             sifre="admin123",
             rol=KullaniciRolu.ADMIN,
+            ad="Admin",
+            email="admin@localhost",
         )
         if basarili:
             logger.info("Varsayılan admin kullanıcısı oluşturuldu. "
-                        "(admin / admin123)")
+                        "(admin@localhost / admin123)")
+
+    def kullanici_bilgi_guncelle(self, kullanici_id: str,
+                                  ad: str, soyad: str, email: str,
+                                  yeni_sifre: str = "") -> Tuple[bool, str]:
+        """Kullanıcının ad/soyad/email/şifre bilgilerini günceller."""
+        kullanici = self.kullanici_repo.id_ile_getir(kullanici_id)
+        if not kullanici:
+            return False, "Kullanıcı bulunamadı."
+
+        if not email or "@" not in email:
+            return False, "Geçerli bir e-posta adresi girin."
+
+        mevcut_email = self.kullanici_repo.email_ile_getir(email)
+        if mevcut_email and mevcut_email.id != kullanici_id:
+            return False, "Bu e-posta adresi başka bir kullanıcıda zaten kullanılıyor."
+
+        kullanici.ad = ad
+        kullanici.soyad = soyad
+        kullanici.email = email
+        kullanici.kullanici_adi = email
+
+        if yeni_sifre:
+            if len(yeni_sifre) < 6:
+                return False, "Şifre en az 6 karakter olmalıdır."
+            kullanici.sifre_hash = self.sifre_hashle(yeni_sifre)
+
+        self.kullanici_repo.guncelle(kullanici)
+
+        state = app_state()
+        if state.aktif_kullanici:
+            self._log_kaydet(
+                state.aktif_kullanici.id, IslemTipi.KULLANICI_GUNCELLE,
+                "kullanicilar", kullanici_id,
+                f"Kullanıcı bilgileri güncellendi: {email}"
+            )
+
+        logger.info(f"Kullanıcı bilgileri güncellendi: {email}")
+        return True, "Kullanıcı bilgileri güncellendi."
+
+    def varsayilan_kullanici_olustur(self) -> None:
+        """Standart varsayılan kullanıcı oluşturur (Viewer rolü)."""
+        email = "kullanıcı@kullanıcı"
+        mevcut = self.kullanici_repo.email_ile_getir(email)
+        if mevcut:
+            return
+
+        basarili, _, _ = self.kullanici_olustur(
+            kullanici_adi=email,
+            sifre="kullanıcı",
+            rol=KullaniciRolu.VIEWER,
+            ad="Kullanıcı",
+            email=email,
+        )
+        if basarili:
+            logger.info("Varsayılan kullanıcı oluşturuldu. "
+                        "(kullanıcı@kullanıcı / kullanıcı)")
 
     # ─────────────────────────────────────────
     # YARDIMCI

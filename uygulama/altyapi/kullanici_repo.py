@@ -24,12 +24,16 @@ class KullaniciRepository:
     @staticmethod
     def _row_to_model(row: sqlite3.Row) -> Kullanici:
         """Veritabanı satırını domain modeline dönüştürür."""
+        keys = row.keys() if hasattr(row, 'keys') else []
         return Kullanici(
             id=row["id"],
             kullanici_adi=row["kullanici_adi"],
             sifre_hash=row["sifre_hash"],
             rol=KullaniciRolu(row["rol"]),
             aktif=bool(row["aktif"]),
+            ad=row["ad"] if "ad" in keys else "",
+            soyad=row["soyad"] if "soyad" in keys else "",
+            email=row["email"] if "email" in keys else "",
             olusturma_tarihi=row["olusturma_tarihi"],
             guncelleme_tarihi=row["guncelleme_tarihi"],
             silinme_tarihi=row["silinme_tarihi"],
@@ -75,14 +79,18 @@ class KullaniciRepository:
             conn.execute(
                 """INSERT INTO kullanicilar
                    (id, kullanici_adi, sifre_hash, rol, aktif,
+                    ad, soyad, email,
                     olusturma_tarihi, guncelleme_tarihi)
-                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (
                     kullanici.id,
                     kullanici.kullanici_adi,
                     kullanici.sifre_hash,
                     kullanici.rol.value,
                     int(kullanici.aktif),
+                    kullanici.ad,
+                    kullanici.soyad,
+                    kullanici.email,
                     kullanici.olusturma_tarihi,
                     kullanici.guncelleme_tarihi,
                 )
@@ -90,19 +98,32 @@ class KullaniciRepository:
         logger.info(f"Kullanıcı oluşturuldu: {kullanici.kullanici_adi}")
         return kullanici
 
+    def email_ile_getir(self, email: str) -> Optional[Kullanici]:
+        """E-posta adresine göre aktif kullanıcı getirir."""
+        row = self.db.getir_tek(
+            """SELECT * FROM kullanicilar
+               WHERE email = ? AND silinme_tarihi IS NULL""",
+            (email,)
+        )
+        return self._row_to_model(row) if row else None
+
     def guncelle(self, kullanici: Kullanici) -> None:
         """Kullanıcı bilgilerini günceller."""
         with self.db.transaction() as conn:
             conn.execute(
                 """UPDATE kullanicilar SET
                    kullanici_adi = ?, sifre_hash = ?, rol = ?,
-                   aktif = ?, guncelleme_tarihi = ?
+                   aktif = ?, ad = ?, soyad = ?, email = ?,
+                   guncelleme_tarihi = ?
                    WHERE id = ?""",
                 (
                     kullanici.kullanici_adi,
                     kullanici.sifre_hash,
                     kullanici.rol.value,
                     int(kullanici.aktif),
+                    kullanici.ad,
+                    kullanici.soyad,
+                    kullanici.email,
                     simdi_iso(),
                     kullanici.id,
                 )

@@ -55,3 +55,7 @@ sablonlar/*.xlsx
 # PyInstaller
 *.manifest
 *.spec.tmp
+
+# Seed scriptleri ve kılavuzları (yerel örnek veri — repo'ya girmez)
+seed_*.py
+seed_*.md

@@ -107,9 +107,16 @@ class Kullanici:
     sifre_hash: str = ""
     rol: KullaniciRolu = KullaniciRolu.EDITOR
     aktif: bool = True
+    ad: str = ""
+    soyad: str = ""
+    email: str = ""
     olusturma_tarihi: str = field(default_factory=_simdi)
     guncelleme_tarihi: str = field(default_factory=_simdi)
     silinme_tarihi: Optional[str] = None
+
+    @property
+    def tam_ad(self) -> str:
+        return f"{self.ad} {self.soyad}".strip() or self.kullanici_adi
 
 
 @dataclass

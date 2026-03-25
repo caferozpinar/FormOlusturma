@@ -853,6 +853,11 @@ MIGRATIONS: list[tuple[int, str, str]] = [
             detay_log TEXT NOT NULL DEFAULT ''
         )
     """),
+    (47, "kullanicilar — ad, soyad, email sütunları", """
+        ALTER TABLE kullanicilar ADD COLUMN ad TEXT NOT NULL DEFAULT '';
+        ALTER TABLE kullanicilar ADD COLUMN soyad TEXT NOT NULL DEFAULT '';
+        ALTER TABLE kullanicilar ADD COLUMN email TEXT NOT NULL DEFAULT ''
+    """),
 ]
 
 # ═══════════════════════════════════════
