@@ -545,8 +545,8 @@ class DriveSyncServisi:
                             stats["eklenen"] += 1
                         else:
                             _log(
-                                f"  ⏭UNIQUE-ATLA [{tablo}] id={rid}: "
-                                f"lokal'de başka UUID ile zaten mevcut"
+                                f"  ⏭ATLA [{tablo}] id={rid}: "
+                                f"lokale eklenemedi (UNIQUE çakışma veya FK hatası)"
                             )
                             eksik_idler.setdefault(tablo, set()).add(rid)
                     except Exception as e:
@@ -657,14 +657,20 @@ class DriveSyncServisi:
         conn.execute(f"INSERT OR IGNORE INTO {tablo} ({col_str}) VALUES ({ph})", vals)
 
     def _kayit_ekle_lokal(self, tablo: str, row: dict) -> bool:
-        """Lokal DB'ye kayıt ekle. True → eklendi, False → UNIQUE çakışma (atlandı)."""
+        """Lokal DB'ye kayıt ekle. True → eklendi, False → çakışma/FK hatası (atlandı)."""
         cols = list(row.keys())
         vals = [row[c] for c in cols]
         ph = ",".join(["?"] * len(cols))
         col_str = ",".join(cols)
-        with self.db.transaction() as c:
-            c.execute(f"INSERT OR IGNORE INTO {tablo} ({col_str}) VALUES ({ph})", vals)
-            return c.rowcount > 0
+        conn = self.db.baglan()
+        try:
+            cursor = conn.execute(
+                f"INSERT OR IGNORE INTO {tablo} ({col_str}) VALUES ({ph})", vals)
+            conn.commit()
+            return cursor.rowcount > 0
+        except sqlite3.IntegrityError:
+            conn.rollback()
+            return False
 
     def _kayit_guncelle(self, conn, tablo: str, pk: str, row: dict):
         """Drive DB'de kayıt güncelle. Hata durumunda exception fırlatır."""
