@@ -92,10 +92,14 @@ def _guncelleme_kontrol_baslat(pencere) -> None:
     def _flag_kontrol():
         if os.path.exists(UPDATE_FLAG):
             from PyQt5.QtWidgets import QMessageBox
+            from PyQt5.QtCore import Qt
             msg = QMessageBox(pencere)
             msg.setWindowTitle("Güncelleme")
             msg.setText("Güncelleme indiriliyor, uygulama yeniden başlatılacak...")
             msg.setStandardButtons(QMessageBox.Ok)
+            msg.setWindowFlags(msg.windowFlags() | Qt.WindowStaysOnTopHint)
+            msg.raise_()
+            msg.activateWindow()
             msg.exec_()
             pencere.close()
 

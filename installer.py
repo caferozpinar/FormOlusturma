@@ -332,11 +332,15 @@ def guncelleme_modu(pid: int) -> None:
     # 2. Kullanıcıya sor
     sor_root = tk.Tk()
     sor_root.withdraw()
+    sor_root.attributes('-topmost', True)
+    sor_root.lift()
+    sor_root.focus_force()
     cevap = messagebox.askyesno(
         "Güncelleme Mevcut",
         f"{APP_NAME} v{tag} mevcut (mevcut sürüm: v{yerel}).\n\n"
         f"Güncelleme yapılsın mı?\n"
         f"(Uygulama kapanıp güncellendikten sonra otomatik açılır.)",
+        parent=sor_root,
     )
     sor_root.destroy()
 
@@ -381,10 +385,14 @@ def guncelleme_modu(pid: int) -> None:
 
             bitis_root = tk.Tk()
             bitis_root.withdraw()
+            bitis_root.attributes('-topmost', True)
+            bitis_root.lift()
+            bitis_root.focus_force()
             messagebox.showinfo(
                 "Güncelleme Tamamlandı",
                 f"{APP_NAME} v{tag} sürümüne başarıyla güncellendi.\n"
                 f"Uygulama yeniden başlatılıyor...",
+                parent=bitis_root,
             )
             bitis_root.destroy()
 
