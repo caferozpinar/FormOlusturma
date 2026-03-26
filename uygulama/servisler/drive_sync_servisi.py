@@ -65,7 +65,7 @@ MERGE_TABLOLARI = [
     {"tablo": "kullanicilar",          "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "olusturma_tarihi", "etiket_col": "kullanici_adi"},
 
     # ─── ÜRÜN KATALOĞU ───
-    {"tablo": "urunler",               "pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "ad"},
+    {"tablo": "urunler",               "pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "ad",           "semantic_key": "kod"},
     {"tablo": "urun_alanlari",         "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "guncelleme_tarihi","etiket_col": "etiket",       "ust_fk": ("urun_id", "urunler")},
     {"tablo": "urun_alan_secenekleri", "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "guncelleme_tarihi","etiket_col": "deger",        "ust_fk": ("alan_id", "urun_alanlari")},
     {"tablo": "urun_versiyonlar",      "pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "urun_id",      "ust_fk": ("urun_id", "urunler")},
@@ -73,7 +73,7 @@ MERGE_TABLOLARI = [
     {"tablo": "parametre_dropdown_degerler", "pk": "id", "zaman": "guncelleme_tarihi", "olusturma": "guncelleme_tarihi", "etiket_col": "deger","ust_fk": ("parametre_id", "urun_parametreler")},
 
     # ─── ALT KALEMLER ───
-    {"tablo": "alt_kalemler",          "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "guncelleme_tarihi","etiket_col": "ad"},
+    {"tablo": "alt_kalemler",          "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "guncelleme_tarihi","etiket_col": "ad",           "semantic_key": "ad"},
     {"tablo": "urun_alt_kalemleri",    "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "guncelleme_tarihi","etiket_col": "id",           "ust_fk": ("urun_id", "urunler")},
     {"tablo": "alt_kalem_versiyonlar", "pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "id",           "ust_fk": ("alt_kalem_id", "alt_kalemler")},
     {"tablo": "alt_kalem_parametreler","pk": "id", "zaman": "guncelleme_tarihi","olusturma": "guncelleme_tarihi","etiket_col": "ad",           "ust_fk": ("alt_kalem_versiyon_id", "alt_kalem_versiyonlar")},
@@ -87,7 +87,7 @@ MERGE_TABLOLARI = [
     {"tablo": "alt_kalem_maliyet_formulleri",        "pk": "id", "zaman": "guncelleme_tarihi", "olusturma": "guncelleme_tarihi", "etiket_col": "alan_adi",  "ust_fk": ("versiyon_id", "alt_kalem_maliyet_versiyonlari")},
 
     # ─── PLACEHOLDER ───
-    {"tablo": "placeholders",          "pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "kod"},
+    {"tablo": "placeholders",          "pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "kod",          "semantic_key": "kod"},
     {"tablo": "placeholder_kurallar",  "pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "id",           "ust_fk": ("placeholder_id", "placeholders")},
 
     # ─── PROJELER ───
@@ -107,10 +107,18 @@ MERGE_TABLOLARI = [
     {"tablo": "belge_uretim_kayitlari","pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "dosya_adi",   "ust_fk": ("teklif_id", "teklifler")},
 
     # ─── BELGE ŞABLONLARI ───
-    {"tablo": "belge_sablon_dosyalar", "pk": "id", "zaman": "yuklenme_tarihi",  "olusturma": "yuklenme_tarihi",  "etiket_col": "ad"},
+    {"tablo": "belge_sablon_dosyalar", "pk": "id", "zaman": "yuklenme_tarihi",  "olusturma": "yuklenme_tarihi",  "etiket_col": "ad",           "semantic_key": "ad"},
     {"tablo": "belge_bolumler",        "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "guncelleme_tarihi","etiket_col": "ad"},
     {"tablo": "belge_sablon_atamalari","pk": "id", "zaman": "guncelleme_tarihi","olusturma": "guncelleme_tarihi","etiket_col": "id",           "ust_fk": ("bolum_id", "belge_bolumler")},
 ]
+
+# Reverse FK haritası: parent_tablo -> [(child_tablo, fk_col)]
+# _lokal_alt_agaci_sil() tarafından cascade delete için kullanılır.
+_FK_COCUK_MAP: dict[str, list[tuple[str, str]]] = {}
+for _t in MERGE_TABLOLARI:
+    if _ust := _t.get("ust_fk"):
+        _fk_col, _ust_tablo = _ust
+        _FK_COCUK_MAP.setdefault(_ust_tablo, []).append((_t["tablo"], _fk_col))
 
 # Lock süresi — bu süreden eski lock'lar geçersiz sayılır
 LOCK_TIMEOUT_DAKIKA = 10
@@ -508,10 +516,41 @@ class DriveSyncServisi:
 
                 _log(f"[{tablo}] lokal={len(lokal_rows)} satır, drive={len(drive_rows)} satır")
 
-                # 1. Sadece lokal'de var → Drive'a ekle
+                # Semantic dedup: Drive'daki kayıtların anlamsal anahtar haritası
+                # (sadece semantic_key tanımlı tablolarda kullanılır)
+                semantic_key = tbl_meta.get("semantic_key")
+                drive_semantic_map: dict[str, str] = {}  # semantic_val -> drive_id
+                if semantic_key:
+                    for d_id, d_row in drive_rows.items():
+                        val = d_row.get(semantic_key)
+                        if val is not None:
+                            drive_semantic_map[str(val)] = d_id
+
+                # 1. Sadece lokal'de var → Drive'a ekle (semantic duplicate yoksa)
                 sadece_lokal = lokal_ids - drive_ids
                 for rid in sadece_lokal:
                     row = lokal_rows[rid]
+
+                    # Semantic duplicate kontrolü: Drive'da aynı anlamsal varlık
+                    # farklı UUID ile varsa, lokal kopyayı sil ve Drive versiyonunu kullan.
+                    if semantic_key:
+                        sem_val = str(row.get(semantic_key, ""))
+                        if sem_val and sem_val in drive_semantic_map:
+                            drive_id = drive_semantic_map[sem_val]
+                            try:
+                                self._lokal_alt_agaci_sil(tablo, rid)
+                                _log(
+                                    f"  🔗SEMANTIC-REMAP [{tablo}] lokal_id={rid} → "
+                                    f"drive_id={drive_id} ({semantic_key}={sem_val!r}): "
+                                    f"lokal alt ağaç silindi, Drive versiyonu inecek"
+                                )
+                            except Exception as e:
+                                _log(
+                                    f"  ❌SEMANTIC-REMAP [{tablo}] id={rid} "
+                                    f"silme hatası: {type(e).__name__}: {e}"
+                                )
+                            continue  # Drive'a ekleme; Drive'ın versiyonu adım 2'de inecek
+
                     try:
                         self._kayit_ekle(drive_conn, tablo, row)
                         _log(f"  ↑LOKAL→DRIVE [{tablo}] id={rid}: {_ozet(row)}")
@@ -564,7 +603,18 @@ class DriveSyncServisi:
                         stats["degisiklik_yok"] += 1
                         continue
 
-                    # Zaman karşılaştır
+                    # Katalog tabloları (semantic_key tanımlı): Drive her zaman kazanır.
+                    # Bu tablolardaki veriler seed/katalog verisidir; Drive otoritedir.
+                    if semantic_key:
+                        try:
+                            self._kayit_guncelle_lokal(tablo, pk, dr)
+                            _log(f"  ✎DRIVE→LOKAL [{tablo}] id={rid}: katalog tablosu — Drive esas")
+                            stats["guncellenen"] += 1
+                        except Exception as e:
+                            _log(f"  ❌GÜNCELLE DRIVE→LOKAL [{tablo}] id={rid} HATA: {e}")
+                        continue
+
+                    # Kullanıcı-üretimi veriler: zaman damgasına göre karar ver
                     lz = lr.get(zaman_col, "") or lr.get(olusturma_col, "") or ""
                     dz = dr.get(zaman_col, "") or dr.get(olusturma_col, "") or ""
 
@@ -694,6 +744,28 @@ class DriveSyncServisi:
         vals.append(row[pk])
         with self.db.transaction() as c:
             c.execute(f"UPDATE {tablo} SET {','.join(sets)} WHERE {pk}=?", vals)
+
+    def _lokal_alt_agaci_sil(self, tablo: str, record_id: str) -> None:
+        """
+        Lokal DB'den kaydı ve tüm çocuk kayıtlarını recursive olarak siler.
+        _FK_COCUK_MAP'ten türetilen bağımlılık zincirine göre çalışır.
+
+        Semantic dedup sırasında çağrılır: Drive'da anlamsal eşleşme bulunan
+        lokal kayıt ve alt ağacı silinerek Drive versiyonunun indirilmesine
+        izin verilir.
+        """
+        for child_tablo, fk_col in _FK_COCUK_MAP.get(tablo, []):
+            child_ids = [
+                r["id"] for r in self.db.getir_hepsi(
+                    f"SELECT id FROM {child_tablo} WHERE {fk_col} = ?",
+                    [record_id],
+                )
+            ]
+            for cid in child_ids:
+                self._lokal_alt_agaci_sil(child_tablo, cid)
+        conn = self.db.baglan()
+        conn.execute(f"DELETE FROM {tablo} WHERE id = ?", [record_id])
+        conn.commit()
 
     # ═══════════════════════════════════════
     # DOSYA SYNC (Şablonlar + Belgeler)

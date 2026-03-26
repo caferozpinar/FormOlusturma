@@ -147,6 +147,18 @@ def zip_ac_guncelle(zip_yolu: str, hedef_dir: str) -> None:
                     shutil.copyfileobj(kaynak, cikis)
 
 
+def uygulama_calisiyor_mu() -> bool:
+    """FormOlusturma.exe'nin şu an çalışıp çalışmadığını kontrol eder."""
+    try:
+        sonuc = subprocess.run(
+            ["tasklist", "/FI", "IMAGENAME eq FormOlusturma.exe"],
+            capture_output=True, text=True, timeout=5,
+        )
+        return "FormOlusturma.exe" in sonuc.stdout
+    except Exception:
+        return False
+
+
 def masaustu_kisayol_olustur() -> None:
     desktop = os.path.join(os.environ.get("USERPROFILE", ""), "Desktop")
     kisayol = os.path.join(desktop, f"{APP_NAME}.lnk")
@@ -199,7 +211,126 @@ class KurulumPenceresi:
         self.root.destroy()
 
 
+def kuruluysa_guncelle() -> None:
+    """Uygulama zaten kuruluysa: versiyon kontrolü yap, güncelle/yeniden kur."""
+    yerel = yerel_versiyon()
+    _log(f"Uygulama kurulu (v{yerel}). Versiyon kontrolü yapılıyor...")
+
+    sor_root = tk.Tk()
+    sor_root.withdraw()
+    sor_root.attributes('-topmost', True)
+    sor_root.lift()
+    sor_root.focus_force()
+
+    try:
+        tag, url = github_son_surum()
+    except Exception as e:
+        _log(f"Versiyon kontrol hatası: {e}")
+        messagebox.showerror(
+            "Bağlantı Hatası",
+            f"GitHub'a bağlanılamadı:\n{e}",
+            parent=sor_root,
+        )
+        sor_root.destroy()
+        return
+
+    if versiyon_kucuk_mu(yerel, tag):
+        mesaj = (
+            f"{APP_NAME} zaten kurulu (v{yerel}).\n\n"
+            f"Yeni sürüm mevcut: v{tag}\n\n"
+            f"Güncelleme yapılsın mı?\n"
+            f"(Uygulama açıksa önce kapatılmalıdır.)"
+        )
+    else:
+        mesaj = (
+            f"{APP_NAME} zaten kurulu ve güncel (v{yerel}).\n\n"
+            f"Yeniden kurmak ister misiniz?"
+        )
+
+    cevap = messagebox.askyesno("Uygulama Kurulu", mesaj, parent=sor_root)
+    sor_root.destroy()
+
+    if not cevap:
+        return
+
+    # Uygulama çalışıyorsa devam etme
+    if uygulama_calisiyor_mu():
+        uyari_root = tk.Tk()
+        uyari_root.withdraw()
+        uyari_root.attributes('-topmost', True)
+        uyari_root.lift()
+        uyari_root.focus_force()
+        messagebox.showwarning(
+            "Uygulama Açık",
+            f"{APP_NAME} şu an çalışıyor.\n\n"
+            f"Lütfen uygulamayı kapatıp installer'ı tekrar çalıştırın.",
+            parent=uyari_root,
+        )
+        uyari_root.destroy()
+        _log("Güncelleme iptal: uygulama çalışıyor.")
+        return
+
+    pencere = GuncellemePenceresi(yerel, tag)
+    hata_kutusu: list[str] = []
+
+    def _guncelle():
+        try:
+            pencere.durum(f"v{tag} indiriliyor...")
+            _log(f"İndirme başlıyor: {url}")
+            zip_gecici = os.path.join(APP_INSTALL_DIR, "_guncelleme_temp.zip")
+            zip_indir(url, zip_gecici, ilerleme_cb=pencere.ilerleme)
+
+            pencere.durum("Dosyalar güncelleniyor...")
+            pencere.ilerleme(100)
+            zip_ac_guncelle(zip_gecici, APP_INSTALL_DIR)
+            os.remove(zip_gecici)
+
+            Path(VERSION_FILE).write_text(tag, encoding="utf-8")
+            _log(f"Güncelleme tamamlandı: v{tag}")
+            pencere.root.after(0, pencere.kapat)
+
+            bitis_root = tk.Tk()
+            bitis_root.withdraw()
+            bitis_root.attributes('-topmost', True)
+            bitis_root.lift()
+            bitis_root.focus_force()
+            messagebox.showinfo(
+                "Tamamlandı",
+                f"{APP_NAME} v{tag} hazır.\nUygulama başlatılıyor...",
+                parent=bitis_root,
+            )
+            bitis_root.destroy()
+            subprocess.Popen([MAIN_EXE], cwd=APP_INSTALL_DIR)
+
+        except Exception as e:
+            _log(f"Güncelleme hatası: {e}")
+            hata_kutusu.append(str(e))
+            pencere.root.after(0, pencere.kapat)
+
+    t = threading.Thread(target=_guncelle, daemon=True)
+    t.start()
+    pencere.root.mainloop()
+
+    if hata_kutusu:
+        err_root = tk.Tk()
+        err_root.withdraw()
+        err_root.attributes('-topmost', True)
+        err_root.lift()
+        err_root.focus_force()
+        messagebox.showerror(
+            "Güncelleme Hatası",
+            f"İşlem sırasında hata oluştu:\n{hata_kutusu[0]}",
+            parent=err_root,
+        )
+        err_root.destroy()
+
+
 def kurulum_modu() -> None:
+    # Uygulama zaten kuruluysa güncelleme/yeniden kurulum akışına yönlendir
+    if os.path.exists(MAIN_EXE):
+        kuruluysa_guncelle()
+        return
+
     pencere = KurulumPenceresi()
     hata_kutusu: list[str] = []
 
