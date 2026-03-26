@@ -92,7 +92,7 @@ MERGE_TABLOLARI = [
     {"tablo": "placeholder_kurallar",  "pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "id",           "ust_fk": ("placeholder_id", "placeholders")},
 
     # ─── PROJELER ───
-    {"tablo": "projeler",              "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "olusturma_tarihi", "etiket_col": "firma",        "alt_tablolar": ["proje_urunleri"]},
+    {"tablo": "projeler",              "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "olusturma_tarihi", "etiket_col": "firma",        "semantic_key": "hash_kodu", "alt_tablolar": ["proje_urunleri"]},
     {"tablo": "proje_urunleri",        "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "olusturma_tarihi", "etiket_col": "urun_id",      "ust_fk": ("proje_id", "projeler")},
     {"tablo": "proje_maliyet_snapshot","pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "id",           "ust_fk": ("proje_id", "projeler")},
 
@@ -102,7 +102,7 @@ MERGE_TABLOLARI = [
     {"tablo": "belge_alt_kalemleri",   "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "guncelleme_tarihi","etiket_col": "id",           "ust_fk": ("belge_id", "belgeler")},
 
     # ─── TEKLİFLER ───
-    {"tablo": "teklifler",             "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "olusturma_tarihi", "etiket_col": "baslik",       "alt_tablolar": ["teklif_kalemleri"]},
+    {"tablo": "teklifler",             "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "olusturma_tarihi", "etiket_col": "baslik",       "semantic_keys": ["proje_id", "tur", "revizyon_no"], "alt_tablolar": ["teklif_kalemleri"]},
     {"tablo": "teklif_kalemleri",      "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "olusturma_tarihi", "etiket_col": "id",           "ust_fk": ("teklif_id", "teklifler"), "alt_tablolar": ["teklif_parametre_degerleri"]},
     {"tablo": "teklif_parametre_degerleri", "pk": "id", "zaman": "guncelleme_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "parametre_adi", "ust_fk": ("teklif_kalem_id", "teklif_kalemleri")},
     {"tablo": "belge_uretim_kayitlari","pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "dosya_adi",   "ust_fk": ("teklif_id", "teklifler")},
@@ -476,6 +476,10 @@ class DriveSyncServisi:
         # Drive'dan lokal'e eklenemeyen ID'leri takip et (UNIQUE çakışma veya FK hatası).
         # Çocuk tablolar, ebeveyn Drive ID'si burada kayıtlıysa atlanır.
         eksik_idler: dict[str, set] = {}
+        # Drive ID -> Lokal ID eşlemesi (semantic duplicate tespitinde kullanılır).
+        # Örn: teklifler'de Drive teklif ID'si lokale farklı ID ile zaten varsa,
+        # çocuk teklif_kalemleri satırları parent FK'yi bu haritadan düzeltir.
+        id_remap: dict[str, dict[str, str]] = {}
 
         _ilerleme("Drive'dan veritabanı indiriliyor...")
         drive_db_yolu = self._db_indir()
@@ -517,15 +521,22 @@ class DriveSyncServisi:
 
                 _log(f"[{tablo}] lokal={len(lokal_rows)} satır, drive={len(drive_rows)} satır")
 
-                # Semantic dedup: Drive'daki kayıtların anlamsal anahtar haritası
-                # (sadece semantic_key tanımlı tablolarda kullanılır)
+                # Semantic dedup: hem lokal hem Drive için anlamsal imza haritası
+                # (semantic_key veya semantic_keys tanımlı tablolarda kullanılır)
                 semantic_key = tbl_meta.get("semantic_key")
-                drive_semantic_map: dict[str, str] = {}  # semantic_val -> drive_id
-                if semantic_key:
+                semantic_keys = tbl_meta.get("semantic_keys")
+                semantic_enabled = bool(semantic_key or semantic_keys)
+                drive_semantic_map: dict[str, str] = {}  # signature -> drive_id
+                lokal_semantic_map: dict[str, str] = {}  # signature -> local_id
+                if semantic_enabled:
                     for d_id, d_row in drive_rows.items():
-                        val = d_row.get(semantic_key)
-                        if val is not None:
-                            drive_semantic_map[str(val)] = d_id
+                        sig = self._semantic_signature(tbl_meta, d_row)
+                        if sig:
+                            drive_semantic_map[sig] = d_id
+                    for l_id, l_row in lokal_rows.items():
+                        sig = self._semantic_signature(tbl_meta, l_row)
+                        if sig:
+                            lokal_semantic_map[sig] = l_id
 
                 # 1. Sadece lokal'de var → Drive'a ekle (semantic duplicate yoksa)
                 sadece_lokal = lokal_ids - drive_ids
@@ -534,15 +545,15 @@ class DriveSyncServisi:
 
                     # Semantic duplicate kontrolü: Drive'da aynı anlamsal varlık
                     # farklı UUID ile varsa, lokal kopyayı sil ve Drive versiyonunu kullan.
-                    if semantic_key:
-                        sem_val = str(row.get(semantic_key, ""))
-                        if sem_val and sem_val in drive_semantic_map:
-                            drive_id = drive_semantic_map[sem_val]
+                    if semantic_enabled:
+                        sig = self._semantic_signature(tbl_meta, row)
+                        if sig and sig in drive_semantic_map:
+                            drive_id = drive_semantic_map[sig]
                             try:
                                 self._lokal_alt_agaci_sil(tablo, rid)
                                 _log(
                                     f"  🔗SEMANTIC-REMAP [{tablo}] lokal_id={rid} → "
-                                    f"drive_id={drive_id} ({semantic_key}={sem_val!r}): "
+                                    f"drive_id={drive_id} (imza={sig!r}): "
                                     f"lokal alt ağaç silindi, Drive versiyonu inecek"
                                 )
                             except Exception as e:
@@ -563,13 +574,20 @@ class DriveSyncServisi:
                 sadece_drive = drive_ids - lokal_ids
                 ust_fk = tbl_meta.get("ust_fk")  # (fk_col, ust_tablo) veya None
                 for rid in sadece_drive:
-                    row = drive_rows[rid]
+                    row = dict(drive_rows[rid])
 
                     # Üst FK kontrolü: üst tablonun Drive ID'si lokal'e eklenememişse bu
                     # satırı da atla ve takip listesine ekle (FK hatası oluşmadan önce).
                     if ust_fk:
                         fk_col, ust_tablo = ust_fk
                         fk_deger = row.get(fk_col)
+
+                        # Parent tabloda Drive ID -> Lokal ID semantic eşleşmesi varsa,
+                        # child satırın FK'sini lokal parent ID'ye remap et.
+                        if fk_deger and fk_deger in id_remap.get(ust_tablo, {}):
+                            row[fk_col] = id_remap[ust_tablo][fk_deger]
+                            fk_deger = row[fk_col]
+
                         if fk_deger and fk_deger in eksik_idler.get(ust_tablo, set()):
                             _log(
                                 f"  ⏭ATLANDI [{tablo}] id={rid}: "
@@ -583,12 +601,31 @@ class DriveSyncServisi:
                         if eklendi:
                             _log(f"  ↓DRIVE→LOKAL [{tablo}] id={rid}: {_ozet(row)}")
                             stats["eklenen"] += 1
+                            if row.get(pk) != rid:
+                                id_remap.setdefault(tablo, {})[rid] = row[pk]
                         else:
-                            _log(
-                                f"  ⏭ATLA [{tablo}] id={rid}: "
-                                f"lokale eklenemedi (UNIQUE çakışma veya FK hatası)"
-                            )
-                            eksik_idler.setdefault(tablo, set()).add(rid)
+                            # UNIQUE/FK çakışmasında semantic eşleşme aranır.
+                            # Aynı anlamsal kayıt lokalde varsa parent-child zinciri kırılmaz;
+                            # Drive ID, lokal ID'ye remap edilerek devam edilir.
+                            semantic_local_id = None
+                            if semantic_enabled:
+                                sig = self._semantic_signature(tbl_meta, row)
+                                if sig:
+                                    semantic_local_id = lokal_semantic_map.get(sig)
+
+                            if semantic_local_id:
+                                id_remap.setdefault(tablo, {})[rid] = semantic_local_id
+                                _log(
+                                    f"  🔁ID-REMAP [{tablo}] drive_id={rid} → "
+                                    f"lokal_id={semantic_local_id} (semantic eşleşme)"
+                                )
+                                stats["guncellenen"] += 1
+                            else:
+                                _log(
+                                    f"  ⏭ATLA [{tablo}] id={rid}: "
+                                    f"lokale eklenemedi (UNIQUE çakışma veya FK hatası)"
+                                )
+                                eksik_idler.setdefault(tablo, set()).add(rid)
                     except Exception as e:
                         _log(f"  ❌DRIVE→LOKAL [{tablo}] id={rid} HATA: {type(e).__name__}: {e} | veri={_ozet(row)}")
                         eksik_idler.setdefault(tablo, set()).add(rid)
@@ -735,6 +772,28 @@ class DriveSyncServisi:
             if str(r1.get(k, "")) != str(r2.get(k, "")):
                 return False
         return True
+
+    def _semantic_signature(self, tbl_meta: dict, row: dict) -> str:
+        """Tablo tanımına göre satırın anlamsal imzasını üretir."""
+        key = tbl_meta.get("semantic_key")
+        keys = tbl_meta.get("semantic_keys")
+
+        if key:
+            val = row.get(key)
+            if val is None or str(val) == "":
+                return ""
+            return f"{key}={val}"
+
+        if keys:
+            parts = []
+            for k in keys:
+                v = row.get(k)
+                if v is None or str(v) == "":
+                    return ""
+                parts.append(f"{k}={v}")
+            return "|".join(parts)
+
+        return ""
 
     def _lokal_pk_degistir_ve_fk_guncelle(self, tablo: str, pk: str,
                                           eski_id: str, yeni_id: str) -> None:
