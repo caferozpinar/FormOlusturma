@@ -15,6 +15,7 @@ import shutil
 import socket
 import sqlite3
 import tempfile
+import uuid
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional, Callable
@@ -598,6 +599,43 @@ class DriveSyncServisi:
                     lr = lokal_rows[rid]
                     dr = drive_rows[rid]
 
+                    # Aynı ID altında farklı anlamsal varlık varsa (örn. urunler.kod)
+                    # kayıt atlamak yerine lokal kaydı yeni ID ile çoğaltıp iki tarafta da
+                    # her iki varlığı koru.
+                    if semantic_key:
+                        lsem = str(lr.get(semantic_key, "") or "")
+                        dsem = str(dr.get(semantic_key, "") or "")
+                        if lsem and dsem and lsem != dsem:
+                            yeni_id = str(uuid.uuid4())
+                            lr_yeni = dict(lr)
+                            lr_yeni[pk] = yeni_id
+
+                            try:
+                                self._lokal_pk_degistir_ve_fk_guncelle(tablo, pk, rid, yeni_id)
+                                self._kayit_ekle(drive_conn, tablo, lr_yeni)
+
+                                # Lokal tarafta artık rid boşaldığı için Drive kaydını rid ile indir.
+                                eklendi = self._kayit_ekle_lokal(tablo, dr)
+                                if not eklendi:
+                                    _log(
+                                        f"  ⚠ID-ÇAKIŞMA [{tablo}] id={rid}: "
+                                        f"Drive kaydı lokal'e eklenemedi (UNIQUE/FK)."
+                                    )
+                                    eksik_idler.setdefault(tablo, set()).add(rid)
+
+                                _log(
+                                    f"  🔁ID-REMAP [{tablo}] eski_id={rid} (lokal {semantic_key}={lsem!r}) "
+                                    f"→ yeni_id={yeni_id}; Drive {semantic_key}={dsem!r} eski_id'de korundu"
+                                )
+                                stats["eklenen"] += 2
+                            except Exception as e:
+                                _log(
+                                    f"  ❌ID-REMAP [{tablo}] id={rid} HATA: "
+                                    f"{type(e).__name__}: {e}"
+                                )
+                                eksik_idler.setdefault(tablo, set()).add(rid)
+                            continue
+
                     # İçerik aynı mı?
                     if self._kayitlar_ayni(lr, dr):
                         stats["degisiklik_yok"] += 1
@@ -697,6 +735,37 @@ class DriveSyncServisi:
             if str(r1.get(k, "")) != str(r2.get(k, "")):
                 return False
         return True
+
+    def _lokal_pk_degistir_ve_fk_guncelle(self, tablo: str, pk: str,
+                                          eski_id: str, yeni_id: str) -> None:
+        """
+        Lokal DB'de bir kaydın PK'sini değiştirir ve doğrudan çocuk FK'larını günceller.
+
+        Bu yöntem, aynı ID altında farklı anlamsal varlık çakışmasında lokal kaydı
+        yeni ID'ye taşıyarak her iki kaydın da korunmasını sağlar.
+        """
+        conn = self.db.baglan()
+        try:
+            conn.execute("PRAGMA foreign_keys=OFF")
+            conn.execute("BEGIN")
+
+            conn.execute(
+                f"UPDATE {tablo} SET {pk} = ? WHERE {pk} = ?",
+                [yeni_id, eski_id],
+            )
+
+            for child_tablo, fk_col in _FK_COCUK_MAP.get(tablo, []):
+                conn.execute(
+                    f"UPDATE {child_tablo} SET {fk_col} = ? WHERE {fk_col} = ?",
+                    [yeni_id, eski_id],
+                )
+
+            conn.execute("COMMIT")
+        except Exception:
+            conn.execute("ROLLBACK")
+            raise
+        finally:
+            conn.execute("PRAGMA foreign_keys=ON")
 
     def _kayit_ekle(self, conn, tablo: str, row: dict):
         """Drive DB'ye kayıt ekle. Hata durumunda exception fırlatır."""
