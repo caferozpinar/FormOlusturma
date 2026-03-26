@@ -464,6 +464,10 @@ class DriveSyncServisi:
 
         stats = {"eklenen": 0, "guncellenen": 0, "cakisma": 0, "degisiklik_yok": 0}
 
+        # Drive'dan lokal'e eklenemeyen ID'leri takip et (UNIQUE çakışma veya FK hatası).
+        # Çocuk tablolar, ebeveyn Drive ID'si burada kayıtlıysa atlanır.
+        eksik_idler: dict[str, set] = {}
+
         _ilerleme("Drive'dan veritabanı indiriliyor...")
         drive_db_yolu = self._db_indir()
 
@@ -517,14 +521,37 @@ class DriveSyncServisi:
 
                 # 2. Sadece Drive'da var → Lokal'e ekle
                 sadece_drive = drive_ids - lokal_ids
+                ust_fk = tbl_meta.get("ust_fk")  # (fk_col, ust_tablo) veya None
                 for rid in sadece_drive:
                     row = drive_rows[rid]
+
+                    # Üst FK kontrolü: üst tablonun Drive ID'si lokal'e eklenememişse bu
+                    # satırı da atla ve takip listesine ekle (FK hatası oluşmadan önce).
+                    if ust_fk:
+                        fk_col, ust_tablo = ust_fk
+                        fk_deger = row.get(fk_col)
+                        if fk_deger and fk_deger in eksik_idler.get(ust_tablo, set()):
+                            _log(
+                                f"  ⏭ATLANDI [{tablo}] id={rid}: "
+                                f"üst {ust_tablo}.{fk_deger} Drive'dan lokale eklenemedi"
+                            )
+                            eksik_idler.setdefault(tablo, set()).add(rid)
+                            continue
+
                     try:
-                        self._kayit_ekle_lokal(tablo, row)
-                        _log(f"  ↓DRIVE→LOKAL [{tablo}] id={rid}: {_ozet(row)}")
-                        stats["eklenen"] += 1
+                        eklendi = self._kayit_ekle_lokal(tablo, row)
+                        if eklendi:
+                            _log(f"  ↓DRIVE→LOKAL [{tablo}] id={rid}: {_ozet(row)}")
+                            stats["eklenen"] += 1
+                        else:
+                            _log(
+                                f"  ⏭UNIQUE-ATLA [{tablo}] id={rid}: "
+                                f"lokal'de başka UUID ile zaten mevcut"
+                            )
+                            eksik_idler.setdefault(tablo, set()).add(rid)
                     except Exception as e:
                         _log(f"  ❌DRIVE→LOKAL [{tablo}] id={rid} HATA: {type(e).__name__}: {e} | veri={_ozet(row)}")
+                        eksik_idler.setdefault(tablo, set()).add(rid)
 
                 # 3. İkisinde de var → karşılaştır
                 ortak = lokal_ids & drive_ids
@@ -629,14 +656,15 @@ class DriveSyncServisi:
         col_str = ",".join(cols)
         conn.execute(f"INSERT OR IGNORE INTO {tablo} ({col_str}) VALUES ({ph})", vals)
 
-    def _kayit_ekle_lokal(self, tablo: str, row: dict):
-        """Lokal DB'ye kayıt ekle. Hata durumunda exception fırlatır."""
+    def _kayit_ekle_lokal(self, tablo: str, row: dict) -> bool:
+        """Lokal DB'ye kayıt ekle. True → eklendi, False → UNIQUE çakışma (atlandı)."""
         cols = list(row.keys())
         vals = [row[c] for c in cols]
         ph = ",".join(["?"] * len(cols))
         col_str = ",".join(cols)
         with self.db.transaction() as c:
             c.execute(f"INSERT OR IGNORE INTO {tablo} ({col_str}) VALUES ({ph})", vals)
+            return c.rowcount > 0
 
     def _kayit_guncelle(self, conn, tablo: str, pk: str, row: dict):
         """Drive DB'de kayıt güncelle. Hata durumunda exception fırlatır."""
