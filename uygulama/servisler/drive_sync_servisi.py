@@ -467,7 +467,8 @@ class DriveSyncServisi:
                 os.remove(tmp_backup)
 
     def merge(self, cakisma_callback: Callable = None,
-              ilerleme_callback: Callable = None) -> tuple[bool, str, dict]:
+              ilerleme_callback: Callable = None,
+              verbose: bool = False) -> tuple[bool, str, dict]:
         """
         Ana merge işlemi.
 
@@ -484,9 +485,19 @@ class DriveSyncServisi:
                 ilerleme_callback(msg)
 
         def _log(msg):
-            """Hem UI'a ilet hem kalıcı log'a ekle."""
+            """Hem UI'a ilet hem kalıcı log'a ekle (INFO)."""
             islem_log.append(msg)
             _ilerleme(msg)
+
+        def _log_detay(msg):
+            """Sorunsuz transferler için: verbose modda INFO, aksi halde DEBUG."""
+            islem_log.append(msg)
+            if verbose:
+                logger.info(msg)
+            else:
+                logger.debug(msg)
+            if ilerleme_callback:
+                ilerleme_callback(msg)
 
         def _ozet(row: dict, maks=4) -> str:
             """Kayıt verisini kısa özet string'e çevirir."""
@@ -596,7 +607,7 @@ class DriveSyncServisi:
 
                     try:
                         self._kayit_ekle(drive_conn, tablo, row)
-                        _log(f"  ↑LOKAL→DRIVE [{tablo}] id={rid}: {_ozet(row)}")
+                        _log_detay(f"  ↑LOKAL→DRIVE [{tablo}] id={rid}: {_ozet(row)}")
                         stats["eklenen"] += 1
                     except Exception as e:
                         _log(f"  ❌LOKAL→DRIVE [{tablo}] id={rid} HATA: {type(e).__name__}: {e} | veri={_ozet(row)}")
@@ -644,7 +655,7 @@ class DriveSyncServisi:
                     try:
                         eklendi, ekleme_hatasi = self._kayit_ekle_lokal(tablo, row)
                         if eklendi:
-                            _log(f"  ↓DRIVE→LOKAL [{tablo}] id={rid}: {_ozet(row)}")
+                            _log_detay(f"  ↓DRIVE→LOKAL [{tablo}] id={rid}: {_ozet(row)}")
                             stats["eklenen"] += 1
                             if row.get(pk) != rid:
                                 id_remap.setdefault(tablo, {})[rid] = row[pk]
@@ -729,7 +740,7 @@ class DriveSyncServisi:
                     if semantic_key:
                         try:
                             self._kayit_guncelle_lokal(tablo, pk, dr)
-                            _log(f"  ✎DRIVE→LOKAL [{tablo}] id={rid}: katalog tablosu — Drive esas")
+                            _log_detay(f"  ✎DRIVE→LOKAL [{tablo}] id={rid}: katalog tablosu — Drive esas")
                             stats["guncellenen"] += 1
                         except Exception as e:
                             _log(f"  ❌GÜNCELLE DRIVE→LOKAL [{tablo}] id={rid} HATA: {e}")
@@ -759,14 +770,14 @@ class DriveSyncServisi:
                     if lokal_kazanir:
                         try:
                             self._kayit_guncelle(drive_conn, tablo, pk, lr)
-                            _log(f"  ✎LOKAL→DRIVE [{tablo}] id={rid}: v{lv}>{dv} | {lz} | {ln}")
+                            _log_detay(f"  ✎LOKAL→DRIVE [{tablo}] id={rid}: v{lv}>{dv} | {lz} | {ln}")
                             stats["guncellenen"] += 1
                         except Exception as e:
                             _log(f"  ❌GÜNCELLE LOKAL→DRIVE [{tablo}] id={rid} HATA: {e}")
                     else:
                         try:
                             self._kayit_guncelle_lokal_syncing(tablo, pk, dr)
-                            _log(f"  ✎DRIVE→LOKAL [{tablo}] id={rid}: v{dv}>={lv} | {dz} | {dn}")
+                            _log_detay(f"  ✎DRIVE→LOKAL [{tablo}] id={rid}: v{dv}>={lv} | {dz} | {dn}")
                             stats["guncellenen"] += 1
                         except Exception as e:
                             _log(f"  ❌GÜNCELLE DRIVE→LOKAL [{tablo}] id={rid} HATA: {e}")
@@ -1186,7 +1197,8 @@ class DriveSyncServisi:
 
     def sync(self, kullanici: str,
              cakisma_callback: Callable = None,
-             ilerleme_callback: Callable = None) -> tuple[bool, str]:
+             ilerleme_callback: Callable = None,
+             verbose: bool = False) -> tuple[bool, str]:
         """
         Ana senkronizasyon — UI'dan çağrılır.
 
@@ -1214,7 +1226,7 @@ class DriveSyncServisi:
         stats: dict = {}
         try:
             # 2. DB Merge
-            ok, msg, stats = self.merge(cakisma_callback, ilerleme_callback)
+            ok, msg, stats = self.merge(cakisma_callback, ilerleme_callback, verbose)
             if not ok:
                 self._sync_log_kaydet(kullanici, False, msg, stats)
                 return False, msg

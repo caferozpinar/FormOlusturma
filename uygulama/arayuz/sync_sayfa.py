@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QProgressBar, QFrame, QMessageBox, QDialog, QFormLayout,
     QLineEdit, QDialogButtonBox, QGroupBox, QTextEdit, QApplication,
-    QTableView
+    QTableView, QCheckBox
 )
 from PyQt5.QtCore import Qt, pyqtSignal, QThread
 
@@ -76,10 +76,11 @@ class SyncWorker(QThread):
     bitti = pyqtSignal(bool, str)
     cakisma = pyqtSignal(str, dict, dict)
 
-    def __init__(self, drive_srv, kullanici):
+    def __init__(self, drive_srv, kullanici, verbose: bool = False):
         super().__init__()
         self.drive_srv = drive_srv
         self.kullanici = kullanici
+        self.verbose = verbose
         self._cakisma_karar = None
 
     def run(self):
@@ -87,7 +88,8 @@ class SyncWorker(QThread):
             ok, msg = self.drive_srv.sync(
                 self.kullanici,
                 cakisma_callback=self._cakisma_handler,
-                ilerleme_callback=lambda m: self.ilerleme.emit(m))
+                ilerleme_callback=lambda m: self.ilerleme.emit(m),
+                verbose=self.verbose)
             self.bitti.emit(ok, msg)
         except Exception as e:
             self.bitti.emit(False, f"Beklenmeyen hata: {type(e).__name__}: {e}")
@@ -161,12 +163,20 @@ class SyncPage(QWidget):
         self.progress.setVisible(False)
         g2l.addWidget(self.progress)
 
+        sync_row = QHBoxLayout()
         self.btn_sync = QPushButton("🔄 Senkronize Et")
         self.btn_sync.setObjectName("primary")
         self.btn_sync.setFixedHeight(40)
         self.btn_sync.setStyleSheet("font-size:14px;font-weight:bold;")
         self.btn_sync.clicked.connect(self._sync_baslat)
-        g2l.addWidget(self.btn_sync)
+        sync_row.addWidget(self.btn_sync)
+        self.chk_verbose = QCheckBox("Detaylı log")
+        self.chk_verbose.setToolTip(
+            "İşaretlenirse tüm aksiyonlar (başarılı transferler dahil) log dosyasına yazılır.")
+        self.chk_verbose.setStyleSheet("font-size:12px;color:#555;")
+        sync_row.addWidget(self.chk_verbose)
+        sync_row.addStretch()
+        g2l.addLayout(sync_row)
         outer.addWidget(g2)
 
         # Log Sync bilgisi
@@ -311,7 +321,8 @@ class SyncPage(QWidget):
         self.log_text.clear()
         self._log("Sync başlatıldı...")
 
-        self._worker = SyncWorker(self.drive_srv, kullanici)
+        self._worker = SyncWorker(self.drive_srv, kullanici,
+                                   verbose=self.chk_verbose.isChecked())
         self._worker.ilerleme.connect(self._on_ilerleme)
         self._worker.bitti.connect(self._on_bitti)
         self._worker.cakisma.connect(self._on_cakisma)
