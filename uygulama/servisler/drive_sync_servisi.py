@@ -63,7 +63,7 @@ MERGE_TABLOLARI = [
     {"tablo": "konum_maliyet_carpanlari", "pk": "id", "zaman": "created_at",    "olusturma": "created_at",       "etiket_col": "konum"},
 
     # ─── KULLANICILER ───
-    {"tablo": "kullanicilar",          "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "olusturma_tarihi", "etiket_col": "kullanici_adi"},
+    {"tablo": "kullanicilar",          "pk": "id", "zaman": "guncelleme_tarihi","olusturma": "olusturma_tarihi", "etiket_col": "kullanici_adi", "semantic_key": "kullanici_adi"},
 
     # ─── ÜRÜN KATALOĞU ───
     {"tablo": "urunler",               "pk": "id", "zaman": "olusturma_tarihi", "olusturma": "olusturma_tarihi", "etiket_col": "ad",           "semantic_key": "kod"},
@@ -578,6 +578,15 @@ class DriveSyncServisi:
                                     f"drive_id={drive_id} (imza={sig!r}): "
                                     f"lokal alt ağaç silindi, Drive versiyonu inecek"
                                 )
+                            except sqlite3.IntegrityError:
+                                # Lokal kayıt FK bağımlıları nedeniyle silinemedi.
+                                # Sorun değil: Drive ID'si Phase 2'de semantic remap ile
+                                # lokal ID'ye eşlenecek, FK bağımlıları korunacak.
+                                _log(
+                                    f"  ⚠SEMANTIC-REMAP [{tablo}] id={rid}: "
+                                    f"FK bağımlısı var, silinemedi — "
+                                    f"Phase 2 ID-remap ile çözülecek"
+                                )
                             except Exception as e:
                                 _log(
                                     f"  ❌SEMANTIC-REMAP [{tablo}] id={rid} "
@@ -618,8 +627,22 @@ class DriveSyncServisi:
                             eksik_idler.setdefault(tablo, set()).add(rid)
                             continue
 
+                    # ust_fk dışındaki DB-level FK kolonları da remap et.
+                    # Örn: projeler.olusturan_id → kullanicilar(id)
+                    # kullanicilar semantic remap ile eklendiyse id_remap'te kaydı var.
+                    for _rt, _rmap in id_remap.items():
+                        if _rt == tablo:
+                            continue
+                        for _col in list(row.keys()):
+                            if _col != pk and row[_col] in _rmap:
+                                _log(
+                                    f"  🔀FK-REMAP [{tablo}] id={rid} "
+                                    f"{_col}: {row[_col]} → {_rmap[row[_col]]} ({_rt})"
+                                )
+                                row[_col] = _rmap[row[_col]]
+
                     try:
-                        eklendi = self._kayit_ekle_lokal(tablo, row)
+                        eklendi, ekleme_hatasi = self._kayit_ekle_lokal(tablo, row)
                         if eklendi:
                             _log(f"  ↓DRIVE→LOKAL [{tablo}] id={rid}: {_ozet(row)}")
                             stats["eklenen"] += 1
@@ -627,7 +650,7 @@ class DriveSyncServisi:
                                 id_remap.setdefault(tablo, {})[rid] = row[pk]
                         else:
                             # UNIQUE/FK çakışmasında semantic eşleşme aranır.
-                            # Aynı anlamsal kayıt lokalde varsa parent-child zinciri kırılmaz;
+                            # Aynı anlamsal kayıt lokelde varsa parent-child zinciri kırılmaz;
                             # Drive ID, lokal ID'ye remap edilerek devam edilir.
                             semantic_local_id = None
                             if semantic_enabled:
@@ -645,7 +668,8 @@ class DriveSyncServisi:
                             else:
                                 _log(
                                     f"  ⏭ATLA [{tablo}] id={rid}: "
-                                    f"lokale eklenemedi (UNIQUE çakışma veya FK hatası)"
+                                    f"lokale eklenemedi — {ekleme_hatasi} | "
+                                    f"veri={_ozet(row)}"
                                 )
                                 eksik_idler.setdefault(tablo, set()).add(rid)
                     except Exception as e:
@@ -674,11 +698,11 @@ class DriveSyncServisi:
                                 self._kayit_ekle(drive_conn, tablo, lr_yeni)
 
                                 # Lokal tarafta artık rid boşaldığı için Drive kaydını rid ile indir.
-                                eklendi = self._kayit_ekle_lokal(tablo, dr)
+                                eklendi, ekleme_hatasi2 = self._kayit_ekle_lokal(tablo, dr)
                                 if not eklendi:
                                     _log(
                                         f"  ⚠ID-ÇAKIŞMA [{tablo}] id={rid}: "
-                                        f"Drive kaydı lokal'e eklenemedi (UNIQUE/FK)."
+                                        f"Drive kaydı lokal'e eklenemedi — {ekleme_hatasi2}"
                                     )
                                     eksik_idler.setdefault(tablo, set()).add(rid)
 
@@ -849,8 +873,10 @@ class DriveSyncServisi:
         col_str = ",".join(cols)
         conn.execute(f"INSERT OR IGNORE INTO {tablo} ({col_str}) VALUES ({ph})", vals)
 
-    def _kayit_ekle_lokal(self, tablo: str, row: dict) -> bool:
-        """Lokal DB'ye kayıt ekle. True → eklendi, False → çakışma/FK hatası (atlandı)."""
+    def _kayit_ekle_lokal(self, tablo: str, row: dict) -> tuple:
+        """Lokal DB'ye kayıt ekle.
+        Döndürür: (True, '') → eklendi, (False, hata_nedeni) → çakışma/FK hatası.
+        """
         cols = list(row.keys())
         vals = [row[c] for c in cols]
         ph = ",".join(["?"] * len(cols))
@@ -860,10 +886,20 @@ class DriveSyncServisi:
             cursor = conn.execute(
                 f"INSERT OR IGNORE INTO {tablo} ({col_str}) VALUES ({ph})", vals)
             conn.commit()
-            return cursor.rowcount > 0
-        except sqlite3.IntegrityError:
+            if cursor.rowcount > 0:
+                return True, ""
+            # IGNORE sessizce yuttu — gerçek hatayı probe et
+            try:
+                conn.execute(
+                    f"INSERT INTO {tablo} ({col_str}) VALUES ({ph})", vals)
+                conn.rollback()
+                return False, "bilinmeyen (rowcount=0)"
+            except sqlite3.IntegrityError as probe_err:
+                conn.rollback()
+                return False, str(probe_err)
+        except sqlite3.IntegrityError as e:
             conn.rollback()
-            return False
+            return False, str(e)
 
     def _kayit_guncelle(self, conn, tablo: str, pk: str, row: dict):
         """Drive DB'de kayıt güncelle. Hata durumunda exception fırlatır."""
