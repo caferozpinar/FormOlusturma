@@ -136,7 +136,29 @@ class DriveSyncServisi:
         self._service = None
         self._token_yolu = os.path.join(
             os.path.dirname(db_yolu), "drive_token.json")
+        self._node_id = self._node_id_yukle()
         self._token_ile_baglan()
+
+    def _node_id_yukle(self) -> str:
+        """Bu cihazın node_id'sini sync_meta'dan yükler; yoksa üretir ve kaydeder."""
+        try:
+            row = self.db.getir_tek(
+                "SELECT deger FROM sync_meta WHERE anahtar='node_id'")
+            if row and row["deger"]:
+                return row["deger"]
+        except Exception:
+            pass
+        nid = str(uuid.uuid4()).replace("-", "")
+        try:
+            with self.db.transaction() as cur:
+                cur.execute(
+                    "INSERT OR REPLACE INTO sync_meta (anahtar, deger, guncelleme_tarihi) "
+                    "VALUES ('node_id', ?, ?)",
+                    (nid, simdi_iso())
+                )
+        except Exception:
+            pass
+        return nid
 
     # ═══════════════════════════════════════
     # GOOGLE AUTH
@@ -689,48 +711,41 @@ class DriveSyncServisi:
                             _log(f"  ❌GÜNCELLE DRIVE→LOKAL [{tablo}] id={rid} HATA: {e}")
                         continue
 
-                    # Kullanıcı-üretimi veriler: zaman damgasına göre karar ver
+                    # Deterministik merge: version → timestamp → node_id
+                    lv = int(lr.get("version") or 0)
+                    dv = int(dr.get("version") or 0)
                     lz = lr.get(zaman_col, "") or lr.get(olusturma_col, "") or ""
                     dz = dr.get(zaman_col, "") or dr.get(olusturma_col, "") or ""
+                    ln = lr.get("node_id", "") or ""
+                    dn = dr.get("node_id", "") or ""
 
-                    if lz and dz and lz != dz:
-                        if lz > dz:
-                            # Lokal daha yeni → Drive'ı güncelle
-                            try:
-                                self._kayit_guncelle(drive_conn, tablo, pk, lr)
-                                _log(f"  ✎LOKAL→DRIVE [{tablo}] id={rid}: lokal={lz} > drive={dz}")
-                                stats["guncellenen"] += 1
-                            except Exception as e:
-                                _log(f"  ❌GÜNCELLE LOKAL→DRIVE [{tablo}] id={rid} HATA: {e}")
-                        elif dz > lz:
-                            # Drive daha yeni → Lokal'i güncelle
-                            try:
-                                self._kayit_guncelle_lokal(tablo, pk, dr)
-                                _log(f"  ✎DRIVE→LOKAL [{tablo}] id={rid}: drive={dz} > lokal={lz}")
-                                stats["guncellenen"] += 1
-                            except Exception as e:
-                                _log(f"  ❌GÜNCELLE DRIVE→LOKAL [{tablo}] id={rid} HATA: {e}")
-                    elif lr != dr:
-                        # Zaman bilgisi yok veya eşit ama içerik farklı → çakışma
-                        stats["cakisma"] += 1
-                        karar = "lokal"
-                        if cakisma_callback:
-                            karar = cakisma_callback(tablo, lr, dr)
+                    if lv > dv:
+                        lokal_kazanir = True
+                    elif dv > lv:
+                        lokal_kazanir = False
+                    elif lz > dz:
+                        lokal_kazanir = True
+                    elif dz > lz:
+                        lokal_kazanir = False
+                    elif ln > dn:
+                        lokal_kazanir = True
+                    else:
+                        lokal_kazanir = False  # drive kazanır veya tam eşit
 
-                        _log(f"  ⚠ÇAKIŞMA [{tablo}] id={rid}: karar={karar} | "
-                             f"lokal={_ozet(lr)} | drive={_ozet(dr)}")
-
-                        if karar == "lokal":
-                            try:
-                                self._kayit_guncelle(drive_conn, tablo, pk, lr)
-                            except Exception as e:
-                                _log(f"  ❌ÇAKIŞMA LOKAL→DRIVE [{tablo}] id={rid} HATA: {e}")
-                        elif karar == "drive":
-                            try:
-                                self._kayit_guncelle_lokal(tablo, pk, dr)
-                            except Exception as e:
-                                _log(f"  ❌ÇAKIŞMA DRIVE→LOKAL [{tablo}] id={rid} HATA: {e}")
-                        # "atla" → hiçbir şey yapma
+                    if lokal_kazanir:
+                        try:
+                            self._kayit_guncelle(drive_conn, tablo, pk, lr)
+                            _log(f"  ✎LOKAL→DRIVE [{tablo}] id={rid}: v{lv}>{dv} | {lz} | {ln}")
+                            stats["guncellenen"] += 1
+                        except Exception as e:
+                            _log(f"  ❌GÜNCELLE LOKAL→DRIVE [{tablo}] id={rid} HATA: {e}")
+                    else:
+                        try:
+                            self._kayit_guncelle_lokal_syncing(tablo, pk, dr)
+                            _log(f"  ✎DRIVE→LOKAL [{tablo}] id={rid}: v{dv}>={lv} | {dz} | {dn}")
+                            stats["guncellenen"] += 1
+                        except Exception as e:
+                            _log(f"  ❌GÜNCELLE DRIVE→LOKAL [{tablo}] id={rid} HATA: {e}")
 
             drive_conn.commit()
             drive_conn.close()
@@ -872,6 +887,22 @@ class DriveSyncServisi:
         vals.append(row[pk])
         with self.db.transaction() as c:
             c.execute(f"UPDATE {tablo} SET {','.join(sets)} WHERE {pk}=?", vals)
+
+    def _kayit_guncelle_lokal_syncing(self, tablo: str, pk: str, row: dict):
+        """Drive→Lokal güncelleme: sync_status='syncing' guard ile trigger tetiklenmez.
+
+        Trigger koşulu WHEN NEW.sync_status!='syncing' olduğundan, kaydı önce
+        'syncing' bayrağıyla yazar (trigger atlar), ardından 'synced' olarak
+        günceller (trigger yine atlar çünkü NEW.sync_status='syncing' olmaya devam eder).
+        """
+        row_syncing = dict(row)
+        row_syncing["sync_status"] = "syncing"
+        self._kayit_guncelle_lokal(tablo, pk, row_syncing)
+        with self.db.transaction() as c:
+            c.execute(
+                f"UPDATE {tablo} SET sync_status='synced' WHERE {pk}=?",
+                (row_syncing[pk],)
+            )
 
     def _lokal_alt_agaci_sil(self, tablo: str, record_id: str) -> None:
         """

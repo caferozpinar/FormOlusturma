@@ -858,6 +858,611 @@ MIGRATIONS: list[tuple[int, str, str]] = [
         ALTER TABLE kullanicilar ADD COLUMN soyad TEXT NOT NULL DEFAULT '';
         ALTER TABLE kullanicilar ADD COLUMN email TEXT NOT NULL DEFAULT ''
     """),
+
+    (48, "Deterministik merge — version, node_id, sync_status + triggerlar", """
+        INSERT OR IGNORE INTO sync_meta (anahtar, deger, guncelleme_tarihi)
+        VALUES ('node_id', lower(hex(randomblob(16))), datetime('now'));
+
+        ALTER TABLE parametre_tipler ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE parametre_tipler ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE parametre_tipler ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE birimler ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE birimler ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE birimler ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE belge_turleri ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE belge_turleri ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE belge_turleri ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE ulkeler ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE ulkeler ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE ulkeler ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE sehirler ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE sehirler ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE sehirler ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE tesis_turleri ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE tesis_turleri ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE tesis_turleri ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE konum_fiyatlar ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE konum_fiyatlar ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE konum_fiyatlar ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE konum_maliyet_carpanlari ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE konum_maliyet_carpanlari ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE konum_maliyet_carpanlari ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE kullanicilar ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE kullanicilar ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE kullanicilar ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE urunler ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE urunler ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE urunler ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE urun_alanlari ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE urun_alanlari ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE urun_alanlari ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE urun_alan_secenekleri ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE urun_alan_secenekleri ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE urun_alan_secenekleri ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE urun_versiyonlar ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE urun_versiyonlar ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE urun_versiyonlar ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE urun_parametreler ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE urun_parametreler ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE urun_parametreler ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE parametre_dropdown_degerler ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE parametre_dropdown_degerler ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE parametre_dropdown_degerler ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE alt_kalemler ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE alt_kalemler ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE alt_kalemler ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE urun_alt_kalemleri ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE urun_alt_kalemleri ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE urun_alt_kalemleri ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE alt_kalem_versiyonlar ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE alt_kalem_versiyonlar ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE alt_kalem_versiyonlar ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE alt_kalem_parametreler ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE alt_kalem_parametreler ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE alt_kalem_parametreler ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE maliyet_sablonlar ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE maliyet_sablonlar ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE maliyet_sablonlar ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE maliyet_parametreler ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE maliyet_parametreler ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE maliyet_parametreler ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE alt_kalem_parametre_kombinasyonlari ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE alt_kalem_parametre_kombinasyonlari ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE alt_kalem_parametre_kombinasyonlari ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE alt_kalem_maliyet_versiyonlari ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE alt_kalem_maliyet_versiyonlari ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE alt_kalem_maliyet_versiyonlari ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE alt_kalem_maliyet_girdi_degerleri ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE alt_kalem_maliyet_girdi_degerleri ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE alt_kalem_maliyet_girdi_degerleri ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE alt_kalem_maliyet_formulleri ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE alt_kalem_maliyet_formulleri ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE alt_kalem_maliyet_formulleri ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE placeholders ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE placeholders ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE placeholders ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE placeholder_kurallar ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE placeholder_kurallar ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE placeholder_kurallar ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE projeler ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE projeler ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE projeler ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE proje_urunleri ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE proje_urunleri ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE proje_urunleri ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE proje_maliyet_snapshot ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE proje_maliyet_snapshot ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE proje_maliyet_snapshot ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE belgeler ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE belgeler ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE belgeler ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE belge_urunleri ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE belge_urunleri ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE belge_urunleri ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE belge_alt_kalemleri ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE belge_alt_kalemleri ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE belge_alt_kalemleri ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE teklifler ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE teklifler ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE teklifler ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE teklif_kalemleri ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE teklif_kalemleri ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE teklif_kalemleri ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE teklif_parametre_degerleri ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE teklif_parametre_degerleri ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE teklif_parametre_degerleri ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE belge_uretim_kayitlari ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE belge_uretim_kayitlari ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE belge_uretim_kayitlari ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE belge_sablon_dosyalar ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE belge_sablon_dosyalar ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE belge_sablon_dosyalar ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE belge_bolumler ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE belge_bolumler ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE belge_bolumler ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        ALTER TABLE belge_sablon_atamalari ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE belge_sablon_atamalari ADD COLUMN node_id TEXT NOT NULL DEFAULT '';
+        ALTER TABLE belge_sablon_atamalari ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'dirty';
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_parametre_tipler
+        AFTER INSERT ON parametre_tipler BEGIN
+            UPDATE parametre_tipler SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_parametre_tipler
+        AFTER UPDATE ON parametre_tipler WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE parametre_tipler SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_birimler
+        AFTER INSERT ON birimler BEGIN
+            UPDATE birimler SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_birimler
+        AFTER UPDATE ON birimler WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE birimler SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_belge_turleri
+        AFTER INSERT ON belge_turleri BEGIN
+            UPDATE belge_turleri SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_belge_turleri
+        AFTER UPDATE ON belge_turleri WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE belge_turleri SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_ulkeler
+        AFTER INSERT ON ulkeler BEGIN
+            UPDATE ulkeler SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_ulkeler
+        AFTER UPDATE ON ulkeler WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE ulkeler SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_sehirler
+        AFTER INSERT ON sehirler BEGIN
+            UPDATE sehirler SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_sehirler
+        AFTER UPDATE ON sehirler WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE sehirler SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_tesis_turleri
+        AFTER INSERT ON tesis_turleri BEGIN
+            UPDATE tesis_turleri SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_tesis_turleri
+        AFTER UPDATE ON tesis_turleri WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE tesis_turleri SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_konum_fiyatlar
+        AFTER INSERT ON konum_fiyatlar BEGIN
+            UPDATE konum_fiyatlar SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_konum_fiyatlar
+        AFTER UPDATE ON konum_fiyatlar WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE konum_fiyatlar SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_konum_maliyet_carpanlari
+        AFTER INSERT ON konum_maliyet_carpanlari BEGIN
+            UPDATE konum_maliyet_carpanlari SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_konum_maliyet_carpanlari
+        AFTER UPDATE ON konum_maliyet_carpanlari WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE konum_maliyet_carpanlari SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_kullanicilar
+        AFTER INSERT ON kullanicilar BEGIN
+            UPDATE kullanicilar SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_kullanicilar
+        AFTER UPDATE ON kullanicilar WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE kullanicilar SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_urunler
+        AFTER INSERT ON urunler BEGIN
+            UPDATE urunler SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_urunler
+        AFTER UPDATE ON urunler WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE urunler SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_urun_alanlari
+        AFTER INSERT ON urun_alanlari BEGIN
+            UPDATE urun_alanlari SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_urun_alanlari
+        AFTER UPDATE ON urun_alanlari WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE urun_alanlari SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_urun_alan_secenekleri
+        AFTER INSERT ON urun_alan_secenekleri BEGIN
+            UPDATE urun_alan_secenekleri SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_urun_alan_secenekleri
+        AFTER UPDATE ON urun_alan_secenekleri WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE urun_alan_secenekleri SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_urun_versiyonlar
+        AFTER INSERT ON urun_versiyonlar BEGIN
+            UPDATE urun_versiyonlar SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_urun_versiyonlar
+        AFTER UPDATE ON urun_versiyonlar WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE urun_versiyonlar SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_urun_parametreler
+        AFTER INSERT ON urun_parametreler BEGIN
+            UPDATE urun_parametreler SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_urun_parametreler
+        AFTER UPDATE ON urun_parametreler WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE urun_parametreler SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_parametre_dropdown_degerler
+        AFTER INSERT ON parametre_dropdown_degerler BEGIN
+            UPDATE parametre_dropdown_degerler SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_parametre_dropdown_degerler
+        AFTER UPDATE ON parametre_dropdown_degerler WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE parametre_dropdown_degerler SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_alt_kalemler
+        AFTER INSERT ON alt_kalemler BEGIN
+            UPDATE alt_kalemler SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_alt_kalemler
+        AFTER UPDATE ON alt_kalemler WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE alt_kalemler SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_urun_alt_kalemleri
+        AFTER INSERT ON urun_alt_kalemleri BEGIN
+            UPDATE urun_alt_kalemleri SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_urun_alt_kalemleri
+        AFTER UPDATE ON urun_alt_kalemleri WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE urun_alt_kalemleri SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_alt_kalem_versiyonlar
+        AFTER INSERT ON alt_kalem_versiyonlar BEGIN
+            UPDATE alt_kalem_versiyonlar SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_alt_kalem_versiyonlar
+        AFTER UPDATE ON alt_kalem_versiyonlar WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE alt_kalem_versiyonlar SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_alt_kalem_parametreler
+        AFTER INSERT ON alt_kalem_parametreler BEGIN
+            UPDATE alt_kalem_parametreler SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_alt_kalem_parametreler
+        AFTER UPDATE ON alt_kalem_parametreler WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE alt_kalem_parametreler SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_maliyet_sablonlar
+        AFTER INSERT ON maliyet_sablonlar BEGIN
+            UPDATE maliyet_sablonlar SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_maliyet_sablonlar
+        AFTER UPDATE ON maliyet_sablonlar WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE maliyet_sablonlar SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_maliyet_parametreler
+        AFTER INSERT ON maliyet_parametreler BEGIN
+            UPDATE maliyet_parametreler SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_maliyet_parametreler
+        AFTER UPDATE ON maliyet_parametreler WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE maliyet_parametreler SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_alt_kalem_parametre_kombinasyonlari
+        AFTER INSERT ON alt_kalem_parametre_kombinasyonlari BEGIN
+            UPDATE alt_kalem_parametre_kombinasyonlari SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_alt_kalem_parametre_kombinasyonlari
+        AFTER UPDATE ON alt_kalem_parametre_kombinasyonlari WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE alt_kalem_parametre_kombinasyonlari SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_alt_kalem_maliyet_versiyonlari
+        AFTER INSERT ON alt_kalem_maliyet_versiyonlari BEGIN
+            UPDATE alt_kalem_maliyet_versiyonlari SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_alt_kalem_maliyet_versiyonlari
+        AFTER UPDATE ON alt_kalem_maliyet_versiyonlari WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE alt_kalem_maliyet_versiyonlari SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_alt_kalem_maliyet_girdi_degerleri
+        AFTER INSERT ON alt_kalem_maliyet_girdi_degerleri BEGIN
+            UPDATE alt_kalem_maliyet_girdi_degerleri SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_alt_kalem_maliyet_girdi_degerleri
+        AFTER UPDATE ON alt_kalem_maliyet_girdi_degerleri WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE alt_kalem_maliyet_girdi_degerleri SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_alt_kalem_maliyet_formulleri
+        AFTER INSERT ON alt_kalem_maliyet_formulleri BEGIN
+            UPDATE alt_kalem_maliyet_formulleri SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_alt_kalem_maliyet_formulleri
+        AFTER UPDATE ON alt_kalem_maliyet_formulleri WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE alt_kalem_maliyet_formulleri SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_placeholders
+        AFTER INSERT ON placeholders BEGIN
+            UPDATE placeholders SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_placeholders
+        AFTER UPDATE ON placeholders WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE placeholders SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_placeholder_kurallar
+        AFTER INSERT ON placeholder_kurallar BEGIN
+            UPDATE placeholder_kurallar SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_placeholder_kurallar
+        AFTER UPDATE ON placeholder_kurallar WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE placeholder_kurallar SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_projeler
+        AFTER INSERT ON projeler BEGIN
+            UPDATE projeler SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_projeler
+        AFTER UPDATE ON projeler WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE projeler SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_proje_urunleri
+        AFTER INSERT ON proje_urunleri BEGIN
+            UPDATE proje_urunleri SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_proje_urunleri
+        AFTER UPDATE ON proje_urunleri WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE proje_urunleri SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_proje_maliyet_snapshot
+        AFTER INSERT ON proje_maliyet_snapshot BEGIN
+            UPDATE proje_maliyet_snapshot SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_proje_maliyet_snapshot
+        AFTER UPDATE ON proje_maliyet_snapshot WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE proje_maliyet_snapshot SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_belgeler
+        AFTER INSERT ON belgeler BEGIN
+            UPDATE belgeler SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_belgeler
+        AFTER UPDATE ON belgeler WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE belgeler SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_belge_urunleri
+        AFTER INSERT ON belge_urunleri BEGIN
+            UPDATE belge_urunleri SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_belge_urunleri
+        AFTER UPDATE ON belge_urunleri WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE belge_urunleri SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_belge_alt_kalemleri
+        AFTER INSERT ON belge_alt_kalemleri BEGIN
+            UPDATE belge_alt_kalemleri SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_belge_alt_kalemleri
+        AFTER UPDATE ON belge_alt_kalemleri WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE belge_alt_kalemleri SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_teklifler
+        AFTER INSERT ON teklifler BEGIN
+            UPDATE teklifler SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_teklifler
+        AFTER UPDATE ON teklifler WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE teklifler SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_teklif_kalemleri
+        AFTER INSERT ON teklif_kalemleri BEGIN
+            UPDATE teklif_kalemleri SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_teklif_kalemleri
+        AFTER UPDATE ON teklif_kalemleri WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE teklif_kalemleri SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_teklif_parametre_degerleri
+        AFTER INSERT ON teklif_parametre_degerleri BEGIN
+            UPDATE teklif_parametre_degerleri SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_teklif_parametre_degerleri
+        AFTER UPDATE ON teklif_parametre_degerleri WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE teklif_parametre_degerleri SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_belge_uretim_kayitlari
+        AFTER INSERT ON belge_uretim_kayitlari BEGIN
+            UPDATE belge_uretim_kayitlari SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_belge_uretim_kayitlari
+        AFTER UPDATE ON belge_uretim_kayitlari WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE belge_uretim_kayitlari SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_belge_sablon_dosyalar
+        AFTER INSERT ON belge_sablon_dosyalar BEGIN
+            UPDATE belge_sablon_dosyalar SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_belge_sablon_dosyalar
+        AFTER UPDATE ON belge_sablon_dosyalar WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE belge_sablon_dosyalar SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_belge_bolumler
+        AFTER INSERT ON belge_bolumler BEGIN
+            UPDATE belge_bolumler SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_belge_bolumler
+        AFTER UPDATE ON belge_bolumler WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE belge_bolumler SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+
+        CREATE TRIGGER IF NOT EXISTS trg_ins_belge_sablon_atamalari
+        AFTER INSERT ON belge_sablon_atamalari BEGIN
+            UPDATE belge_sablon_atamalari SET version=1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+        CREATE TRIGGER IF NOT EXISTS trg_upd_belge_sablon_atamalari
+        AFTER UPDATE ON belge_sablon_atamalari WHEN NEW.sync_status!='syncing' BEGIN
+            UPDATE belge_sablon_atamalari SET version=OLD.version+1,
+                node_id=COALESCE((SELECT deger FROM sync_meta WHERE anahtar='node_id'),''),
+                sync_status='dirty' WHERE id=NEW.id; END;
+    """),
 ]
 
 # ═══════════════════════════════════════
@@ -921,6 +1526,40 @@ class MigrationMotoru:
         except Exception:
             return 0
 
+    @staticmethod
+    def _sql_ifadelerine_bol(sql: str) -> list:
+        """
+        SQL metnini trigger BEGIN...END bloklarını bozmadan ifadelere böler.
+
+        Basit split(";") trigger gövdelerindeki iç noktalı virgülleri yanlış
+        keser (ör. "WHERE id=NEW.id;" + " END" → incomplete input).
+        Bu metod BEGIN/END derinliğini takip ederek birden fazla parçaya bölünmüş
+        trigger ifadelerini doğru şekilde birleştirir.
+        """
+        ifadeler = []
+        tampon = ""
+        derinlik = 0
+
+        for parca in sql.split(";"):
+            parca = parca.strip()
+            if not parca:
+                continue
+            ust = parca.upper()
+            # Trigger başlangıcı: "... BEGIN" ile biten satır
+            derinlik += ust.count(" BEGIN")
+            # Trigger bitişi: parça yalnızca "END" ise
+            if ust.strip() in ("END", "END;"):
+                derinlik -= 1
+            tampon = (tampon + "; " + parca) if tampon else parca
+            if derinlik <= 0:
+                derinlik = 0
+                ifadeler.append(tampon)
+                tampon = ""
+
+        if tampon:
+            ifadeler.append(tampon)
+        return ifadeler
+
     def uygula(self) -> int:
         """
         Bekleyen tüm migration'ları uygular.
@@ -937,8 +1576,7 @@ class MigrationMotoru:
 
             with self.db.transaction() as conn:
                 # Çoklu SQL ifadelerini ayrı ayrı çalıştır
-                for ifade in sql.strip().split(";"):
-                    ifade = ifade.strip()
+                for ifade in self._sql_ifadelerine_bol(sql):
                     if ifade:
                         try:
                             conn.execute(ifade)
